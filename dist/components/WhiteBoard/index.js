@@ -440,7 +440,8 @@ function resizeCanvas(canvas, whiteboard) {
 
 var Whiteboard = function Whiteboard(_ref9) {
   var _ref9$aspectRatio = _ref9.aspectRatio,
-      aspectRatio = _ref9$aspectRatio === void 0 ? 4 / 3 : _ref9$aspectRatio;
+      aspectRatio = _ref9$aspectRatio === void 0 ? 4 / 3 : _ref9$aspectRatio,
+      setFiles = _ref9.setFiles;
 
   var _useState = (0, _react.useState)(null),
       canvas = _useState[0],
@@ -527,10 +528,49 @@ var Whiteboard = function Whiteboard(_ref9) {
     });
   }
 
+  var _useState5 = (0, _react.useState)([]),
+      pages = _useState5[0],
+      setPages = _useState5[1];
+
+  var _useState6 = (0, _react.useState)(0),
+      index = _useState6[0],
+      setIndex = _useState6[1];
+
   function onSaveCanvasAsImage() {
     canvasRef.current.toBlob(function (blob) {
-      (0, _fileSaver.saveAs)(blob, 'image.png');
+      setPages([].concat(pages, [blob]));
+
+      for (var i = 0; i < pages.length; i++) {
+        (0, _fileSaver.saveAs)(pages[i], 'image.png');
+      }
     });
+    (0, _fileSaver.saveAs)(blob, 'image.png');
+    canvas.getObjects().forEach(function (item) {
+      if (item !== canvas.backgroundImage) {
+        canvas.remove(item);
+      }
+    });
+    setFiles(pages);
+  }
+
+  function savePages(canvas) {
+    canvasRef.current.toBlob(function (blob) {
+      console.log(blob, "blob");
+      setPages([].concat(pages, [blob]));
+      canvas.getObjects().forEach(function (item) {
+        if (item !== canvas.backgroundImage) {
+          canvas.remove(item);
+        }
+      });
+    });
+  }
+
+  (0, _react.useEffect)(function () {
+    console.log(pages);
+  }, [pages]);
+
+  function previousPage(canvas) {
+    canvasRef.current = pages[index];
   }
 
   function onFileChange(event) {
@@ -629,12 +669,7 @@ var Whiteboard = function Whiteboard(_ref9) {
     onChange: changeFill
   }), /*#__PURE__*/_react.default.createElement("label", {
     htmlFor: "fill"
-  }, "fill")), /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("input", {
-    type: "color",
-    name: "color",
-    id: "color",
-    onChange: changeCurrentColor
-  })), /*#__PURE__*/_react.default.createElement("input", {
+  }, "fill")), /*#__PURE__*/_react.default.createElement("input", {
     type: "range",
     min: 1,
     max: 20,
@@ -666,22 +701,23 @@ var Whiteboard = function Whiteboard(_ref9) {
       return uploadPdfRef.current.click();
     }
   }, "PDF"))), /*#__PURE__*/_react.default.createElement("button", {
-    onClick: function onClick() {
-      return canvasToJson(canvas);
-    }
-  }, "To Json"), /*#__PURE__*/_react.default.createElement("button", {
     onClick: onSaveCanvasAsImage
   }, "Save as image")), /*#__PURE__*/_react.default.createElement("canvas", {
     ref: canvasRef,
     id: "canvas"
-  }), /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement(_PdfReader.default, {
+  }), /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("button", {
+    onClick: function onClick() {
+      return savePages(canvas);
+    }
+  }, "Next")), /*#__PURE__*/_react.default.createElement("div", null, fileReaderInfo.length > 0 && /*#__PURE__*/_react.default.createElement(_PdfReader.default, {
     fileReaderInfo: fileReaderInfo,
     updateFileReaderInfo: updateFileReaderInfo
   })));
 };
 
 Whiteboard.propTypes = {
-  aspectRatio: _propTypes.default.number
+  aspectRatio: _propTypes.default.number,
+  setFiles: _propTypes.default.func
 };
 var _default = Whiteboard;
 exports.default = _default;
