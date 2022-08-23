@@ -473,6 +473,7 @@ const Whiteboard = ({ aspectRatio = 4 / 3 , setFiles }) => {
 
   function onSaveCanvasAsImage() {
     canvasRef.current.toBlob(function (blob) {
+      setFiles(pages);
       setPages([...pages, blob]);
       for(let i=0; i<pages.length; i++)
         saveAs(pages[i], 'image.png');
@@ -483,7 +484,6 @@ const Whiteboard = ({ aspectRatio = 4 / 3 , setFiles }) => {
         canvas.remove(item);
       }
     })
-    setFiles(pages);
   }
 
   function savePages(canvas) {
@@ -585,7 +585,7 @@ const Whiteboard = ({ aspectRatio = 4 / 3 , setFiles }) => {
 
 Whiteboard.propTypes = {
   aspectRatio: PropTypes.number,
-  setFiles: PropTypes.func,
+  setFiles: PropTypes.any,
 };
 
 export default Whiteboard;
