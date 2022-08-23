@@ -4,13 +4,11 @@ import styles from './app.module.scss';
 
 const App = () => {
   const [files, setFiles] = React.useState([]);
-  React.useEffect(()=>{
-    console.log(files,"Nieee");
-  },[files]);
+  
   return (
     <div className={styles.app}>
       <main>
-        <Whiteboard aspectRatio={4 / 3} setFiles={setFiles} />
+        <Whiteboard aspectRatio={4 / 3} setFiles={setFiles} color="#000000" />
       </main>
     </div>
   );
