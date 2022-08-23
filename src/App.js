@@ -8,7 +8,7 @@ const App = () => {
   return (
     <div className={styles.app}>
       <main>
-        <Whiteboard aspectRatio={4 / 3} setFiles={setFiles} />
+        <Whiteboard aspectRatio={4 / 3} setFiles={setFiles} color="#ff0019"/>
       </main>
     </div>
   );

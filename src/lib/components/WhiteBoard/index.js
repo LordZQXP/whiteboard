@@ -19,7 +19,7 @@ import './eraserBrush';
 import styles from './index.module.scss';
 
 
-const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color = "#000000" }) => {
+const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color }) => {
   let drawInstance = null;
   let origX;
   let origY;
@@ -375,7 +375,6 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color = "#000000" }) => {
       canvas.freeDrawingBrush.width = parseInt(options.currentWidth, 10) || 1;
       canvas.isDrawingMode = true;
       canvas.freeDrawingBrush.color = options.currentColor;
-  
     }
   }
   
@@ -410,7 +409,6 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color = "#000000" }) => {
   const whiteboardRef = useRef(null);
   const uploadImageRef = useRef(null);
   const uploadPdfRef = useRef(null);
-
 
   useEffect(() => {
     if (!canvas && canvasRef.current) {
@@ -587,7 +585,7 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color = "#000000" }) => {
 Whiteboard.propTypes = {
   aspectRatio: PropTypes.number,
   setFiles: PropTypes.any,
-  color : PropTypes.string,
+  color : PropTypes.any,
 };
 
 export default Whiteboard;
