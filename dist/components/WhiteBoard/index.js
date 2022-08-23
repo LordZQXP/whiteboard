@@ -536,23 +536,32 @@ var Whiteboard = function Whiteboard(_ref9) {
       index = _useState6[0],
       setIndex = _useState6[1];
 
+  var _useState7 = (0, _react.useState)([]),
+      backUpCanvas = _useState7[0],
+      setBackUpCanvas = _useState7[1];
+
   function onSaveCanvasAsImage() {
     canvasRef.current.toBlob(function (blob) {
       setFiles([].concat(pages, [blob]));
-      setPages([].concat(pages, [blob])); // for(let i=0; i<pages.length; i++)
-      //   saveAs(pages[i], 'image.png');
-    }); // saveAs(blob, 'image.png');
-
+      setPages([].concat(pages, [blob])); // for(let i=0; i<pages.length;i++)
+      //   saveAs(pages[i], "im.png");
+      //   saveAs(blob, "im.png");
+    });
     canvas.getObjects().forEach(function (item) {
       if (item !== canvas.backgroundImage) {
         canvas.remove(item);
       }
     });
+    setPages([]);
+    updateFileReaderInfo({
+      file: "",
+      currentPageNumber: 1
+    });
   }
 
   function savePages(canvas) {
+    setBackUpCanvas([].concat(backUpCanvas, [canvasRef]));
     canvasRef.current.toBlob(function (blob) {
-      console.log(blob, "blob");
       setPages([].concat(pages, [blob]));
       canvas.getObjects().forEach(function (item) {
         if (item !== canvas.backgroundImage) {
@@ -562,20 +571,16 @@ var Whiteboard = function Whiteboard(_ref9) {
     });
   }
 
-  (0, _react.useEffect)(function () {
-    console.log(pages);
-  }, [pages]);
-
-  function previousPage(canvas) {
-    canvasRef.current = pages[index];
-  }
-
   function onFileChange(event) {
     updateFileReaderInfo({
       file: event.target.files[0],
       currentPageNumber: 1
     });
   }
+
+  var _React$useState = _react.default.useState(false),
+      pdfViewer = _React$useState[0],
+      setPdfViewer = _React$useState[1];
 
   function updateFileReaderInfo(data) {
     setFileReaderInfo(_extends({}, fileReaderInfo, data));
@@ -695,18 +700,22 @@ var Whiteboard = function Whiteboard(_ref9) {
     }
   }, "Image"), /*#__PURE__*/_react.default.createElement("span", {
     onClick: function onClick() {
-      return uploadPdfRef.current.click();
+      uploadPdfRef.current.click();
+      setPdfViewer(true);
     }
   }, "PDF"))), /*#__PURE__*/_react.default.createElement("button", {
     onClick: onSaveCanvasAsImage
   }, "Save as image")), /*#__PURE__*/_react.default.createElement("canvas", {
     ref: canvasRef,
     id: "canvas"
-  }), /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("button", {
+  }), /*#__PURE__*/_react.default.createElement("div", null, !pdfViewer && /*#__PURE__*/_react.default.createElement("button", {
     onClick: function onClick() {
       return savePages(canvas);
     }
-  }, "Next")), /*#__PURE__*/_react.default.createElement("div", null, fileReaderInfo.length > 0 && /*#__PURE__*/_react.default.createElement(_PdfReader.default, {
+  }, "Next")), /*#__PURE__*/_react.default.createElement("div", null, pdfViewer && /*#__PURE__*/_react.default.createElement(_PdfReader.default, {
+    savePage: function savePage() {
+      return savePages(canvas);
+    },
     fileReaderInfo: fileReaderInfo,
     updateFileReaderInfo: updateFileReaderInfo
   })));

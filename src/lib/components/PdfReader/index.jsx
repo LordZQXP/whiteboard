@@ -5,7 +5,7 @@ import styles from './index.module.scss';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
-const PDFReader = ({ fileReaderInfo, updateFileReaderInfo }) => {
+const PDFReader = ({ fileReaderInfo, updateFileReaderInfo, savePage }) => {
   function onRenderSuccess() {
     const importPDFCanvas = document.querySelector('.import-pdf-page canvas');
     const pdfAsImageSrc = importPDFCanvas.toDataURL();
@@ -21,7 +21,10 @@ const PDFReader = ({ fileReaderInfo, updateFileReaderInfo }) => {
     updateFileReaderInfo({ currentPageNumber: fileReaderInfo.currentPageNumber + offset });
   }
 
-  const nextPage = () => changePage(1);
+  const nextPage = () => {
+    changePage(1);
+    savePage();
+  };
   const previousPage = () => changePage(-1);
 
   return (
@@ -46,13 +49,13 @@ const PDFReader = ({ fileReaderInfo, updateFileReaderInfo }) => {
         <span>
           Page {fileReaderInfo.currentPageNumber} of {fileReaderInfo.totalPages || '--'}
         </span>
-        <button
+        {/* <button
           type="button"
           disabled={fileReaderInfo.currentPageNumber <= 1}
           onClick={previousPage}
         >
           Previous
-        </button>
+        </button> */}
         <button
           type="button"
           disabled={fileReaderInfo.currentPageNumber >= fileReaderInfo.totalPages}

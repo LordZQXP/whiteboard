@@ -403,7 +403,7 @@ const Whiteboard = ({ aspectRatio = 4 / 3 , setFiles }) => {
     currentPageNumber: 1,
     currentPage: '',
   });
-  const canvasRef = useRef(null);
+  var canvasRef = useRef(null);
   const whiteboardRef = useRef(null);
   const uploadImageRef = useRef(null);
   const uploadPdfRef = useRef(null);
@@ -471,24 +471,29 @@ const Whiteboard = ({ aspectRatio = 4 / 3 , setFiles }) => {
   const [pages, setPages] = useState([]); 
   const [index, setIndex] = useState(0);
 
+  const [backUpCanvas, setBackUpCanvas] = useState([]);
+
   function onSaveCanvasAsImage() {
     canvasRef.current.toBlob(function (blob) {
       setFiles([...pages, blob]);
       setPages([...pages, blob]);
-      // for(let i=0; i<pages.length; i++)
-      //   saveAs(pages[i], 'image.png');
+      // for(let i=0; i<pages.length;i++)
+      //   saveAs(pages[i], "im.png");
+      //   saveAs(blob, "im.png");
     });
-    // saveAs(blob, 'image.png');
     canvas.getObjects().forEach((item) => {
       if (item !== canvas.backgroundImage) {
         canvas.remove(item);
       }
     })
+    setPages([]);
+    updateFileReaderInfo({ file: "", currentPageNumber: 1 });
+    
   }
 
   function savePages(canvas) {
+    setBackUpCanvas([...backUpCanvas, canvasRef]);
     canvasRef.current.toBlob(function (blob) {
-      console.log(blob, "blob");
       setPages([...pages, blob]);
       canvas.getObjects().forEach((item) => {
         if (item !== canvas.backgroundImage) {
@@ -498,17 +503,11 @@ const Whiteboard = ({ aspectRatio = 4 / 3 , setFiles }) => {
     });
   }
 
-  useEffect(()=>{
-    console.log(pages);
-  },[pages])
-
-  function previousPage(canvas) {
-    canvasRef.current = pages[index];
-  }
-
   function onFileChange(event) {
     updateFileReaderInfo({ file: event.target.files[0], currentPageNumber: 1 });
   }
+
+  const [pdfViewer, setPdfViewer] = React.useState(false);
 
   function updateFileReaderInfo(data) {
     setFileReaderInfo({ ...fileReaderInfo, ...data });
@@ -548,9 +547,7 @@ const Whiteboard = ({ aspectRatio = 4 / 3 , setFiles }) => {
           <input type="checkbox" name="fill" id="fill" checked={isFill} onChange={changeFill} />
           <label htmlFor="fill">fill</label>
         </div>
-        {/* <div>
-          <input type="color" name="color" id="color" onChange={changeCurrentColor} />
-        </div> */}
+
         <input
           type="range"
           min={1}
@@ -565,19 +562,19 @@ const Whiteboard = ({ aspectRatio = 4 / 3 , setFiles }) => {
           <button className={styles.dropdownButton}>+Upload</button>
           <div className={styles.dropdownContent}>
             <span onClick={() => uploadImageRef.current.click()}>Image</span>
-            <span onClick={() => uploadPdfRef.current.click()}>PDF</span>
+            <span onClick={() => {uploadPdfRef.current.click(); setPdfViewer(true)}}>PDF</span>
           </div>
         </div>
 
-        {/* <button onClick={() => canvasToJson(canvas)}>To Json</button> */}
         <button onClick={onSaveCanvasAsImage}>Save as image</button>
       </div>
       <canvas ref={canvasRef} id="canvas" />
       <div>
-        <button onClick={() => savePages(canvas)}>Next</button>
+        {/* <button>Previous</button> */}
+       {!pdfViewer && <button onClick={() => savePages(canvas)}>Next</button>}
       </div>
       <div>
-        {fileReaderInfo.length >0 && <PdfReader fileReaderInfo={fileReaderInfo} updateFileReaderInfo={updateFileReaderInfo} />}
+        {pdfViewer && <PdfReader savePage={() => savePages(canvas)} fileReaderInfo={fileReaderInfo} updateFileReaderInfo={updateFileReaderInfo} />}
       </div>
     </div>
   );
