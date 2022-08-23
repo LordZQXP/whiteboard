@@ -538,6 +538,7 @@ var Whiteboard = function Whiteboard(_ref9) {
 
   function onSaveCanvasAsImage() {
     canvasRef.current.toBlob(function (blob) {
+      setFiles(pages);
       setPages([].concat(pages, [blob]));
 
       for (var i = 0; i < pages.length; i++) {
@@ -550,7 +551,6 @@ var Whiteboard = function Whiteboard(_ref9) {
         canvas.remove(item);
       }
     });
-    setFiles(pages);
   }
 
   function savePages(canvas) {
@@ -717,7 +717,7 @@ var Whiteboard = function Whiteboard(_ref9) {
 
 Whiteboard.propTypes = {
   aspectRatio: _propTypes.default.number,
-  setFiles: _propTypes.default.func
+  setFiles: _propTypes.default.any
 };
 var _default = Whiteboard;
 exports.default = _default;
