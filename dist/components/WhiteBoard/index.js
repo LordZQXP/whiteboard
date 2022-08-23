@@ -538,14 +538,11 @@ var Whiteboard = function Whiteboard(_ref9) {
 
   function onSaveCanvasAsImage() {
     canvasRef.current.toBlob(function (blob) {
-      setFiles(pages);
-      setPages([].concat(pages, [blob]));
+      setFiles([].concat(pages, [blob]));
+      setPages([].concat(pages, [blob])); // for(let i=0; i<pages.length; i++)
+      //   saveAs(pages[i], 'image.png');
+    }); // saveAs(blob, 'image.png');
 
-      for (var i = 0; i < pages.length; i++) {
-        (0, _fileSaver.saveAs)(pages[i], 'image.png');
-      }
-    });
-    (0, _fileSaver.saveAs)(blob, 'image.png');
     canvas.getObjects().forEach(function (item) {
       if (item !== canvas.backgroundImage) {
         canvas.remove(item);
