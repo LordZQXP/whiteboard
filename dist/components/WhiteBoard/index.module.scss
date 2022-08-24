@@ -23,6 +23,24 @@
       background-color: #7173ee;
     }
   }
+
+  
+}
+
+.colorToolbarDiv{
+  display:flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width:300px;
+  margin-top : 15px;
+  margin-bottom : 15px
+}
+
+.colorDiv{
+   width:30px;
+   height:30px;
+   border-radius:50%;
+   cursor:pointer;
 }
 
 .toolbar {
