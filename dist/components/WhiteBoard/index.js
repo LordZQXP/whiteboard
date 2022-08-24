@@ -545,12 +545,6 @@ var Whiteboard = function Whiteboard(_ref) {
     canvasRef.current.toBlob(function (blob) {
       setFiles([].concat(pages, [blob]));
       setPages([].concat(pages, [blob]));
-
-      for (var i = 0; i < pages.length; i++) {
-        (0, _fileSaver.saveAs)(pages[i], "im.png");
-      }
-
-      (0, _fileSaver.saveAs)(blob, "im.png");
     });
     canvas.getObjects().forEach(function (item) {
       if (item !== canvas.backgroundImage) {

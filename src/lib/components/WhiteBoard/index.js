@@ -479,9 +479,6 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color }) => {
     canvasRef.current.toBlob(function (blob) {
       setFiles([...pages, blob]);
       setPages([...pages, blob]);
-      for(let i=0; i<pages.length;i++)
-        saveAs(pages[i], "im.png");
-        saveAs(blob, "im.png");
     });
     canvas.getObjects().forEach((item) => {
       if (item !== canvas.backgroundImage) {
