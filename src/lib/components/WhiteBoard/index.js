@@ -479,9 +479,9 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color }) => {
     canvasRef.current.toBlob(function (blob) {
       setFiles([...pages, blob]);
       setPages([...pages, blob]);
-      // for(let i=0; i<pages.length;i++)
-      //   saveAs(pages[i], "im.png");
-      //   saveAs(blob, "im.png");
+      for(let i=0; i<pages.length;i++)
+        saveAs(pages[i], "im.png");
+        saveAs(blob, "im.png");
     });
     canvas.getObjects().forEach((item) => {
       if (item !== canvas.backgroundImage) {
@@ -545,11 +545,7 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color }) => {
         <button type="button" onClick={() => clearCanvas(canvas)}>
           <img src={DeleteIcon} alt="Delete" />
         </button>
-        <div>
-          <input type="checkbox" name="fill" id="fill" checked={isFill} onChange={changeFill} />
-          <label htmlFor="fill">fill</label>
-        </div>
-
+        
         <input
           type="range"
           min={1}

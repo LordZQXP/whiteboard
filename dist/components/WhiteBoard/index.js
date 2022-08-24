@@ -49,8 +49,7 @@ var Whiteboard = function Whiteboard(_ref) {
   var _ref$aspectRatio = _ref.aspectRatio,
       aspectRatio = _ref$aspectRatio === void 0 ? 4 / 3 : _ref$aspectRatio,
       setFiles = _ref.setFiles,
-      _ref$color = _ref.color,
-      color = _ref$color === void 0 ? "#000000" : _ref$color;
+      color = _ref.color;
   var drawInstance = null;
   var origX;
   var origY;
@@ -545,9 +544,13 @@ var Whiteboard = function Whiteboard(_ref) {
   function onSaveCanvasAsImage() {
     canvasRef.current.toBlob(function (blob) {
       setFiles([].concat(pages, [blob]));
-      setPages([].concat(pages, [blob])); // for(let i=0; i<pages.length;i++)
-      //   saveAs(pages[i], "im.png");
-      //   saveAs(blob, "im.png");
+      setPages([].concat(pages, [blob]));
+
+      for (var i = 0; i < pages.length; i++) {
+        (0, _fileSaver.saveAs)(pages[i], "im.png");
+      }
+
+      (0, _fileSaver.saveAs)(blob, "im.png");
     });
     canvas.getObjects().forEach(function (item) {
       if (item !== canvas.backgroundImage) {
@@ -665,15 +668,7 @@ var Whiteboard = function Whiteboard(_ref) {
   }, /*#__PURE__*/_react.default.createElement("img", {
     src: _delete.default,
     alt: "Delete"
-  })), /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("input", {
-    type: "checkbox",
-    name: "fill",
-    id: "fill",
-    checked: isFill,
-    onChange: changeFill
-  }), /*#__PURE__*/_react.default.createElement("label", {
-    htmlFor: "fill"
-  }, "fill")), /*#__PURE__*/_react.default.createElement("input", {
+  })), /*#__PURE__*/_react.default.createElement("input", {
     type: "range",
     min: 1,
     max: 20,
@@ -726,7 +721,7 @@ var Whiteboard = function Whiteboard(_ref) {
 Whiteboard.propTypes = {
   aspectRatio: _propTypes.default.number,
   setFiles: _propTypes.default.any,
-  color: _propTypes.default.string
+  color: _propTypes.default.any
 };
 var _default = Whiteboard;
 exports.default = _default;
