@@ -552,16 +552,14 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color }) => {
           onChange={changeCurrentWidth}
         />
         <div className={styles.uploadDropdown}>
-          <input ref={uploadImageRef} accept="image/*" type="file" onChange={uploadImage} />
           <input ref={uploadPdfRef} accept=".pdf" type="file" onChange={onFileChange} />
           <button className={styles.dropdownButton}>+Upload</button>
           <div className={styles.dropdownContent}>
-            <span onClick={() => uploadImageRef.current.click()}>Image</span>
             <span onClick={() => {uploadPdfRef.current.click(); setPdfViewer(true)}}>PDF</span>
           </div>
         </div>
 
-        <button onClick={onSaveCanvasAsImage}>Save as image</button>
+        <button onClick={onSaveCanvasAsImage}>Submit</button>
       </div>
       <canvas ref={canvasRef} id="canvas" />
       <div>

@@ -672,11 +672,6 @@ var Whiteboard = function Whiteboard(_ref) {
   }), /*#__PURE__*/_react.default.createElement("div", {
     className: _indexModule.default.uploadDropdown
   }, /*#__PURE__*/_react.default.createElement("input", {
-    ref: uploadImageRef,
-    accept: "image/*",
-    type: "file",
-    onChange: uploadImage
-  }), /*#__PURE__*/_react.default.createElement("input", {
     ref: uploadPdfRef,
     accept: ".pdf",
     type: "file",
@@ -687,16 +682,12 @@ var Whiteboard = function Whiteboard(_ref) {
     className: _indexModule.default.dropdownContent
   }, /*#__PURE__*/_react.default.createElement("span", {
     onClick: function onClick() {
-      return uploadImageRef.current.click();
-    }
-  }, "Image"), /*#__PURE__*/_react.default.createElement("span", {
-    onClick: function onClick() {
       uploadPdfRef.current.click();
       setPdfViewer(true);
     }
   }, "PDF"))), /*#__PURE__*/_react.default.createElement("button", {
     onClick: onSaveCanvasAsImage
-  }, "Save as image")), /*#__PURE__*/_react.default.createElement("canvas", {
+  }, "Submit")), /*#__PURE__*/_react.default.createElement("canvas", {
     ref: canvasRef,
     id: "canvas"
   }), /*#__PURE__*/_react.default.createElement("div", null, !pdfViewer && /*#__PURE__*/_react.default.createElement("button", {
