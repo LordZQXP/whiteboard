@@ -2,21 +2,25 @@ import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { fabric } from 'fabric';
 import PdfReader from '../PdfReader';
-import { saveAs } from 'file-saver';
 import getCursor from './cursors';
-import SelectIcon from './images/select.svg';
 import EraserIcon from './images/eraser.svg';
-import TextIcon from './images/text.svg';
-import RectangleIcon from './images/rectangle.svg';
-import LineIcon from './images/line.svg';
-import EllipseIcon from './images/ellipse.svg';
-import TriangleIcon from './images/triangle.svg';
-import PencilIcon from './images/pencil.svg';
-import DeleteIcon from './images/delete.svg';
+import HorizontalRuleIcon from '@mui/icons-material/HorizontalRule';
+import Crop169Icon from '@mui/icons-material/Crop169';
+import ChangeHistoryIcon from '@mui/icons-material/ChangeHistory';
+import CreateIcon from '@mui/icons-material/Create';
+import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
+import TitleRoundedIcon from '@mui/icons-material/TitleRounded';
+import HighlightAltRoundedIcon from '@mui/icons-material/HighlightAltRounded';
+import DeleteIcon from '@mui/icons-material/Delete';
+import UndoIcon from '@mui/icons-material/Undo';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import DriveFolderUploadIcon from '@mui/icons-material/DriveFolderUpload';
 
 import './eraserBrush';
 
 import styles from './index.module.scss';
+import { Button } from '@mui/material';
+import InputSlider from './components/Slider';
 let drawInstance = null;
 let origX;
 let origY;
@@ -357,6 +361,14 @@ function clearCanvas(canvas) {
   });
 }
 
+function undoCanvas(canvas) {
+  let length = canvas.getObjects().length-1;
+  if (canvas.getObjects()[length] !== canvas.backgroundImage) {
+    canvas.remove(canvas.getObjects()[length]);
+
+    }
+}
+
 function draw(canvas) {
   if (options.currentMode !== modes.PENCIL) {
     removeCanvasListener(canvas);
@@ -437,8 +449,8 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color }) => {
     }
   }, [fileReaderInfo.currentPage]);
 
-  function changeCurrentWidth(e) {
-    const intValue = parseInt(e.target.value);
+  function changeCurrentWidth(value) {
+    const intValue = parseInt(value);
     options.currentWidth = intValue;
     canvas.freeDrawingBrush.width = intValue;
     setBrushWidth(() => intValue);
@@ -458,15 +470,14 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color }) => {
     canvasRef.current.toBlob(function (blob) {
       setFiles([...pages, blob]);
       setPages([...pages, blob]);
+      setPages([]);
     });
     canvas.getObjects().forEach((item) => {
       if (item !== canvas.backgroundImage) {
         canvas.remove(item);
       }
     })
-    setPages([]);
     updateFileReaderInfo({ file: "", currentPageNumber: 1 });
-
   }
 
   function savePages(canvas) {
@@ -544,61 +555,51 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color }) => {
   return (
     <div ref={whiteboardRef} className={styles.whiteboard}>
       <div className={styles.toolbar}>
-        <button type="button" style={{ backgroundColor: currTool === modes.LINE && "white", border: currTool === modes.LINE && `1px solid ${currColor}`}} onClick={() => toolbarCommander(modes.LINE, canvas)}>
-          <img src={LineIcon} alt="line" />
-        </button>
-        <button type="button" style={{ backgroundColor: currTool === modes.RECTANGLE && "white" , border : currTool === modes.RECTANGLE && `1px solid ${currColor}` }} onClick={() => toolbarCommander(modes.RECTANGLE, canvas)}>
-          <img src={RectangleIcon} alt="Rectangle" />
-        </button>
-        <button type="button" style={{ backgroundColor: currTool === modes.ELLIPSE && "white" , border : currTool === modes.ELLIPSE && `1px solid ${currColor}` }} onClick={() => toolbarCommander(modes.ELLIPSE, canvas)}>
-          <img src={EllipseIcon} alt="Ellipse" />
-        </button>
-        <button type="button" style={{ backgroundColor: currTool === modes.TRIANGLE && "white" , border : currTool === modes.TRIANGLE && `1px solid ${currColor}` }} onClick={() => toolbarCommander(modes.TRIANGLE, canvas, options)}>
-          <img src={TriangleIcon} alt="Triangle" />
-        </button>
-        <button type="button" style={{ backgroundColor: currTool === modes.PENCIL && "white" , border : currTool === modes.PENCIL && `1px solid ${currColor}` }} onClick={() => toolbarCommander(modes.PENCIL, canvas)}>
-          <img src={PencilIcon} alt="Pencil" />
-        </button>
-        <button type="button" style={{ backgroundColor: currTool === "TEXT" && "white" , border : currTool === "TEXT" && `1px solid ${currColor}` }} onClick={() => toolbarCommander("TEXT", canvas)}>
-          <img src={TextIcon} alt="Text" />
-        </button>
-        <button type="button" style={{ backgroundColor: currTool === "SELECT" && "white" , border : currTool === "SELECT" && `1px solid ${currColor}` }} onClick={() => toolbarCommander("SELECT", canvas)}>
-          <img src={SelectIcon} alt="Selection mode" />
-        </button>
-        <button type="button" style={{ backgroundColor: currTool === modes.ERASER && "white" , border : currTool === modes.ERASER && `1px solid ${currColor}` }} onClick={() => toolbarCommander(modes.ERASER, canvas)}>
+        <Button type="button" title='Line' style={{ boxShadow: currTool === modes.LINE && `0 0 10px ${currColor}`}} onClick={() => toolbarCommander(modes.LINE, canvas)}>
+          <HorizontalRuleIcon alt="Line" style={{ rotate: '-45deg', color: 'black' }} />
+        </Button>
+        <Button type="button" title='Rectangle' style={{ boxShadow : currTool === modes.RECTANGLE && `0 0 10px ${currColor}` }} onClick={() => toolbarCommander(modes.RECTANGLE, canvas)}>
+          <Crop169Icon alt="Rectangle" style={{ color: 'black' }} />
+        </Button>
+        <Button type="button" title='Circle' style={{ boxShadow : currTool === modes.ELLIPSE && `0 0 10px ${currColor}` }} onClick={() => toolbarCommander(modes.ELLIPSE, canvas)}>
+          <RadioButtonUncheckedIcon style={{ color: 'black' }}  />
+        </Button>
+        <Button type="button" title='Triangle' style={{ boxShadow : currTool === modes.TRIANGLE && `0 0 10px ${currColor}` }} onClick={() => toolbarCommander(modes.TRIANGLE, canvas, options)}>
+          <ChangeHistoryIcon style={{ color: 'black' }}  />
+        </Button>
+        <Button type="button" title='Pencil' style={{ boxShadow: currTool === modes.PENCIL && `0 0 10px ${currColor}` }} onClick={() => toolbarCommander(modes.PENCIL, canvas)}>
+          <CreateIcon style={{ color: 'black' }} />
+        </Button>
+        <Button type="button" title='Text' style={{ boxShadow : currTool === "TEXT" && `0 0 10px ${currColor}` }} onClick={() => toolbarCommander("TEXT", canvas)}>
+          <TitleRoundedIcon style={{ color: 'black' }} />
+        </Button>
+        <Button type="button" title='Select' style={{ boxShadow : currTool === "SELECT" && `0 0 10px ${currColor}` }} onClick={() => toolbarCommander("SELECT", canvas)}>
+          <HighlightAltRoundedIcon style={{ color: 'black' }} />
+        </Button>
+        <Button type="button" title='Eraser' style={{ boxShadow : currTool === modes.ERASER && `0 0 10px ${currColor}` }} onClick={() => toolbarCommander(modes.ERASER, canvas)}>
           <img src={EraserIcon} alt="Eraser" />
-        </button>
-        <button type="button" style={{ backgroundColor: currTool === "CLEAR" && "white" , border : currTool === "CLEAR" && `1px solid ${currColor}` }}  onClick={() => toolbarCommander("CLEAR", canvas)}>
-          <img src={DeleteIcon} alt="Delete" />
-        </button>
-
-        <input
-          type="range"
-          min={1}
-          max={20}
-          step={1}
-          value={brushWidth}
-          onChange={changeCurrentWidth}
-        />
+        </Button>
+        <Button type="button" title='Clear'  onClick={() => toolbarCommander("CLEAR", canvas)}>
+          <DeleteIcon style={{ color: 'black' }} />
+        </Button>
+        <Button type="button" title='Undo' onClick={() => undoCanvas(canvas)}>
+          <UndoIcon style={{ color: 'black' }} />
+        </Button>
+        <InputSlider max={20} min={1} value={brushWidth} changeHandler={changeCurrentWidth} />
         <div className={styles.uploadDropdown}>
           <input ref={uploadPdfRef} accept=".pdf" type="file" onChange={onFileChange} />
-          <button className={styles.dropdownButton}>+Upload</button>
-          <div className={styles.dropdownContent}>
-            <span onClick={() => { uploadPdfRef.current.click(); setPdfViewer(true) }}>PDF</span>
-          </div>
+          <Button onClick={() => { uploadPdfRef.current.click(); setPdfViewer(true) }}><PictureAsPdfIcon /></Button>
         </div>
-
-        <button onClick={onSaveCanvasAsImage}>Submit</button>
+        <Button onClick={onSaveCanvasAsImage}><DriveFolderUploadIcon /></Button>
       </div>
       <div className={styles.colorToolbarDiv}>
         {color.map(col => <div onClick={() => changeCurrentColor(col.color)} key={col.color} style={{ backgroundColor: `${col.color}`, boxShadow: currColor === col.color && '0 0 10px black' }} title={col.title} className={styles.colorDiv}></div>)}
       </div>
       <canvas ref={canvasRef} id="canvas" />
       <div>
-        {/* <button>Previous</button> */}
+      <div>
         {!pdfViewer && <button onClick={() => savePages(canvas)}>Next</button>}
       </div>
-      <div>
         {pdfViewer && <PdfReader savePage={() => savePages(canvas)} fileReaderInfo={fileReaderInfo} updateFileReaderInfo={updateFileReaderInfo} />}
       </div>
     </div>

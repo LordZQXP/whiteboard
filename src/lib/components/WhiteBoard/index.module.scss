@@ -12,18 +12,20 @@
   button {
     padding: 12px;
     margin: 1px;
-    background-color: #7b7de0;
+    background-color: #ffffff;
     border-radius: 3px;
-    color: #fff;
+    color: rgb(0, 0, 0);
     border: none;
     outline: none;
     cursor: pointer;
 
     &:hover {
-      background-color: #7173ee;
+      background-color: #c2c2c2;
     }
   }
-
+  .canvas-container{
+    height: 600px !important;
+  }
   
 }
 
@@ -49,8 +51,9 @@
   align-items: center;
 
   img {
-    width: 15px;
+    width: 22px;
     vertical-align: middle;
+    padding: 2.5px;
   }
 
   input {
@@ -104,5 +107,5 @@
 }
 
 .uploadDropdown:hover .dropdownButton {
-  background-color: #7173ee;
+  background-color: #c8c8c8;
 }

@@ -1,9 +1,19 @@
 import React from 'react';
 import { Whiteboard } from './lib';
+import {saveAs} from 'file-saver';
 import styles from './app.module.scss';
 
 const App = () => {
   const [files, setFiles] = React.useState([]);
+
+
+  React.useEffect(()=>{
+    if(files.length >0){
+    for(let i=0; i<files.length; i++)
+    saveAs(files[i], `page${i+1}.png`);
+    }
+  },[files])
+
   const color = [
     {
       title: 'red',
@@ -43,7 +53,7 @@ const App = () => {
   return (
     <div className={styles.app}>
       <main>
-        <Whiteboard aspectRatio={4 / 3} setFiles={setFiles} color={color} />
+        <Whiteboard aspectRatio={4/8} setFiles={setFiles} color={color} />
       </main>
     </div>
   );
