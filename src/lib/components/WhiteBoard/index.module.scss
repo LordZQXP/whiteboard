@@ -35,7 +35,7 @@
   justify-content: space-between;
   width:300px;
   margin-top : 15px;
-  margin-bottom : 15px
+  margin-bottom: 35px;
 }
 
 .colorDiv{
@@ -48,7 +48,9 @@
 .toolbar {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
+  justify-content: center;
+  position: relative;
+  align-items: flex-end;
 
   img {
     width: 22px;
@@ -80,6 +82,17 @@
   input {
     display: none;
   }
+}
+
+.toolbarWithColor{
+  display: flex;
+  flex-direction: column-reverse;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  z-index: 9999;
+  bottom: 0;
 }
 
 .dropdownContent {
