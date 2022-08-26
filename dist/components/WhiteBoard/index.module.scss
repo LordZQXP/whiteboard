@@ -6,24 +6,27 @@
   canvas {
     border: 1px solid rgb(165, 165, 165);
     border-radius: 3px;
-    min-height: 600px !important;
+    margin-top: 60px;
   }
 
   button {
     padding: 12px;
     margin: 1px;
-    background-color: #7b7de0;
+    background-color: white;
     border-radius: 3px;
-    color: #fff;
+    box-shadow: none;
+    color: rgb(0, 0, 0);
     border: none;
     outline: none;
     cursor: pointer;
 
     &:hover {
-      background-color: #7173ee;
+      background-color: white;
     }
   }
-
+  .canvas-container{
+    height: 600px !important;
+  }
   
 }
 
@@ -33,7 +36,7 @@
   justify-content: space-between;
   width:300px;
   margin-top : 15px;
-  margin-bottom : 15px
+  margin-bottom: 35px;
 }
 
 .colorDiv{
@@ -43,14 +46,45 @@
    cursor:pointer;
 }
 
+.upperToolBar{
+  position:fixed;
+  top:0;
+  width:100%;
+  background-color:white;
+  display: flex;
+  justify-content:center;
+}
+
+.upperToolBarFlex{
+  display: flex;
+  justify-content:space-between;
+  max-width:400px;
+  width:100%;
+}
+
+.nextFixedButton{
+  position: relative; 
+  width: 90vw;
+  padding-bottom: 80px;
+  padding-right: 10vw;
+  bottom: 0;
+  left: 0;
+  z-index: 1000;
+  display: flex; 
+  justify-content: right;
+}
+
 .toolbar {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
+  justify-content: center;
+  position: relative;
+  align-items: flex-end;
 
   img {
-    width: 15px;
+    width: 22px;
     vertical-align: middle;
+    padding: 2.5px;
   }
 
   input {
@@ -79,6 +113,18 @@
   }
 }
 
+.toolbarWithColor{
+  display: flex;
+  flex-direction: column-reverse;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  z-index: 9999;
+  bottom: 0;
+  background-color: white;
+}
+
 .dropdownContent {
   display: none;
   position: absolute;
@@ -104,5 +150,5 @@
 }
 
 .uploadDropdown:hover .dropdownButton {
-  background-color: #7173ee;
+  background-color: #c8c8c8;
 }

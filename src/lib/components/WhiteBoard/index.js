@@ -10,13 +10,15 @@ import ChangeHistoryIcon from '@mui/icons-material/ChangeHistory';
 import CreateIcon from '@mui/icons-material/Create';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import TitleRoundedIcon from '@mui/icons-material/TitleRounded';
-import HighlightAltRoundedIcon from '@mui/icons-material/HighlightAltRounded';
-import DeleteIcon from '@mui/icons-material/Delete';
-import UndoIcon from '@mui/icons-material/Undo';
-import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
-import DriveFolderUploadIcon from '@mui/icons-material/DriveFolderUpload';
 import Brush from "./images/brush@3x.png";
 import Pencil from "./images/pencil-create@3x.png";
+import RotateLeft from "./images/rotate-ccw@3x.png";
+import RotateRight from "./images/rotate-cw@3x.png";
+import submit from "./images/Group 6949.png"
+import sendTostudent from "./images/Group 6948.png"
+import preview from "./images/Group 6946.png"
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+
 
 
 import './eraserBrush';
@@ -37,6 +39,8 @@ const options = {
   fill: false,
   group: {},
 };
+
+let backUpCanvas = "";
 
 const modes = {
   RECTANGLE: 'RECTANGLE',
@@ -69,6 +73,7 @@ const initCanvas = (width, height) => {
 
 function removeObject(canvas) {
   return (e) => {
+    backUpCanvas = canvas.toJSON();
     if (options.currentMode === modes.ERASER) {
       console.log("removed");
       canvas.remove(e.target);
@@ -425,7 +430,7 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color }) => {
         whiteboardRef.current.clientWidth / aspectRatio,
       );
       setCanvas(() => canvas);
-
+      console.log(canvas);
       handleResize(resizeCanvas(canvas, whiteboardRef.current)).observe(whiteboardRef.current);
     }
   }, [canvasRef]);
@@ -441,7 +446,6 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color }) => {
           originX: 'center',
           originY: 'center',
         });
-
         canvas.renderAll();
       });
     }
@@ -462,8 +466,6 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color }) => {
 
   const [pages, setPages] = useState([]);
 
-  let backUpCanvas = [];
-
   function onSaveCanvasAsImage() {
     canvasRef.current.toBlob(function (blob) {
       setFiles([...pages, blob]);
@@ -479,7 +481,6 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color }) => {
   }
 
   function savePages(canvas) {
-    setBackUpCanvas([...backUpCanvas, canvasRef]);
     canvasRef.current.toBlob(function (blob) {
       setPages([...pages, blob]);
       canvas.getObjects().forEach((item) => {
@@ -491,37 +492,13 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color }) => {
   }
 
   function redoAll() {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    for (let i = backUpCanvas.length-1; i>=0; i--){
-    console.log(backUpCanvas)
-    if(backUpCanvas.length===0){
-      return;
-    }
-    if (backUpCanvas[i]?.path){
-    const data = backUpCanvas[i]?.path;
-    console.log(data);
-    ctx.strokeStyle = "red";
-    ctx.beginPath();
-    ctx.lineWidth = 5;
-    var first = data[0];
-    ctx.moveTo(first[1], first[2]);
-    data.forEach((item, index) => {
-      if (index !== 0) {
-        ctx.lineTo(item[1], item[2]);
-        ctx.stroke();
-      }
-    });
-  }
-  }
-    ctx.closePath();
+    canvas.loadFromJSON(backUpCanvas);
   }
 
   function undoCanvas(canvas, backUpCanvas) {
     let length = canvas.getObjects().length - 1;
+    backUpCanvas = (canvas.toJSON());
     if (canvas.getObjects()[length] !== canvas.backgroundImage) {
-      console.log(canvas.getObjects()[length]);
-      backUpCanvas.push(canvas.getObjects()[length]);
       canvas.remove(canvas.getObjects()[length]);
     }
   }
@@ -601,7 +578,7 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color }) => {
       <canvas ref={canvasRef} id="canvas" />
       <div>
       <div>
-        {!pdfViewer && <button onClick={() => savePages(canvas)}>Next</button>}
+          {!pdfViewer && <div className={styles.nextFixedButton}> <Button style={{ borderRadius:'50%', boxShadow:'0 0 10px #ccc', width:'60px', height:'60px' }} onClick={() => savePages(canvas)}><ArrowForwardIosIcon style={{ color:'black' }} /></Button> </div>}
       </div>
         {pdfViewer && <PdfReader savePage={() => savePages(canvas)} fileReaderInfo={fileReaderInfo} updateFileReaderInfo={updateFileReaderInfo} />}
       </div>
@@ -676,43 +653,51 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color }) => {
             )}
           </SpeedDial>
           </Box>
-
-          {/* <Button type="button" title='Select' style={{ boxShadow: currTool === "SELECT" && `0 0 10px ${currColor}`}} onClick={() => toolbarCommander("SELECT", canvas)}>
-          <HighlightAltRoundedIcon style={{ color: 'black' }} />
-        </Button> */}
-        {/* <Button type="button" title='Eraser' style={{ boxShadow : currTool === modes.ERASER && `0 0 10px ${currColor}` }} onClick={() => toolbarCommander(modes.ERASER, canvas)}>
-          <img src={EraserIcon} alt="Eraser" />
-        </Button> */}
-        {/* <Button type="button" title='Clear'  onClick={() => toolbarCommander("CLEAR", canvas)}>
-          <DeleteIcon style={{ color: 'black' }} />
-        </Button> */}
+          <SpeedDial
+            open={false}
+            onClick={() => toolbarCommander(modes.ERASER, canvas)}
+            direction='up'
+            icon={<SpeedDialIcon icon={<Box sx={{ display: "flex" }}>
+              <img src={EraserIcon} />
+            </Box>} />}
+            ariaLabel="SpeedDial openIcon example"
+          />
           <SpeedDial
             open={false}
             onClick={() => undoCanvas(canvas, backUpCanvas)}
             direction='up'
             ariaLabel="SpeedDial openIcon example"
-            icon={<SpeedDialIcon icon={<UndoIcon style={{ color: 'black' }} />} />}
-          />
-          {/* <SpeedDial
-            open={false}
-            onClick={() => redoAll(canvas)}
-            direction='up'
-            ariaLabel="SpeedDial openIcon example"
-            icon={<SpeedDialIcon icon={<UndoIcon style={{ color: 'black' }} />} />}
+            icon={<SpeedDialIcon icon={<Box sx={{ display: "flex" }}>
+              <img src={RotateLeft} />
+            </Box>} />}
           />
           <SpeedDial
             open={false}
-            onClick={() => toolbarCommander(modes.ERASER,canvas)}
+            onClick={() => redoAll(canvas)}
             direction='up'
+            icon={<SpeedDialIcon icon={<Box sx={{ display: "flex" }}>
+              <img src={RotateRight} />
+            </Box>} />}
             ariaLabel="SpeedDial openIcon example"
-            icon={<SpeedDialIcon icon={<UndoIcon style={{ color: 'black' }} />} />}
-          /> */}
-       <div style={{position:'fixed', top:'0', right:'0'}}>
-       <div className={styles.uploadDropdown}>
+          />
+       <div className={styles.upperToolBar}>
+       {/* <div className={styles.uploadDropdown}>
           <input ref={uploadPdfRef} accept=".pdf" type="file" onChange={onFileChange} />
-          <Button onClick={() => { uploadPdfRef.current.click(); setPdfViewer(true) }}><PictureAsPdfIcon /></Button>
+              <Button onClick={() => { uploadPdfRef.current.click(); setPdfViewer(true) }}><Box sx={{ display: "flex" }}>
+                <img src={submit} />
+              </Box></Button>
+        </div> */}
+            <div className={styles.upperToolBarFlex}>
+            <Button><Box sx={{ display: "flex" }}>
+              <img src={preview} />
+            </Box></Button>
+            <Button><Box sx={{ display: "flex" }}>
+              <img src={sendTostudent} />
+            </Box></Button>
+            <Button onClick={onSaveCanvasAsImage}><Box sx={{ display: "flex" }}>
+              <img src={submit} />
+            </Box></Button>
         </div>
-        <Button onClick={onSaveCanvasAsImage}><DriveFolderUploadIcon /></Button>
         </div>
        </div>
       </div>
