@@ -15,7 +15,7 @@ var _Slider = _interopRequireDefault(require("@mui/material/Slider"));
 
 var _Input = _interopRequireDefault(require("@mui/material/Input"));
 
-var _LineWeight = _interopRequireDefault(require("@mui/icons-material/LineWeight"));
+var _indexModule = _interopRequireDefault(require("../index.module.scss"));
 
 var _templateObject;
 
@@ -35,6 +35,7 @@ function InputSlider(props) {
       setValue = _React$useState[1];
 
   var handleSliderChange = function handleSliderChange(event, newValue) {
+    if (newValue < 5) return;
     setValue(newValue);
     props == null ? void 0 : props.changeHandler(newValue);
   };
@@ -44,37 +45,34 @@ function InputSlider(props) {
     props == null ? void 0 : props.changeHandler(event.target.value === '' ? '' : Number(event.target.value));
   };
 
-  var handleBlur = function handleBlur() {
-    if (value < 5) {
-      setValue(5);
-    } else if (value > 20) {
-      setValue(20);
-    }
-  };
-
   return /*#__PURE__*/React.createElement(_Box.default, {
     sx: {
-      width: 250,
+      width: 280,
       marginBottom: "60px",
-      display: props != null && props.open ? "block" : "none",
+      backgroundColor: 'white',
+      display: props != null && props.open ? "flex" : "none",
       boxShadow: open ? '0 0 10px #ccc' : 'none',
       position: 'absolute',
       zIndex: '999999999999',
       paddingLeft: '5px',
-      paddingRight: '5px'
+      paddingRight: '5px',
+      justifyContent: 'center',
+      alignItems: 'center'
     }
   }, /*#__PURE__*/React.createElement(_Grid.default, {
     container: true,
     spacing: 2,
-    alignItems: "center"
+    alignItems: "center",
+    className: _indexModule.default.slider
   }, /*#__PURE__*/React.createElement(_Grid.default, {
     item: true,
-    xs: true
+    xs: true,
+    className: _indexModule.default.slider
   }, /*#__PURE__*/React.createElement(_Slider.default, {
     value: typeof value === 'number' ? value : props == null ? void 0 : props.min,
     onChange: handleSliderChange,
     max: 20,
-    min: 5,
+    min: 0,
     step: 1,
     "aria-labelledby": "input-slider"
   })), /*#__PURE__*/React.createElement(_Grid.default, {

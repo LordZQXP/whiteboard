@@ -4,15 +4,26 @@ import {saveAs} from 'file-saver';
 import styles from './app.module.scss';
 
 const App = () => {
-  const [files, setFiles] = React.useState([]);
-
+  const [files, setFiles] = React.useState({});
+  const [canvasJSON, setCanvasJSON] = React.useState({});
 
   React.useEffect(()=>{
-    if(files.length >0){
-    for(let i=0; i<files.length; i++)
-    saveAs(files[i], `page${i+1}.png`);
+    if(Object.values(files).length >0){
+    for (let i = 0; i < Object.values(files).length; i++){
+      saveAs(Object.values(files)[i], `page${i+1}.png`);
+      }
     }
+    if (Object.values(files).length >0)
+    window.location.reload();
   },[files])
+
+  React.useEffect(() => {
+    if (Object.values(canvasJSON).length > 0) {
+      for (let i = 0; i < Object.values(canvasJSON).length; i++) {
+        console.log(Object.values(canvasJSON)[i]);
+      }
+    }
+  }, [canvasJSON])
 
   const color = [
     {
@@ -49,11 +60,14 @@ const App = () => {
     },
 
   ]
+
+  const width = window.innerWidth;
+  const height = window.innerHeight;
   
   return (
     <div className={styles.app}>
       <main>
-        <Whiteboard aspectRatio={4/8} setFiles={setFiles} color={color} />
+        <Whiteboard aspectRatio={width/(height-100)} setFiles={setFiles} color={color} setJSON={setCanvasJSON} />
       </main>
     </div>
   );

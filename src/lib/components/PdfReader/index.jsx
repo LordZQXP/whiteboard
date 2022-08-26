@@ -3,7 +3,6 @@ import { Document, Page } from 'react-pdf/dist/esm/entry.webpack';
 import { pdfjs } from 'react-pdf';
 import styles from './index.module.scss';
 import { Button } from '@mui/material';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -11,7 +10,6 @@ const PDFReader = ({ fileReaderInfo, updateFileReaderInfo, savePage }) => {
   function onRenderSuccess() {
     const importPDFCanvas = document.querySelector('.import-pdf-page canvas');
     const pdfAsImageSrc = importPDFCanvas.toDataURL();
-
     updateFileReaderInfo({ currentPage: pdfAsImageSrc });
   }
 
@@ -27,7 +25,6 @@ const PDFReader = ({ fileReaderInfo, updateFileReaderInfo, savePage }) => {
     changePage(1);
     savePage();
   };
-  const previousPage = () => changePage(-1);
 
   return (
     <div className={styles.pdfReader}>

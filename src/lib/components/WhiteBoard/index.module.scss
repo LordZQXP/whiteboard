@@ -153,3 +153,76 @@
 .uploadDropdown:hover .dropdownButton {
   background-color: #c8c8c8;
 }
+
+.slider{
+   max-width: 240;
+   display: flex;
+   align-items: center;
+}
+
+.sliderbox {
+  width: 280;
+  margin-bottom: 60px;
+  background-color:white; 
+  display: flex;
+  box-shadow: 0 0 10px #ccc;
+  position:absolute;
+  z-index:999999999999;
+  padding-left:5px;
+  padding-right:5px;
+  justify-content:center;
+  align-items:center;
+}
+
+.flexDiv{
+  display:flex
+}
+
+.speeddialDivOpen{
+  display: flex;
+  flex-direction: column-reverse;
+  max-height: 100%;
+  background-color: white;
+  box-shadow: 0 0 10px #ccc;
+}
+
+.speeddialDivClose{
+  display: flex;
+  flex-direction: column-reverse;
+  max-height: 50px; 
+  box-shadow: none;
+   background-color: transparent;
+}
+
+.speeddialColorDivOpen{
+  display: flex;
+  flex-direction: column-reverse;
+  max-height: 100%;
+  background-color: white;
+  box-shadow: 0 0 10px #ccc;
+
+}
+
+.speeddialColorDivClose{
+  display: flex;
+  flex-direction: column-reverse;
+  max-height: 50px; 
+   background-color: transparent;
+   box-shadow: none;
+}
+
+.blackIcon {
+  color : black
+}
+.blackSlantedIcon {
+  color : black;
+  rotate: -45deg
+
+}
+
+.floatingButtonsNextPrev{
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #ccc;
+}

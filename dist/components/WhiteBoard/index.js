@@ -45,13 +45,23 @@ var _Group3 = _interopRequireDefault(require("./images/Group 6946.png"));
 
 var _ArrowForwardIos = _interopRequireDefault(require("@mui/icons-material/ArrowForwardIos"));
 
+var _ArrowBackIosNew = _interopRequireDefault(require("@mui/icons-material/ArrowBackIosNew"));
+
 var _PictureAsPdf = _interopRequireDefault(require("@mui/icons-material/PictureAsPdf"));
 
 require("./eraserBrush");
 
 var _indexModule = _interopRequireDefault(require("./index.module.scss"));
 
-var _material = require("@mui/material");
+var _Box = _interopRequireDefault(require("@mui/material/Box"));
+
+var _Button = _interopRequireDefault(require("@mui/material/Button"));
+
+var _SpeedDial = _interopRequireDefault(require("@mui/material/SpeedDial"));
+
+var _SpeedDialAction = _interopRequireDefault(require("@mui/material/SpeedDialAction"));
+
+var _SpeedDialIcon = _interopRequireDefault(require("@mui/material/SpeedDialIcon"));
 
 var _Slider = _interopRequireDefault(require("./components/Slider"));
 
@@ -110,7 +120,6 @@ function removeObject(canvas) {
     backUpCanvas = canvas.toJSON();
 
     if (options.currentMode === modes.ERASER) {
-      console.log("removed");
       canvas.remove(e.target);
     }
   };
@@ -462,7 +471,8 @@ var Whiteboard = function Whiteboard(_ref9) {
   var _ref9$aspectRatio = _ref9.aspectRatio,
       aspectRatio = _ref9$aspectRatio === void 0 ? 4 / 3 : _ref9$aspectRatio,
       setFiles = _ref9.setFiles,
-      color = _ref9.color;
+      color = _ref9.color,
+      setJSON = _ref9.setJSON;
 
   var _useState = (0, _react.useState)((_color$ = color[0]) == null ? void 0 : _color$.color),
       currColor = _useState[0],
@@ -476,14 +486,26 @@ var Whiteboard = function Whiteboard(_ref9) {
       brushWidth = _useState3[0],
       setBrushWidth = _useState3[1];
 
-  var _useState4 = (0, _react.useState)({
+  var _useState4 = (0, _react.useState)({}),
+      pages = _useState4[0],
+      setPages = _useState4[1];
+
+  var _useState5 = (0, _react.useState)([]),
+      canvasPage = _useState5[0],
+      setCanvasPage = _useState5[1];
+
+  var _useState6 = (0, _react.useState)(0),
+      index = _useState6[0],
+      setIndex = _useState6[1];
+
+  var _useState7 = (0, _react.useState)({
     file: '',
     totalPages: null,
     currentPageNumber: 1,
     currentPage: ''
   }),
-      fileReaderInfo = _useState4[0],
-      setFileReaderInfo = _useState4[1];
+      fileReaderInfo = _useState7[0],
+      setFileReaderInfo = _useState7[1];
 
   (0, _react.useEffect)(function () {
     options.currentColor = currColor;
@@ -498,7 +520,6 @@ var Whiteboard = function Whiteboard(_ref9) {
       setCanvas(function () {
         return _canvas;
       });
-      console.log(_canvas);
       handleResize(resizeCanvas(_canvas, whiteboardRef.current)).observe(whiteboardRef.current);
     }
   }, [canvasRef]);
@@ -534,37 +555,55 @@ var Whiteboard = function Whiteboard(_ref9) {
     setCurrColor(e);
   }
 
-  var _useState5 = (0, _react.useState)([]),
-      pages = _useState5[0],
-      setPages = _useState5[1];
-
   function onSaveCanvasAsImage() {
+    var _extends4;
+
     canvasRef.current.toBlob(function (blob) {
-      setFiles([].concat(pages, [blob]));
-      setPages([].concat(pages, [blob]));
-      setPages([]);
+      var _extends2, _extends3;
+
+      setPages(_extends({}, pages, (_extends2 = {}, _extends2[index] = blob, _extends2)));
+      setFiles(_extends({}, pages, (_extends3 = {}, _extends3[index] = blob, _extends3)));
     });
-    canvas.getObjects().forEach(function (item) {
-      if (item !== canvas.backgroundImage) {
-        canvas.remove(item);
-      }
-    });
+    setJSON(_extends({}, canvasPage, (_extends4 = {}, _extends4[index] = canvas.toJSON(), _extends4)));
+    setPages({});
+    clearCanvas(canvas);
     updateFileReaderInfo({
       file: "",
       currentPageNumber: 1
     });
   }
 
-  function savePages(canvas) {
+  function nextPage(canvas) {
+    var _extends5;
+
     backUpCanvas = "";
+    setCanvasPage(_extends({}, canvasPage, (_extends5 = {}, _extends5[index] = canvas.toJSON(), _extends5)));
     canvasRef.current.toBlob(function (blob) {
-      setPages([].concat(pages, [blob]));
-      canvas.getObjects().forEach(function (item) {
-        if (item !== canvas.backgroundImage) {
-          canvas.remove(item);
-        }
-      });
+      var _extends6;
+
+      setPages(_extends({}, pages, (_extends6 = {}, _extends6[index] = blob, _extends6)));
     });
+    if (canvasPage[index + 1] !== undefined) canvas.loadFromJSON(canvasPage[index + 1]);else clearCanvas(canvas);
+    setIndex(index + 1);
+  }
+
+  function previousPage(canvas) {
+    var _extends7;
+
+    backUpCanvas = "";
+
+    if (index - 1 < 0) {
+      return;
+    }
+
+    setCanvasPage(_extends({}, canvasPage, (_extends7 = {}, _extends7[index] = canvas.toJSON(), _extends7)));
+    canvasRef.current.toBlob(function (blob) {
+      var _extends8;
+
+      setPages(_extends({}, pages, (_extends8 = {}, _extends8[index] = blob, _extends8)));
+    });
+    canvas.loadFromJSON(canvasPage[index - 1]);
+    setIndex(index - 1);
   }
 
   function redoAll() {
@@ -637,17 +676,17 @@ var Whiteboard = function Whiteboard(_ref9) {
     }
   };
 
-  var _useState6 = (0, _react.useState)(false),
-      openDraw = _useState6[0],
-      setOpenDraw = _useState6[1];
-
-  var _useState7 = (0, _react.useState)(false),
-      openThickness = _useState7[0],
-      setOpenThickness = _useState7[1];
-
   var _useState8 = (0, _react.useState)(false),
-      openColor = _useState8[0],
-      setOpenColor = _useState8[1];
+      openDraw = _useState8[0],
+      setOpenDraw = _useState8[1];
+
+  var _useState9 = (0, _react.useState)(false),
+      openThickness = _useState9[0],
+      setOpenThickness = _useState9[1];
+
+  var _useState10 = (0, _react.useState)(false),
+      openColor = _useState10[0],
+      setOpenColor = _useState10[1];
 
   return /*#__PURE__*/_react.default.createElement("div", {
     ref: whiteboardRef,
@@ -657,23 +696,23 @@ var Whiteboard = function Whiteboard(_ref9) {
     id: "canvas"
   }), /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("div", null, !pdfViewer && /*#__PURE__*/_react.default.createElement("div", {
     className: _indexModule.default.nextFixedButton
-  }, " ", /*#__PURE__*/_react.default.createElement(_material.Button, {
-    style: {
-      borderRadius: '50%',
-      boxShadow: '0 0 10px #ccc',
-      width: '60px',
-      height: '60px'
-    },
+  }, " ", /*#__PURE__*/_react.default.createElement(_Button.default, {
+    className: _indexModule.default.floatingButtonsNextPrev,
     onClick: function onClick() {
-      return savePages(canvas);
+      return previousPage(canvas);
+    }
+  }, /*#__PURE__*/_react.default.createElement(_ArrowBackIosNew.default, {
+    className: _indexModule.default.blackIcon
+  })), " ", /*#__PURE__*/_react.default.createElement(_Button.default, {
+    className: _indexModule.default.floatingButtonsNextPrev,
+    onClick: function onClick() {
+      return nextPage(canvas);
     }
   }, /*#__PURE__*/_react.default.createElement(_ArrowForwardIos.default, {
-    style: {
-      color: 'black'
-    }
+    className: _indexModule.default.blackIcon
   })), " ")), pdfViewer && /*#__PURE__*/_react.default.createElement(_PdfReader.default, {
     savePage: function savePage() {
-      return savePages(canvas);
+      return nextPage(canvas);
     },
     fileReaderInfo: fileReaderInfo,
     updateFileReaderInfo: updateFileReaderInfo
@@ -684,25 +723,18 @@ var Whiteboard = function Whiteboard(_ref9) {
     }
   }, /*#__PURE__*/_react.default.createElement("div", {
     className: _indexModule.default.toolbar
-  }, /*#__PURE__*/_react.default.createElement(_material.Box, {
-    style: {
-      display: 'flex',
-      flexDirection: 'column-reverse',
-      maxHeight: openThickness ? '100%' : '50px',
-      backgroundColor: openThickness ? 'transparent' : 'white'
-    }
-  }, /*#__PURE__*/_react.default.createElement(_material.SpeedDial, {
+  }, /*#__PURE__*/_react.default.createElement(_Box.default, {
+    className: openThickness ? _indexModule.default.speeddialDivOpen : _indexModule.default.speeddialDivClose
+  }, /*#__PURE__*/_react.default.createElement(_SpeedDial.default, {
     open: false,
     direction: "up",
     ariaLabel: "SpeedDial openIcon example",
     onClick: function onClick() {
       return setOpenThickness(!openThickness);
     },
-    icon: /*#__PURE__*/_react.default.createElement(_material.SpeedDialIcon, {
-      icon: /*#__PURE__*/_react.default.createElement(_material.Box, {
-        sx: {
-          display: "flex"
-        }
+    icon: /*#__PURE__*/_react.default.createElement(_SpeedDialIcon.default, {
+      icon: /*#__PURE__*/_react.default.createElement(_Box.default, {
+        className: _indexModule.default.flexDiv
       }, /*#__PURE__*/_react.default.createElement("img", {
         src: _thickness.default
       }))
@@ -713,15 +745,9 @@ var Whiteboard = function Whiteboard(_ref9) {
     },
     open: openThickness && !openDraw && !openColor,
     value: options.currentWidth
-  })), /*#__PURE__*/_react.default.createElement(_material.Box, {
-    style: {
-      display: 'flex',
-      alignItems: 'flex-end',
-      maxHeight: openDraw ? '100%' : '50px',
-      backgroundColor: !openDraw ? 'transparent' : 'white',
-      boxShadow: openDraw ? '0 0 10px #ccc' : 'none'
-    }
-  }, /*#__PURE__*/_react.default.createElement(_material.SpeedDial, {
+  })), /*#__PURE__*/_react.default.createElement(_Box.default, {
+    className: openDraw ? _indexModule.default.speeddialDivOpen : _indexModule.default.speeddialDivClose
+  }, /*#__PURE__*/_react.default.createElement(_SpeedDial.default, {
     open: openDraw,
     onClick: function onClick() {
       setOpenDraw(!openDraw);
@@ -730,115 +756,94 @@ var Whiteboard = function Whiteboard(_ref9) {
     },
     direction: "up",
     ariaLabel: "SpeedDial openIcon example",
-    icon: /*#__PURE__*/_react.default.createElement(_material.SpeedDialIcon, {
-      icon: /*#__PURE__*/_react.default.createElement(_material.Box, {
-        sx: {
-          display: "flex"
-        }
+    icon: /*#__PURE__*/_react.default.createElement(_SpeedDialIcon.default, {
+      icon: /*#__PURE__*/_react.default.createElement(_Box.default, {
+        className: _indexModule.default.flexDiv
       }, /*#__PURE__*/_react.default.createElement("img", {
         src: _pencilCreate3x.default
       }))
     })
-  }, /*#__PURE__*/_react.default.createElement(_material.SpeedDialAction, {
+  }, /*#__PURE__*/_react.default.createElement(_SpeedDialAction.default, {
     FabProps: {
       style: {
         boxShadow: 'none'
       }
     },
     icon: /*#__PURE__*/_react.default.createElement(_HorizontalRule.default, {
-      style: {
-        rotate: '-45deg',
-        color: 'black'
-      }
+      className: _indexModule.default.blackSlantedIcon
     }),
     tooltipTitle: "Line",
     onClick: function onClick() {
       return toolbarCommander(modes.LINE, canvas);
     }
-  }), /*#__PURE__*/_react.default.createElement(_material.SpeedDialAction, {
+  }), /*#__PURE__*/_react.default.createElement(_SpeedDialAction.default, {
     FabProps: {
       style: {
         boxShadow: 'none'
       }
     },
     icon: /*#__PURE__*/_react.default.createElement(_Crop.default, {
-      style: {
-        color: 'black'
-      }
+      className: _indexModule.default.blackIcon
     }),
     tooltipTitle: "Rectangle",
     onClick: function onClick() {
       return toolbarCommander(modes.RECTANGLE, canvas);
     }
-  }), /*#__PURE__*/_react.default.createElement(_material.SpeedDialAction, {
+  }), /*#__PURE__*/_react.default.createElement(_SpeedDialAction.default, {
     FabProps: {
       style: {
         boxShadow: 'none'
       }
     },
     icon: /*#__PURE__*/_react.default.createElement(_RadioButtonUnchecked.default, {
-      style: {
-        color: 'black'
-      }
+      className: _indexModule.default.blackIcon
     }),
     tooltipTitle: "Ellipse",
     onClick: function onClick() {
       return toolbarCommander(modes.ELLIPSE, canvas);
     }
-  }), /*#__PURE__*/_react.default.createElement(_material.SpeedDialAction, {
+  }), /*#__PURE__*/_react.default.createElement(_SpeedDialAction.default, {
     FabProps: {
       style: {
         boxShadow: 'none'
       }
     },
     icon: /*#__PURE__*/_react.default.createElement(_ChangeHistory.default, {
-      style: {
-        color: 'black'
-      }
+      className: _indexModule.default.blackIcon
     }),
     tooltipTitle: "Triangle",
     onClick: function onClick() {
       return toolbarCommander(modes.TRIANGLE, canvas, options);
     }
-  }), /*#__PURE__*/_react.default.createElement(_material.SpeedDialAction, {
+  }), /*#__PURE__*/_react.default.createElement(_SpeedDialAction.default, {
     FabProps: {
       style: {
         boxShadow: 'none'
       }
     },
     icon: /*#__PURE__*/_react.default.createElement(_Create.default, {
-      style: {
-        color: 'black'
-      }
+      className: _indexModule.default.blackIcon
     }),
     tooltipTitle: "Pencil",
     onClick: function onClick() {
       return toolbarCommander(modes.PENCIL, canvas);
     }
-  }), /*#__PURE__*/_react.default.createElement(_material.SpeedDialAction, {
+  }), /*#__PURE__*/_react.default.createElement(_SpeedDialAction.default, {
     FabProps: {
       style: {
         boxShadow: 'none'
       }
     },
     icon: /*#__PURE__*/_react.default.createElement(_TitleRounded.default, {
-      style: {
-        color: 'black'
-      }
+      className: _indexModule.default.blackIcon
     }),
     tooltipTitle: "Text",
     onClick: function onClick() {
       return toolbarCommander("TEXT", canvas);
     }
-  }))), /*#__PURE__*/_react.default.createElement(_material.Box, {
-    style: {
-      display: 'flex',
-      alignItems: 'flex-end',
-      maxHeight: openColor ? '100%' : '50px',
-      backgroundColor: !openColor ? 'transparent' : 'white',
-      boxShadow: openColor ? '0 0 10px #ccc' : 'none'
-    }
-  }, /*#__PURE__*/_react.default.createElement(_material.SpeedDial, {
+  }))), /*#__PURE__*/_react.default.createElement(_Box.default, {
+    className: openColor ? _indexModule.default.speeddialColorDivOpen : _indexModule.default.speeddialColorDivClose
+  }, /*#__PURE__*/_react.default.createElement(_SpeedDial.default, {
     open: openColor,
     onClick: function onClick() {
       setOpenColor(!openColor);
@@ -847,17 +852,15 @@ var Whiteboard = function Whiteboard(_ref9) {
     },
     direction: "up",
     ariaLabel: "SpeedDial openIcon example",
-    icon: /*#__PURE__*/_react.default.createElement(_material.SpeedDialIcon, {
-      icon: /*#__PURE__*/_react.default.createElement(_material.Box, {
-        sx: {
-          display: "flex"
-        }
+    icon: /*#__PURE__*/_react.default.createElement(_SpeedDialIcon.default, {
+      icon: /*#__PURE__*/_react.default.createElement(_Box.default, {
+        className: _indexModule.default.flexDiv
       }, /*#__PURE__*/_react.default.createElement("img", {
         src: _brush3x.default
       }))
     })
   }, color.map(function (col) {
-    return /*#__PURE__*/_react.default.createElement(_material.SpeedDialAction, {
+    return /*#__PURE__*/_react.default.createElement(_SpeedDialAction.default, {
       key: col.color,
       FabProps: {
         style: {
@@ -872,49 +875,43 @@ var Whiteboard = function Whiteboard(_ref9) {
         setOpenColor(!openColor);
       }
     });
-  }))), /*#__PURE__*/_react.default.createElement(_material.SpeedDial, {
+  }))), /*#__PURE__*/_react.default.createElement(_SpeedDial.default, {
     open: false,
     onClick: function onClick() {
       return toolbarCommander(modes.ERASER, canvas);
     },
     direction: "up",
-    icon: /*#__PURE__*/_react.default.createElement(_material.SpeedDialIcon, {
-      icon: /*#__PURE__*/_react.default.createElement(_material.Box, {
-        sx: {
-          display: "flex"
-        }
+    icon: /*#__PURE__*/_react.default.createElement(_SpeedDialIcon.default, {
+      icon: /*#__PURE__*/_react.default.createElement(_Box.default, {
+        className: _indexModule.default.flexDiv
       }, /*#__PURE__*/_react.default.createElement("img", {
         src: _eraser.default
       }))
     }),
     ariaLabel: "SpeedDial openIcon example"
-  }), /*#__PURE__*/_react.default.createElement(_material.SpeedDial, {
+  }), /*#__PURE__*/_react.default.createElement(_SpeedDial.default, {
     open: false,
     onClick: function onClick() {
       return undoCanvas(canvas);
     },
     direction: "up",
     ariaLabel: "SpeedDial openIcon example",
-    icon: /*#__PURE__*/_react.default.createElement(_material.SpeedDialIcon, {
-      icon: /*#__PURE__*/_react.default.createElement(_material.Box, {
-        sx: {
-          display: "flex"
-        }
+    icon: /*#__PURE__*/_react.default.createElement(_SpeedDialIcon.default, {
+      icon: /*#__PURE__*/_react.default.createElement(_Box.default, {
+        className: _indexModule.default.flexDiv
       }, /*#__PURE__*/_react.default.createElement("img", {
         src: _rotateCcw3x.default
       }))
     })
-  }), /*#__PURE__*/_react.default.createElement(_material.SpeedDial, {
+  }), /*#__PURE__*/_react.default.createElement(_SpeedDial.default, {
     open: false,
     onClick: function onClick() {
       return redoAll(canvas);
     },
     direction: "up",
-    icon: /*#__PURE__*/_react.default.createElement(_material.SpeedDialIcon, {
-      icon: /*#__PURE__*/_react.default.createElement(_material.Box, {
-        sx: {
-          display: "flex"
-        }
+    icon: /*#__PURE__*/_react.default.createElement(_SpeedDialIcon.default, {
+      icon: /*#__PURE__*/_react.default.createElement(_Box.default, {
+        className: _indexModule.default.flexDiv
       }, /*#__PURE__*/_react.default.createElement("img", {
         src: _rotateCw3x.default
       }))
@@ -929,31 +926,25 @@ var Whiteboard = function Whiteboard(_ref9) {
     accept: ".pdf",
     type: "file",
     onChange: onFileChange
-  }), /*#__PURE__*/_react.default.createElement(_material.Button, {
+  }), /*#__PURE__*/_react.default.createElement(_Button.default, {
     onClick: function onClick() {
       uploadPdfRef.current.click();
       setPdfViewer(true);
     }
   }, /*#__PURE__*/_react.default.createElement(_PictureAsPdf.default, null))), /*#__PURE__*/_react.default.createElement("div", {
     className: _indexModule.default.upperToolBarFlex
-  }, /*#__PURE__*/_react.default.createElement(_material.Button, null, /*#__PURE__*/_react.default.createElement(_material.Box, {
-    sx: {
-      display: "flex"
-    }
+  }, /*#__PURE__*/_react.default.createElement(_Button.default, null, /*#__PURE__*/_react.default.createElement(_Box.default, {
+    className: _indexModule.default.flexDiv
   }, /*#__PURE__*/_react.default.createElement("img", {
     src: _Group3.default
-  }))), /*#__PURE__*/_react.default.createElement(_material.Button, null, /*#__PURE__*/_react.default.createElement(_material.Box, {
-    sx: {
-      display: "flex"
-    }
+  }))), /*#__PURE__*/_react.default.createElement(_Button.default, null, /*#__PURE__*/_react.default.createElement(_Box.default, {
+    className: _indexModule.default.flexDiv
   }, /*#__PURE__*/_react.default.createElement("img", {
     src: _Group2.default
-  }))), /*#__PURE__*/_react.default.createElement(_material.Button, {
+  }))), /*#__PURE__*/_react.default.createElement(_Button.default, {
     onClick: onSaveCanvasAsImage
-  }, /*#__PURE__*/_react.default.createElement(_material.Box, {
-    sx: {
-      display: "flex"
-    }
+  }, /*#__PURE__*/_react.default.createElement(_Box.default, {
+    className: _indexModule.default.flexDiv
   }, /*#__PURE__*/_react.default.createElement("img", {
     src: _Group.default
   }))))))));
@@ -962,7 +953,8 @@ var Whiteboard = function Whiteboard(_ref9) {
 Whiteboard.propTypes = {
   aspectRatio: _propTypes.default.number,
   setFiles: _propTypes.default.any,
-  color: _propTypes.default.any
+  color: _propTypes.default.any,
+  setJSON: _propTypes.default.any
 };
 var _default = Whiteboard;
 exports.default = _default;

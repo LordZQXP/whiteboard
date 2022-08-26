@@ -19,10 +19,19 @@ import sendTostudent from "./images/Group 6948.png"
 import thickness from "./images/thickness.png"
 import preview from "./images/Group 6946.png"
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import PictureAsPdf from '@mui/icons-material/PictureAsPdf';
 import './eraserBrush';
 import styles from './index.module.scss';
-import { Box, Button, SpeedDial, SpeedDialAction, SpeedDialIcon } from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import SpeedDial from '@mui/material/SpeedDial';
+import SpeedDialAction from '@mui/material/SpeedDialAction';
+import SpeedDialIcon from '@mui/material/SpeedDialIcon';
+
+
+
+
 import InputSlider from './components/Slider';
 let drawInstance = null;
 let origX;
@@ -72,7 +81,6 @@ function removeObject(canvas) {
   return (e) => {
     backUpCanvas = canvas.toJSON();
     if (options.currentMode === modes.ERASER) {
-      console.log("removed");
       canvas.remove(e.target);
     }
   };
@@ -397,11 +405,13 @@ function resizeCanvas(canvas, whiteboard) {
   };
 }
 
-const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color }) => {
+const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON }) => {
   const [currColor, setCurrColor] = useState(color[0]?.color);
   const [canvas, setCanvas] = useState(null);
   const [brushWidth, setBrushWidth] = useState(5);
-
+  const [pages, setPages] = useState({});
+  const [canvasPage, setCanvasPage] = useState([]);
+  const [index, setIndex] = useState(0);
 
   const [fileReaderInfo, setFileReaderInfo] = useState({
     file: '',
@@ -425,7 +435,6 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color }) => {
         whiteboardRef.current.clientWidth / aspectRatio,
       );
       setCanvas(() => canvas);
-      console.log(canvas);
       handleResize(resizeCanvas(canvas, whiteboardRef.current)).observe(whiteboardRef.current);
     }
   }, [canvasRef]);
@@ -459,32 +468,41 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color }) => {
     setCurrColor(e);
   }
 
-  const [pages, setPages] = useState([]);
-
   function onSaveCanvasAsImage() {
     canvasRef.current.toBlob(function (blob) {
-      setFiles([...pages, blob]);
-      setPages([...pages, blob]);
-      setPages([]);
+      setPages({...pages, [index] : blob});
+      setFiles({ ...pages, [index]: blob });
     });
-    canvas.getObjects().forEach((item) => {
-      if (item !== canvas.backgroundImage) {
-        canvas.remove(item);
-      }
-    })
+    setJSON({...canvasPage, [index] : canvas.toJSON()});
+    setPages({});
+    clearCanvas(canvas);
     updateFileReaderInfo({ file: "", currentPageNumber: 1 });
   }
 
-  function savePages(canvas) {
+  function nextPage(canvas) {
     backUpCanvas="";
+    setCanvasPage({...canvasPage, [index] : canvas.toJSON()});
     canvasRef.current.toBlob(function (blob) {
-      setPages([...pages, blob]);
-      canvas.getObjects().forEach((item) => {
-        if (item !== canvas.backgroundImage) {
-          canvas.remove(item);
-        }
-      })
+        setPages({...pages, [index] : blob});
+      });
+    if(canvasPage[index+1] !== undefined)
+    canvas.loadFromJSON(canvasPage[index+1]);
+    else
+    clearCanvas(canvas);
+    setIndex(index+1);
+  }
+
+  function previousPage(canvas){
+    backUpCanvas = "";
+    if(index - 1 <0){
+      return;
+    }
+    setCanvasPage({ ...canvasPage, [index]: canvas.toJSON() });
+    canvasRef.current.toBlob(function (blob) {
+      setPages({ ...pages, [index]: blob });
     });
+    canvas.loadFromJSON(canvasPage[index-1]);
+    setIndex(index - 1);
   }
 
   function redoAll() {
@@ -560,31 +578,31 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color }) => {
       <canvas ref={canvasRef} id="canvas" />
       <div>
       <div>
-          {!pdfViewer && <div className={styles.nextFixedButton}> <Button style={{ borderRadius:'50%', boxShadow:'0 0 10px #ccc', width:'60px', height:'60px' }} onClick={() => savePages(canvas)}><ArrowForwardIosIcon style={{ color:'black' }} /></Button> </div>}
+          {!pdfViewer && <div className={styles.nextFixedButton}> <Button className={styles.floatingButtonsNextPrev} onClick={() => previousPage(canvas)}><ArrowBackIosNewIcon className={styles.blackIcon} /></Button> <Button className={styles.floatingButtonsNextPrev} onClick={() => nextPage(canvas)}><ArrowForwardIosIcon className={styles.blackIcon} /></Button> </div>}
       </div>
-        {pdfViewer && <PdfReader savePage={() => savePages(canvas)} fileReaderInfo={fileReaderInfo} updateFileReaderInfo={updateFileReaderInfo} />}
+        {pdfViewer && <PdfReader savePage={() => nextPage(canvas)} fileReaderInfo={fileReaderInfo} updateFileReaderInfo={updateFileReaderInfo} />}
       </div>
       <div className={styles.toolbarWithColor} style={{ backgroundColor: (openDraw || openColor) ? 'transparent' : 'white'}}>
         <div className={styles.toolbar}>
-          <Box style={{ display: 'flex', flexDirection: 'column-reverse', maxHeight: openThickness ? '100%' : '50px', backgroundColor: openThickness ? 'transparent' : 'white' }}>
+          <Box className={openThickness ? styles.speeddialDivOpen : styles.speeddialDivClose}>
           <SpeedDial
               open={false}
               direction='up'
               ariaLabel="SpeedDial openIcon example"
             onClick={() => setOpenThickness(!openThickness)}
-              icon={<SpeedDialIcon icon={<Box sx={{ display: "flex" }}>
+              icon={<SpeedDialIcon icon={<Box className={styles.flexDiv}>
                 <img src={thickness} />
               </Box>}/>}
          />   
             <InputSlider changeHandler={(v)=>changeCurrentWidth(v)} open={openThickness && !openDraw && !openColor}  value={options.currentWidth}/>
           </Box>
-          <Box style={{ display: 'flex', alignItems: 'flex-end', maxHeight: openDraw ? '100%' : '50px', backgroundColor: !openDraw ? 'transparent' : 'white', boxShadow: openDraw ? '0 0 10px #ccc' : 'none'}}>
+          <Box className={openDraw ? styles.speeddialDivOpen : styles.speeddialDivClose}>
           <SpeedDial
           open={openDraw}
           onClick={()=>{setOpenDraw(!openDraw); setOpenColor(false); setOpenThickness(false);}}
           direction='up'
           ariaLabel="SpeedDial openIcon example"
-          icon={<SpeedDialIcon icon={<Box sx={{ display: "flex" }}>
+          icon={<SpeedDialIcon icon={<Box className={styles.flexDiv}>
               <img src={Pencil} />
             </Box>} />}
           >
@@ -594,7 +612,7 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color }) => {
                   boxShadow : 'none'
                 }
               }}
-              icon={<HorizontalRuleIcon style={{ rotate: '-45deg', color: 'black' }} /> }
+                icon={<HorizontalRuleIcon className={styles.blackSlantedIcon} /> }
                 tooltipTitle="Line"
                 onClick={() => toolbarCommander(modes.LINE, canvas)}
             />
@@ -604,7 +622,7 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color }) => {
                   boxShadow : 'none'
                 }
               }}
-              icon={<Crop169Icon style={{ color: 'black' }} />}
+              icon={<Crop169Icon className={styles.blackIcon} />}
               tooltipTitle="Rectangle"
               onClick={() => toolbarCommander(modes.RECTANGLE, canvas)}
             />
@@ -614,7 +632,7 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color }) => {
                   boxShadow : 'none'
                 }
               }}
-              icon={<RadioButtonUncheckedIcon style={{ color: 'black' }} />}
+              icon={<RadioButtonUncheckedIcon className={styles.blackIcon} />}
               tooltipTitle="Ellipse"
               onClick={() => toolbarCommander(modes.ELLIPSE, canvas)}
             />
@@ -624,7 +642,7 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color }) => {
                   boxShadow : 'none'
                 }
               }}
-              icon={<ChangeHistoryIcon style={{ color: 'black' }} />}
+              icon={<ChangeHistoryIcon className={styles.blackIcon} />}
               tooltipTitle="Triangle"
               onClick={() => toolbarCommander(modes.TRIANGLE, canvas,options)}
             />
@@ -634,7 +652,7 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color }) => {
                   boxShadow : 'none'
                 }
               }}
-              icon={<CreateIcon style={{ color: 'black' }} />}
+              icon={<CreateIcon className={styles.blackIcon} />}
               tooltipTitle="Pencil"
               onClick={() => toolbarCommander(modes.PENCIL, canvas)}
             />
@@ -644,20 +662,20 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color }) => {
                   boxShadow : 'none'
                 }
               }}
-              icon={<TitleRoundedIcon style={{ color: 'black' }} />}
+              icon={<TitleRoundedIcon className={styles.blackIcon} />}
               tooltipTitle="Text"
               onClick={() => toolbarCommander("TEXT", canvas)}
             />
             
           </SpeedDial>
           </Box>
-          <Box style={{ display: 'flex', alignItems: 'flex-end', maxHeight: openColor ? '100%' : '50px', backgroundColor: !openColor ? 'transparent' : 'white', boxShadow: openColor ? '0 0 10px #ccc' : 'none' }}>
+          <Box className={openColor ? styles.speeddialColorDivOpen : styles.speeddialColorDivClose}>
           <SpeedDial
             open={openColor}
               onClick={() => { setOpenColor(!openColor); setOpenDraw(false); setOpenThickness(false); }}
             direction='up'
             ariaLabel="SpeedDial openIcon example"
-            icon={  <SpeedDialIcon icon={<Box sx={{ display: "flex" }}>
+            icon={  <SpeedDialIcon icon={<Box className={styles.flexDiv}>
                 <img src={Brush} />
                  </Box>} />}
           >
@@ -682,7 +700,7 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color }) => {
             open={false}
             onClick={() => toolbarCommander(modes.ERASER, canvas)}
             direction='up'
-            icon={<SpeedDialIcon icon={<Box sx={{ display: "flex" }}>
+            icon={<SpeedDialIcon icon={<Box className={styles.flexDiv}>
               <img src={EraserIcon} />
             </Box>} />}
             ariaLabel="SpeedDial openIcon example"
@@ -692,7 +710,7 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color }) => {
             onClick={() => undoCanvas(canvas)}
             direction='up'
             ariaLabel="SpeedDial openIcon example"
-            icon={<SpeedDialIcon icon={<Box sx={{ display: "flex" }}>
+            icon={<SpeedDialIcon icon={<Box className={styles.flexDiv}>
               <img src={RotateLeft} />
             </Box>} />}
           />
@@ -700,7 +718,7 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color }) => {
             open={false}
             onClick={() => redoAll(canvas)}
             direction='up'
-            icon={<SpeedDialIcon icon={<Box sx={{ display: "flex" }}>
+            icon={<SpeedDialIcon icon={<Box className={styles.flexDiv}>
               <img src={RotateRight} />
             </Box>} />}
             ariaLabel="SpeedDial openIcon example"
@@ -711,13 +729,13 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color }) => {
               <Button onClick={() => { uploadPdfRef.current.click(); setPdfViewer(true) }}><PictureAsPdf /></Button>
         </div>
             <div className={styles.upperToolBarFlex}>
-            <Button><Box sx={{ display: "flex" }}>
+            <Button><Box className={styles.flexDiv}>
               <img src={preview} />
             </Box></Button>
-            <Button><Box sx={{ display: "flex" }}>
+            <Button><Box className={styles.flexDiv}>
               <img src={sendTostudent} />
             </Box></Button>
-            <Button onClick={onSaveCanvasAsImage}><Box sx={{ display: "flex" }}>
+            <Button onClick={onSaveCanvasAsImage}><Box className={styles.flexDiv}>
               <img src={submit} />
             </Box></Button>
         </div>
@@ -732,6 +750,7 @@ Whiteboard.propTypes = {
   aspectRatio: PropTypes.number,
   setFiles: PropTypes.any,
   color: PropTypes.any,
+  setJSON : PropTypes.any
 };
 
 export default Whiteboard;

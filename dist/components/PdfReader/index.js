@@ -13,8 +13,6 @@ var _indexModule = _interopRequireDefault(require("./index.module.scss"));
 
 var _material = require("@mui/material");
 
-var _ArrowForwardIos = _interopRequireDefault(require("@mui/icons-material/ArrowForwardIos"));
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 _reactPdf.pdfjs.GlobalWorkerOptions.workerSrc = "//cdnjs.cloudflare.com/ajax/libs/pdf.js/" + _reactPdf.pdfjs.version + "/pdf.worker.js";
@@ -48,10 +46,6 @@ var PDFReader = function PDFReader(_ref) {
   var nextPage = function nextPage() {
     changePage(1);
     savePage();
-  };
-
-  var previousPage = function previousPage() {
-    return changePage(-1);
   };
 
   return /*#__PURE__*/_react.default.createElement("div", {
