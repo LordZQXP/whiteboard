@@ -28,8 +28,7 @@ import Button from '@mui/material/Button';
 import SpeedDial from '@mui/material/SpeedDial';
 import SpeedDialAction from '@mui/material/SpeedDialAction';
 import SpeedDialIcon from '@mui/material/SpeedDialIcon';
-
-
+import {saveAs} from 'file-saver';
 
 
 import InputSlider from './components/Slider';
@@ -405,7 +404,7 @@ function resizeCanvas(canvas, whiteboard) {
   };
 }
 
-const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON }) => {
+const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = null }) => {
   const [currColor, setCurrColor] = useState(color[0]?.color);
   const [canvas, setCanvas] = useState(null);
   const [brushWidth, setBrushWidth] = useState(5);
@@ -455,6 +454,29 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON }) => {
     }
   }, [fileReaderInfo.currentPage]);
 
+  useEffect(()=>{
+      const fetchImg = async()=>{
+      console.log(src);
+      canvas.loadFromJSON(src);
+      // var image = new Image();
+      //  image.src = canvas.toDataURL();
+        let source = "https://i.postimg.cc/x83xVfnY/page.png";
+      clearCanvas(canvas);
+      // console.log(source);
+        fetch(source)
+          .then(response => response.blob())
+          .then(imageBlob => {
+            const imageObjectURL = URL.createObjectURL(imageBlob);
+            console.log(imageObjectURL);
+            fabric.Image.fromURL(imageObjectURL, (img) => {
+              img.scaleToHeight(window.innerHeight);
+              canvas.add(img);
+            });
+          });
+      }
+    if (src && canvas) fetchImg();
+  },[src, canvas])
+
   function changeCurrentWidth(value) {
     const intValue = parseInt(value);
     options.currentWidth = intValue;
@@ -469,6 +491,10 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON }) => {
   }
 
   function onSaveCanvasAsImage() {
+    if(src){
+      var imageURI = canvas.toDataURL("image/jpg");
+      saveAs(imageURI,'pic.jpg');
+    }
     canvasRef.current.toBlob(function (blob) {
       setPages({...pages, [index] : blob});
       setFiles({ ...pages, [index]: blob });
@@ -482,6 +508,7 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON }) => {
   function nextPage(canvas) {
     backUpCanvas="";
     setCanvasPage({...canvasPage, [index] : canvas.toJSON()});
+    console.log(canvas.toJSON());
     canvasRef.current.toBlob(function (blob) {
         setPages({...pages, [index] : blob});
       });
@@ -750,7 +777,8 @@ Whiteboard.propTypes = {
   aspectRatio: PropTypes.number,
   setFiles: PropTypes.any,
   color: PropTypes.any,
-  setJSON : PropTypes.any
+  setJSON : PropTypes.any,
+  src : PropTypes.any
 };
 
 export default Whiteboard;
