@@ -456,21 +456,17 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = null 
 
   useEffect(()=>{
       const fetchImg = async()=>{
-      console.log(src);
-      canvas.loadFromJSON(src);
-      // var image = new Image();
-      //  image.src = canvas.toDataURL();
-        let source = "https://i.postimg.cc/x83xVfnY/page.png";
+      // canvas.loadFromJSON(src);
+      // let source = "https://i.postimg.cc/x83xVfnY/page.png";
       clearCanvas(canvas);
-      // console.log(source);
-        fetch(source)
+        fetch(src)
           .then(response => response.blob())
           .then(imageBlob => {
             const imageObjectURL = URL.createObjectURL(imageBlob);
-            console.log(imageObjectURL);
             fabric.Image.fromURL(imageObjectURL, (img) => {
-              img.scaleToHeight(window.innerHeight);
+              img.scaleToHeight(canvas.height);
               canvas.add(img);
+              canvas.centerObject(img);
             });
           });
       }
