@@ -11,6 +11,10 @@ var _reactPdf = require("react-pdf");
 
 var _indexModule = _interopRequireDefault(require("./index.module.scss"));
 
+var _material = require("@mui/material");
+
+var _ArrowForwardIos = _interopRequireDefault(require("@mui/icons-material/ArrowForwardIos"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 _reactPdf.pdfjs.GlobalWorkerOptions.workerSrc = "//cdnjs.cloudflare.com/ajax/libs/pdf.js/" + _reactPdf.pdfjs.version + "/pdf.worker.js";
@@ -69,11 +73,18 @@ var PDFReader = function PDFReader(_ref) {
     pageNumber: fileReaderInfo.currentPageNumber
   }))), /*#__PURE__*/_react.default.createElement("div", {
     className: _indexModule.default.pageInfo
-  }, /*#__PURE__*/_react.default.createElement("span", null, "Page ", fileReaderInfo.currentPageNumber, " of ", fileReaderInfo.totalPages || '--'), /*#__PURE__*/_react.default.createElement("button", {
-    type: "button",
+  }, /*#__PURE__*/_react.default.createElement("div", {
+    className: _indexModule.default.nextFixedButton
+  }, /*#__PURE__*/_react.default.createElement(_material.Button, {
+    style: {
+      borderRadius: '15px',
+      boxShadow: '0 0 10px #ccc',
+      width: '80px',
+      height: '60px'
+    },
     disabled: fileReaderInfo.currentPageNumber >= fileReaderInfo.totalPages,
     onClick: nextPage
-  }, "Next")));
+  }, fileReaderInfo.currentPageNumber, " of ", fileReaderInfo.totalPages || '--'), " ")));
 };
 
 var _default = PDFReader;

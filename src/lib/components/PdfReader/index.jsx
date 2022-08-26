@@ -2,6 +2,8 @@ import React from 'react';
 import { Document, Page } from 'react-pdf/dist/esm/entry.webpack';
 import { pdfjs } from 'react-pdf';
 import styles from './index.module.scss';
+import { Button } from '@mui/material';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -46,23 +48,9 @@ const PDFReader = ({ fileReaderInfo, updateFileReaderInfo, savePage }) => {
         </Document>
       </div>
       <div className={styles.pageInfo}>
-        <span>
-          Page {fileReaderInfo.currentPageNumber} of {fileReaderInfo.totalPages || '--'}
-        </span>
-        {/* <button
-          type="button"
-          disabled={fileReaderInfo.currentPageNumber <= 1}
-          onClick={previousPage}
-        >
-          Previous
-        </button> */}
-        <button
-          type="button"
-          disabled={fileReaderInfo.currentPageNumber >= fileReaderInfo.totalPages}
-          onClick={nextPage}
-        >
-          Next
-        </button>
+        <div className={styles.nextFixedButton}>
+           <Button style={{ borderRadius:'15px', boxShadow: '0 0 10px #ccc', width: '80px', height: '60px' }} disabled={fileReaderInfo.currentPageNumber >= fileReaderInfo.totalPages}
+          onClick={nextPage}>{fileReaderInfo.currentPageNumber} of {fileReaderInfo.totalPages || '--'}</Button> </div>
       </div>
     </div>
   );

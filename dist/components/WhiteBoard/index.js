@@ -39,9 +39,13 @@ var _Group = _interopRequireDefault(require("./images/Group 6949.png"));
 
 var _Group2 = _interopRequireDefault(require("./images/Group 6948.png"));
 
+var _thickness = _interopRequireDefault(require("./images/thickness.png"));
+
 var _Group3 = _interopRequireDefault(require("./images/Group 6946.png"));
 
 var _ArrowForwardIos = _interopRequireDefault(require("@mui/icons-material/ArrowForwardIos"));
+
+var _PictureAsPdf = _interopRequireDefault(require("@mui/icons-material/PictureAsPdf"));
 
 require("./eraserBrush");
 
@@ -50,8 +54,6 @@ var _indexModule = _interopRequireDefault(require("./index.module.scss"));
 var _material = require("@mui/material");
 
 var _Slider = _interopRequireDefault(require("./components/Slider"));
-
-var _system = require("@mui/system");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -455,7 +457,7 @@ function resizeCanvas(canvas, whiteboard) {
 }
 
 var Whiteboard = function Whiteboard(_ref9) {
-  var _color$, _color$2;
+  var _color$;
 
   var _ref9$aspectRatio = _ref9.aspectRatio,
       aspectRatio = _ref9$aspectRatio === void 0 ? 4 / 3 : _ref9$aspectRatio,
@@ -466,30 +468,22 @@ var Whiteboard = function Whiteboard(_ref9) {
       currColor = _useState[0],
       setCurrColor = _useState[1];
 
-  var _useState2 = (0, _react.useState)((_color$2 = color[0]) == null ? void 0 : _color$2.color),
-      currTool = _useState2[0],
-      setCurrTool = _useState2[1];
+  var _useState2 = (0, _react.useState)(null),
+      canvas = _useState2[0],
+      setCanvas = _useState2[1];
 
-  var _useState3 = (0, _react.useState)(null),
-      canvas = _useState3[0],
-      setCanvas = _useState3[1];
+  var _useState3 = (0, _react.useState)(5),
+      brushWidth = _useState3[0],
+      setBrushWidth = _useState3[1];
 
-  var _useState4 = (0, _react.useState)(5),
-      brushWidth = _useState4[0],
-      setBrushWidth = _useState4[1];
-
-  var _useState5 = (0, _react.useState)(false),
-      colorToggle = _useState5[0],
-      setColorToggle = _useState5[1];
-
-  var _useState6 = (0, _react.useState)({
+  var _useState4 = (0, _react.useState)({
     file: '',
     totalPages: null,
     currentPageNumber: 1,
     currentPage: ''
   }),
-      fileReaderInfo = _useState6[0],
-      setFileReaderInfo = _useState6[1];
+      fileReaderInfo = _useState4[0],
+      setFileReaderInfo = _useState4[1];
 
   (0, _react.useEffect)(function () {
     options.currentColor = currColor;
@@ -540,9 +534,9 @@ var Whiteboard = function Whiteboard(_ref9) {
     setCurrColor(e);
   }
 
-  var _useState7 = (0, _react.useState)([]),
-      pages = _useState7[0],
-      setPages = _useState7[1];
+  var _useState5 = (0, _react.useState)([]),
+      pages = _useState5[0],
+      setPages = _useState5[1];
 
   function onSaveCanvasAsImage() {
     canvasRef.current.toBlob(function (blob) {
@@ -562,6 +556,7 @@ var Whiteboard = function Whiteboard(_ref9) {
   }
 
   function savePages(canvas) {
+    backUpCanvas = "";
     canvasRef.current.toBlob(function (blob) {
       setPages([].concat(pages, [blob]));
       canvas.getObjects().forEach(function (item) {
@@ -576,7 +571,7 @@ var Whiteboard = function Whiteboard(_ref9) {
     canvas.loadFromJSON(backUpCanvas);
   }
 
-  function undoCanvas(canvas, backUpCanvas) {
+  function undoCanvas(canvas) {
     var length = canvas.getObjects().length - 1;
     backUpCanvas = canvas.toJSON();
 
@@ -606,64 +601,53 @@ var Whiteboard = function Whiteboard(_ref9) {
     switch (props) {
       case modes.LINE:
         createLine(canvas);
-        setCurrTool(modes.LINE);
-        setColorToggle(true);
         break;
 
       case modes.RECTANGLE:
         createRect(canvas);
-        setCurrTool(modes.RECTANGLE);
-        setColorToggle(true);
         break;
 
       case modes.ELLIPSE:
         createEllipse(canvas);
-        setCurrTool(modes.ELLIPSE);
-        setColorToggle(true);
         break;
 
       case modes.TRIANGLE:
         createTriangle(canvas, options);
-        setCurrTool(modes.TRIANGLE);
-        setColorToggle(true);
         break;
 
       case modes.PENCIL:
         draw(canvas);
-        setCurrTool(modes.PENCIL);
-        setColorToggle(true);
         break;
 
       case "TEXT":
         createText(canvas);
-        setCurrTool("TEXT");
-        setColorToggle(true);
         break;
 
       case "SELECT":
         onSelectMode(canvas);
-        setCurrTool("SELECT");
         break;
 
       case modes.ERASER:
         changeToErasingMode(canvas);
-        setCurrTool(modes.ERASER);
         break;
 
       case "CLEAR":
         clearCanvas(canvas);
-        setCurrTool("CLEAR");
         break;
     }
   };
 
-  var _useState8 = (0, _react.useState)(false),
-      openDraw = _useState8[0],
-      setOpenDraw = _useState8[1];
+  var _useState6 = (0, _react.useState)(false),
+      openDraw = _useState6[0],
+      setOpenDraw = _useState6[1];
 
-  var _useState9 = (0, _react.useState)(false),
-      openColor = _useState9[0],
-      setOpenColor = _useState9[1];
+  var _useState7 = (0, _react.useState)(false),
+      openThickness = _useState7[0],
+      setOpenThickness = _useState7[1];
+
+  var _useState8 = (0, _react.useState)(false),
+      openColor = _useState8[0],
+      setOpenColor = _useState8[1];
 
   return /*#__PURE__*/_react.default.createElement("div", {
     ref: whiteboardRef,
@@ -694,19 +678,55 @@ var Whiteboard = function Whiteboard(_ref9) {
     fileReaderInfo: fileReaderInfo,
     updateFileReaderInfo: updateFileReaderInfo
   })), /*#__PURE__*/_react.default.createElement("div", {
-    className: _indexModule.default.toolbarWithColor
+    className: _indexModule.default.toolbarWithColor,
+    style: {
+      backgroundColor: openDraw || openColor ? 'transparent' : 'white'
+    }
   }, /*#__PURE__*/_react.default.createElement("div", {
     className: _indexModule.default.toolbar
   }, /*#__PURE__*/_react.default.createElement(_material.Box, {
     style: {
       display: 'flex',
+      flexDirection: 'column-reverse',
+      maxHeight: openThickness ? '100%' : '50px',
+      backgroundColor: openThickness ? 'transparent' : 'white'
+    }
+  }, /*#__PURE__*/_react.default.createElement(_material.SpeedDial, {
+    open: false,
+    direction: "up",
+    ariaLabel: "SpeedDial openIcon example",
+    onClick: function onClick() {
+      return setOpenThickness(!openThickness);
+    },
+    icon: /*#__PURE__*/_react.default.createElement(_material.SpeedDialIcon, {
+      icon: /*#__PURE__*/_react.default.createElement(_material.Box, {
+        sx: {
+          display: "flex"
+        }
+      }, /*#__PURE__*/_react.default.createElement("img", {
+        src: _thickness.default
+      }))
+    })
+  }), /*#__PURE__*/_react.default.createElement(_Slider.default, {
+    changeHandler: function changeHandler(v) {
+      return changeCurrentWidth(v);
+    },
+    open: openThickness && !openDraw && !openColor,
+    value: options.currentWidth
+  })), /*#__PURE__*/_react.default.createElement(_material.Box, {
+    style: {
+      display: 'flex',
       alignItems: 'flex-end',
-      maxHeight: openDraw ? '100%' : '50px'
+      maxHeight: openDraw ? '100%' : '50px',
+      backgroundColor: !openDraw ? 'transparent' : 'white',
+      boxShadow: openDraw ? '0 0 10px #ccc' : 'none'
     }
   }, /*#__PURE__*/_react.default.createElement(_material.SpeedDial, {
     open: openDraw,
     onClick: function onClick() {
-      return setOpenDraw(!openDraw);
+      setOpenDraw(!openDraw);
+      setOpenColor(false);
+      setOpenThickness(false);
     },
     direction: "up",
     ariaLabel: "SpeedDial openIcon example",
@@ -720,6 +740,11 @@ var Whiteboard = function Whiteboard(_ref9) {
       }))
     })
   }, /*#__PURE__*/_react.default.createElement(_material.SpeedDialAction, {
+    FabProps: {
+      style: {
+        boxShadow: 'none'
+      }
+    },
     icon: /*#__PURE__*/_react.default.createElement(_HorizontalRule.default, {
       style: {
         rotate: '-45deg',
@@ -731,6 +756,11 @@ var Whiteboard = function Whiteboard(_ref9) {
       return toolbarCommander(modes.LINE, canvas);
     }
   }), /*#__PURE__*/_react.default.createElement(_material.SpeedDialAction, {
+    FabProps: {
+      style: {
+        boxShadow: 'none'
+      }
+    },
     icon: /*#__PURE__*/_react.default.createElement(_Crop.default, {
       style: {
         color: 'black'
@@ -741,6 +771,11 @@ var Whiteboard = function Whiteboard(_ref9) {
       return toolbarCommander(modes.RECTANGLE, canvas);
     }
   }), /*#__PURE__*/_react.default.createElement(_material.SpeedDialAction, {
+    FabProps: {
+      style: {
+        boxShadow: 'none'
+      }
+    },
     icon: /*#__PURE__*/_react.default.createElement(_RadioButtonUnchecked.default, {
       style: {
         color: 'black'
@@ -751,6 +786,11 @@ var Whiteboard = function Whiteboard(_ref9) {
       return toolbarCommander(modes.ELLIPSE, canvas);
     }
   }), /*#__PURE__*/_react.default.createElement(_material.SpeedDialAction, {
+    FabProps: {
+      style: {
+        boxShadow: 'none'
+      }
+    },
     icon: /*#__PURE__*/_react.default.createElement(_ChangeHistory.default, {
       style: {
         color: 'black'
@@ -761,6 +801,11 @@ var Whiteboard = function Whiteboard(_ref9) {
       return toolbarCommander(modes.TRIANGLE, canvas, options);
     }
   }), /*#__PURE__*/_react.default.createElement(_material.SpeedDialAction, {
+    FabProps: {
+      style: {
+        boxShadow: 'none'
+      }
+    },
     icon: /*#__PURE__*/_react.default.createElement(_Create.default, {
       style: {
         color: 'black'
@@ -771,6 +816,11 @@ var Whiteboard = function Whiteboard(_ref9) {
       return toolbarCommander(modes.PENCIL, canvas);
     }
   }), /*#__PURE__*/_react.default.createElement(_material.SpeedDialAction, {
+    FabProps: {
+      style: {
+        boxShadow: 'none'
+      }
+    },
     icon: /*#__PURE__*/_react.default.createElement(_TitleRounded.default, {
       style: {
         color: 'black'
@@ -784,12 +834,16 @@ var Whiteboard = function Whiteboard(_ref9) {
     style: {
       display: 'flex',
       alignItems: 'flex-end',
-      maxHeight: openColor ? '100%' : '50px'
+      maxHeight: openColor ? '100%' : '50px',
+      backgroundColor: !openColor ? 'transparent' : 'white',
+      boxShadow: openColor ? '0 0 10px #ccc' : 'none'
     }
   }, /*#__PURE__*/_react.default.createElement(_material.SpeedDial, {
     open: openColor,
     onClick: function onClick() {
-      return setOpenColor(!openColor);
+      setOpenColor(!openColor);
+      setOpenDraw(false);
+      setOpenThickness(false);
     },
     direction: "up",
     ariaLabel: "SpeedDial openIcon example",
@@ -811,6 +865,7 @@ var Whiteboard = function Whiteboard(_ref9) {
           boxShadow: currColor === col.color && "0 0 10px black"
         }
       },
+      className: "floating_buttons",
       tooltipTitle: col.title,
       onClick: function onClick() {
         changeCurrentColor(col.color);
@@ -836,7 +891,7 @@ var Whiteboard = function Whiteboard(_ref9) {
   }), /*#__PURE__*/_react.default.createElement(_material.SpeedDial, {
     open: false,
     onClick: function onClick() {
-      return undoCanvas(canvas, backUpCanvas);
+      return undoCanvas(canvas);
     },
     direction: "up",
     ariaLabel: "SpeedDial openIcon example",
@@ -868,6 +923,18 @@ var Whiteboard = function Whiteboard(_ref9) {
   }), /*#__PURE__*/_react.default.createElement("div", {
     className: _indexModule.default.upperToolBar
   }, /*#__PURE__*/_react.default.createElement("div", {
+    className: _indexModule.default.uploadDropdown
+  }, /*#__PURE__*/_react.default.createElement("input", {
+    ref: uploadPdfRef,
+    accept: ".pdf",
+    type: "file",
+    onChange: onFileChange
+  }), /*#__PURE__*/_react.default.createElement(_material.Button, {
+    onClick: function onClick() {
+      uploadPdfRef.current.click();
+      setPdfViewer(true);
+    }
+  }, /*#__PURE__*/_react.default.createElement(_PictureAsPdf.default, null))), /*#__PURE__*/_react.default.createElement("div", {
     className: _indexModule.default.upperToolBarFlex
   }, /*#__PURE__*/_react.default.createElement(_material.Button, null, /*#__PURE__*/_react.default.createElement(_material.Box, {
     sx: {

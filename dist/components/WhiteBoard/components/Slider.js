@@ -11,8 +11,6 @@ var _Box = _interopRequireDefault(require("@mui/material/Box"));
 
 var _Grid = _interopRequireDefault(require("@mui/material/Grid"));
 
-var _Typography = _interopRequireDefault(require("@mui/material/Typography"));
-
 var _Slider = _interopRequireDefault(require("@mui/material/Slider"));
 
 var _Input = _interopRequireDefault(require("@mui/material/Input"));
@@ -37,10 +35,8 @@ function InputSlider(props) {
       setValue = _React$useState[1];
 
   var handleSliderChange = function handleSliderChange(event, newValue) {
-    if (newValue > 5) {
-      setValue(newValue);
-      props == null ? void 0 : props.changeHandler(newValue);
-    }
+    setValue(newValue);
+    props == null ? void 0 : props.changeHandler(newValue);
   };
 
   var handleInputChange = function handleInputChange(event) {
@@ -58,28 +54,36 @@ function InputSlider(props) {
 
   return /*#__PURE__*/React.createElement(_Box.default, {
     sx: {
-      width: 250
+      width: 250,
+      marginBottom: "60px",
+      display: props != null && props.open ? "block" : "none",
+      boxShadow: open ? '0 0 10px #ccc' : 'none',
+      position: 'absolute',
+      zIndex: '999999999999',
+      paddingLeft: '5px',
+      paddingRight: '5px'
     }
   }, /*#__PURE__*/React.createElement(_Grid.default, {
     container: true,
     spacing: 2,
     alignItems: "center"
   }, /*#__PURE__*/React.createElement(_Grid.default, {
-    item: true
-  }, /*#__PURE__*/React.createElement(_LineWeight.default, null)), /*#__PURE__*/React.createElement(_Grid.default, {
     item: true,
     xs: true
   }, /*#__PURE__*/React.createElement(_Slider.default, {
     value: typeof value === 'number' ? value : props == null ? void 0 : props.min,
     onChange: handleSliderChange,
+    max: 20,
+    min: 5,
+    step: 1,
     "aria-labelledby": "input-slider"
   })), /*#__PURE__*/React.createElement(_Grid.default, {
     item: true
   }, /*#__PURE__*/React.createElement(Input, {
     value: value,
     size: "small",
+    "aria-orientation": "vertical",
     onChange: handleInputChange,
-    onBlur: handleBlur,
     inputProps: {
       step: 1,
       min: 5,
