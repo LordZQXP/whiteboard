@@ -434,8 +434,8 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
   useEffect(() => {
     if (!canvas && canvasRef.current) {
       const canvas = initCanvas(
-        2000,
-        2000 / aspectRatio,
+        whiteboardRef.current.clientWidth,
+        whiteboardRef.current.clientWidth / aspectRatio,
       );
       setCanvas(() => canvas);
       handleResize(resizeCanvas(canvas, whiteboardRef.current)).observe(whiteboardRef.current);
@@ -466,20 +466,27 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
           .then(imageBlob => {
             const imageObjectURL = URL.createObjectURL(imageBlob);
             fabric.Image.fromURL(imageObjectURL, (img) => {
-              // img.scaleToHeight(2000);
+              img.scaleToHeight(canvas.height);
               // img.scaleToWidth(2000);
               // img.evented = false;
               // img.selectable = false;
               // img.center().setCoords();
               // canvas.add(img);
               // canvas.centerObject(img); 
-              canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
-                scaleX: 2000 / img.width,
-                scaleY: 2000 / img.height,
-              });
-            });
+              canvas.setBackgroundImage(img);
           });
-      }
+
+
+        //   img.scaleToHeight(canvas.height);
+        // canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
+        //   top: center.top,
+        //   left: center.left,
+        //   originX: 'center',
+        //   originY: 'center',
+        // });
+        // canvas.renderAll();
+      })
+    }
     if (src && canvas) fetchImg();
   },[src, canvas])
 

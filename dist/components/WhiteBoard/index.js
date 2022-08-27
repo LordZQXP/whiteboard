@@ -532,7 +532,7 @@ var Whiteboard = function Whiteboard(_ref9) {
   var uploadPdfRef = (0, _react.useRef)(null);
   (0, _react.useEffect)(function () {
     if (!canvas && canvasRef.current) {
-      var _canvas = initCanvas(2000, 2000 / aspectRatio);
+      var _canvas = initCanvas(whiteboardRef.current.clientWidth, whiteboardRef.current.clientWidth / aspectRatio);
 
       setCanvas(function () {
         return _canvas;
@@ -570,18 +570,23 @@ var Whiteboard = function Whiteboard(_ref9) {
                   var imageObjectURL = URL.createObjectURL(imageBlob);
 
                   _fabric.fabric.Image.fromURL(imageObjectURL, function (img) {
-                    // img.scaleToHeight(2000);
-                    // img.scaleToWidth(2000);
+                    img.scaleToHeight(canvas.height); // img.scaleToWidth(2000);
                     // img.evented = false;
                     // img.selectable = false;
                     // img.center().setCoords();
                     // canvas.add(img);
                     // canvas.centerObject(img); 
-                    canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
-                      scaleX: 2000 / img.width,
-                      scaleY: 2000 / img.height
-                    });
-                  });
+
+                    canvas.setBackgroundImage(img);
+                  }); //   img.scaleToHeight(canvas.height);
+                  // canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
+                  //   top: center.top,
+                  //   left: center.left,
+                  //   originX: 'center',
+                  //   originY: 'center',
+                  // });
+                  // canvas.renderAll();
+
                 });
 
               case 2:
