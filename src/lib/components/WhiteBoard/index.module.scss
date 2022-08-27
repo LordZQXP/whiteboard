@@ -7,6 +7,8 @@
     border: 1px solid rgb(165, 165, 165);
     border-radius: 3px;
     margin-top: 60px;
+    min-height: 1000px !important;
+    min-width: 1000px !important;
   }
 
   button {
@@ -63,10 +65,8 @@
 }
 
 .nextFixedButton{
-  position: relative; 
-  width: 90vw;
+  position: fixed; 
   padding-bottom: 80px;
-  padding-right: 10vw;
   bottom: 0;
   left: 0;
   z-index: 1000;

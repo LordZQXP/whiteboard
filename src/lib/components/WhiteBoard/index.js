@@ -29,8 +29,6 @@ import SpeedDial from '@mui/material/SpeedDial';
 import SpeedDialAction from '@mui/material/SpeedDialAction';
 import SpeedDialIcon from '@mui/material/SpeedDialIcon';
 import {saveAs} from 'file-saver';
-
-
 import InputSlider from './components/Slider';
 let drawInstance = null;
 let origX;
@@ -374,6 +372,12 @@ function clearCanvas(canvas) {
   });
 }
 
+function clearCanvasNextPage(canvas) {
+  canvas.getObjects().forEach((item) => {
+      canvas.remove(item);
+  });
+}
+
 function draw(canvas) {
   if (options.currentMode !== modes.PENCIL) {
     removeCanvasListener(canvas);
@@ -404,7 +408,7 @@ function resizeCanvas(canvas, whiteboard) {
   };
 }
 
-const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = null }) => {
+const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undefined, json }) => {
   const [currColor, setCurrColor] = useState(color[0]?.color);
   const [canvas, setCanvas] = useState(null);
   const [brushWidth, setBrushWidth] = useState(5);
@@ -430,8 +434,8 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = null 
   useEffect(() => {
     if (!canvas && canvasRef.current) {
       const canvas = initCanvas(
-        whiteboardRef.current.clientWidth,
-        whiteboardRef.current.clientWidth / aspectRatio,
+        2000,
+        2000 / aspectRatio,
       );
       setCanvas(() => canvas);
       handleResize(resizeCanvas(canvas, whiteboardRef.current)).observe(whiteboardRef.current);
@@ -456,22 +460,43 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = null 
 
   useEffect(()=>{
       const fetchImg = async()=>{
-      // canvas.loadFromJSON(src);
-      // let source = "https://i.postimg.cc/x83xVfnY/page.png";
-      clearCanvas(canvas);
+        clearCanvasNextPage(canvas);
         fetch(src)
           .then(response => response.blob())
           .then(imageBlob => {
             const imageObjectURL = URL.createObjectURL(imageBlob);
             fabric.Image.fromURL(imageObjectURL, (img) => {
-              img.scaleToHeight(canvas.height);
-              canvas.add(img);
-              canvas.centerObject(img);
+              // img.scaleToHeight(2000);
+              // img.scaleToWidth(2000);
+              // img.evented = false;
+              // img.selectable = false;
+              // img.center().setCoords();
+              // canvas.add(img);
+              // canvas.centerObject(img); 
+              canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
+                scaleX: 2000 / img.width,
+                scaleY: 2000 / img.height,
+              });
             });
           });
       }
     if (src && canvas) fetchImg();
   },[src, canvas])
+
+
+
+  useEffect(() => {
+    const fetchImg = async () => {
+      clearCanvas(canvas);
+      canvas.loadFromJSON(json, canvas.renderAll.bind(canvas), function (o, object) {
+        object.set('selectable', false);
+        object.set('evented' , false);
+      });
+
+    }
+    if (json && canvas) fetchImg();
+  }, [json, canvas])
+
 
   function changeCurrentWidth(value) {
     const intValue = parseInt(value);
@@ -504,14 +529,13 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = null 
   function nextPage(canvas) {
     backUpCanvas="";
     setCanvasPage({...canvasPage, [index] : canvas.toJSON()});
-    console.log(canvas.toJSON());
     canvasRef.current.toBlob(function (blob) {
         setPages({...pages, [index] : blob});
       });
     if(canvasPage[index+1] !== undefined)
     canvas.loadFromJSON(canvasPage[index+1]);
     else
-    clearCanvas(canvas);
+    clearCanvasNextPage(canvas);
     setIndex(index+1);
   }
 
@@ -535,7 +559,7 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = null 
   function undoCanvas(canvas) {
     let length = canvas.getObjects().length - 1;
     backUpCanvas = (canvas.toJSON());
-    if (canvas.getObjects()[length] !== canvas.backgroundImage) {
+    if ((canvas.getObjects()[length] !== canvas.backgroundImage) || (canvas.getObjects()[length] !== canvas.Image) ) {
       canvas.remove(canvas.getObjects()[length]);
     }
   }
@@ -601,7 +625,7 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = null 
       <canvas ref={canvasRef} id="canvas" />
       <div>
       <div>
-          {!pdfViewer && <div className={styles.nextFixedButton}> <Button className={styles.floatingButtonsNextPrev} onClick={() => previousPage(canvas)}><ArrowBackIosNewIcon className={styles.blackIcon} /></Button> <Button className={styles.floatingButtonsNextPrev} onClick={() => nextPage(canvas)}><ArrowForwardIosIcon className={styles.blackIcon} /></Button> </div>}
+          { !src && <div className={styles.nextFixedButton}> <Button className={styles.floatingButtonsNextPrev} onClick={() => previousPage(canvas)}><ArrowBackIosNewIcon className={styles.blackIcon} /></Button> <Button className={styles.floatingButtonsNextPrev} onClick={() => nextPage(canvas)}><ArrowForwardIosIcon className={styles.blackIcon} /></Button> </div>}
       </div>
         {pdfViewer && <PdfReader savePage={() => nextPage(canvas)} fileReaderInfo={fileReaderInfo} updateFileReaderInfo={updateFileReaderInfo} />}
       </div>
@@ -774,7 +798,8 @@ Whiteboard.propTypes = {
   setFiles: PropTypes.any,
   color: PropTypes.any,
   setJSON : PropTypes.any,
-  src : PropTypes.any
+  src : PropTypes.any,
+  json : PropTypes.any
 };
 
 export default Whiteboard;
