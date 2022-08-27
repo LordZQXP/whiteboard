@@ -570,23 +570,16 @@ var Whiteboard = function Whiteboard(_ref9) {
                   var imageObjectURL = URL.createObjectURL(imageBlob);
 
                   _fabric.fabric.Image.fromURL(imageObjectURL, function (img) {
-                    img.scaleToHeight(canvas.height); // img.scaleToWidth(2000);
-                    // img.evented = false;
-                    // img.selectable = false;
-                    // img.center().setCoords();
-                    // canvas.add(img);
-                    // canvas.centerObject(img); 
+                    img.scaleToHeight(window.innerWidth > 500 ? window.innerWidth : 360);
+                    img.scaleToWidth(window.innerWidth > 500 ? window.innerHeight - 150 > 1000 ? 900 : window.innerHeight - 150 : 360);
+                    img.evented = false;
+                    img.selectable = false;
+                    img.center().setCoords(); // canvas.add(img);
 
+                    canvas.centerObject(img);
                     canvas.setBackgroundImage(img);
-                  }); //   img.scaleToHeight(canvas.height);
-                  // canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
-                  //   top: center.top,
-                  //   left: center.left,
-                  //   originX: 'center',
-                  //   originY: 'center',
-                  // });
-                  // canvas.renderAll();
-
+                    canvas.setBackgroundColor("#fff");
+                  });
                 });
 
               case 2:

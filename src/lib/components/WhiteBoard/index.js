@@ -466,25 +466,16 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
           .then(imageBlob => {
             const imageObjectURL = URL.createObjectURL(imageBlob);
             fabric.Image.fromURL(imageObjectURL, (img) => {
-              img.scaleToHeight(canvas.height);
-              // img.scaleToWidth(2000);
-              // img.evented = false;
-              // img.selectable = false;
-              // img.center().setCoords();
+              img.scaleToHeight(window.innerWidth > 500 ? window.innerWidth : 360);
+              img.scaleToWidth(window.innerWidth > 500 ? window.innerHeight - 150 > 1000 ? 900 : window.innerHeight - 150 : 360);
+              img.evented = false;
+              img.selectable = false;
+              img.center().setCoords();
               // canvas.add(img);
-              // canvas.centerObject(img); 
+              canvas.centerObject(img); 
               canvas.setBackgroundImage(img);
+              canvas.setBackgroundColor("#fff");
           });
-
-
-        //   img.scaleToHeight(canvas.height);
-        // canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
-        //   top: center.top,
-        //   left: center.left,
-        //   originX: 'center',
-        //   originY: 'center',
-        // });
-        // canvas.renderAll();
       })
     }
     if (src && canvas) fetchImg();
