@@ -67,6 +67,10 @@ var _fileSaver = require("file-saver");
 
 var _Slider = _interopRequireDefault(require("./components/Slider"));
 
+var _Add = _interopRequireDefault(require("@mui/icons-material/Add"));
+
+var _Remove = _interopRequireDefault(require("@mui/icons-material/Remove"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
@@ -92,7 +96,8 @@ var options = {
   fill: false,
   group: {}
 };
-var backUpCanvas = "";
+var backUpCanvas = [];
+var backupIndex = 0;
 var modes = {
   RECTANGLE: 'RECTANGLE',
   TRIANGLE: 'TRIANGLE',
@@ -125,9 +130,8 @@ var initCanvas = function initCanvas(width, height) {
 
 function removeObject(canvas) {
   return function (e) {
-    backUpCanvas = canvas.toJSON();
-
     if (options.currentMode === modes.ERASER) {
+      pushToBackUp(canvas);
       canvas.remove(e.target);
     }
   };
@@ -423,6 +427,10 @@ function changeToErasingMode(canvas) {
   }
 }
 
+function canvasObjectsSize(canvas) {
+  return canvas.getObjects().length;
+}
+
 function onSelectMode(canvas) {
   options.currentMode = '';
   canvas.isDrawingMode = false;
@@ -449,6 +457,19 @@ function clearCanvasNextPage(canvas) {
   });
 }
 
+function pushToBackUp(canvas) {
+  if (canvasObjectsSize(canvas) === 0) return;
+  backUpCanvas[backupIndex] = canvas.toJSON();
+  backupIndex++;
+}
+
+function popFromBackUp() {
+  if (backupIndex - 1 >= 0) {
+    backupIndex--;
+    return backUpCanvas[backupIndex];
+  }
+}
+
 function draw(canvas) {
   if (options.currentMode !== modes.PENCIL) {
     removeCanvasListener(canvas);
@@ -471,6 +492,20 @@ function resizeCanvas(canvas, whiteboard) {
     var whiteboardWidth = whiteboard.clientWidth;
     var scale = whiteboardWidth / canvas.getWidth();
     var zoom = canvas.getZoom() * scale;
+    canvas.setDimensions({
+      width: whiteboardWidth,
+      height: whiteboardWidth / ratio
+    });
+    canvas.setViewportTransform([zoom, 0, 0, zoom, 0, 0]);
+  };
+}
+
+function zoomCanvas(canvas, whiteboard, zoomValue) {
+  return function () {
+    console.log(zoomValue);
+    var ratio = canvas.getWidth() / canvas.getHeight();
+    var whiteboardWidth = whiteboard.clientWidth;
+    var zoom = canvas.getZoom() * zoomValue;
     canvas.setDimensions({
       width: whiteboardWidth,
       height: whiteboardWidth / ratio
@@ -515,14 +550,18 @@ var Whiteboard = function Whiteboard(_ref9) {
       index = _useState6[0],
       setIndex = _useState6[1];
 
-  var _useState7 = (0, _react.useState)({
+  var _useState7 = (0, _react.useState)(1),
+      zoomValue = _useState7[0],
+      setZoomValue = _useState7[1];
+
+  var _useState8 = (0, _react.useState)({
     file: '',
     totalPages: null,
     currentPageNumber: 1,
     currentPage: ''
   }),
-      fileReaderInfo = _useState7[0],
-      setFileReaderInfo = _useState7[1];
+      fileReaderInfo = _useState8[0],
+      setFileReaderInfo = _useState8[1];
 
   (0, _react.useEffect)(function () {
     options.currentColor = currColor;
@@ -641,6 +680,24 @@ var Whiteboard = function Whiteboard(_ref9) {
     setCurrColor(e);
   }
 
+  var intervalRef = _react.default.useRef(null);
+
+  function zoomIn(value) {
+    var center = canvas.getCenter();
+    var centerPoint = new _fabric.fabric.Point(center.left, center.top);
+    canvas.zoomToPoint(centerPoint, value + 0.01);
+    setZoomValue(value + 0.01);
+    canvas.requestRenderAll();
+  }
+
+  function zoomOut(value) {
+    var center = canvas.getCenter();
+    var centerPoint = new _fabric.fabric.Point(center.left, center.top);
+    canvas.zoomToPoint(centerPoint, value - 0.01);
+    setZoomValue(value - 0.01);
+    canvas.requestRenderAll();
+  }
+
   function onSaveCanvasAsImage() {
     var _extends4;
 
@@ -667,7 +724,7 @@ var Whiteboard = function Whiteboard(_ref9) {
   function nextPage(canvas) {
     var _extends5;
 
-    backUpCanvas = "";
+    backUpCanvas = [];
     setCanvasPage(_extends({}, canvasPage, (_extends5 = {}, _extends5[index] = canvas.toJSON(), _extends5)));
     canvasRef.current.toBlob(function (blob) {
       var _extends6;
@@ -681,7 +738,7 @@ var Whiteboard = function Whiteboard(_ref9) {
   function previousPage(canvas) {
     var _extends7;
 
-    backUpCanvas = "";
+    backUpCanvas = [];
 
     if (index - 1 < 0) {
       return;
@@ -697,13 +754,14 @@ var Whiteboard = function Whiteboard(_ref9) {
     setIndex(index - 1);
   }
 
-  function redoAll() {
-    canvas.loadFromJSON(backUpCanvas);
+  function redoCanvas() {
+    if (backupIndex - 1 < 0) return;
+    canvas.loadFromJSON(popFromBackUp(canvas));
   }
 
   function undoCanvas(canvas) {
-    var length = canvas.getObjects().length - 1;
-    backUpCanvas = canvas.toJSON();
+    var length = canvasObjectsSize(canvas) - 1;
+    pushToBackUp(canvas);
 
     if (canvas.getObjects()[length] !== canvas.backgroundImage || canvas.getObjects()[length] !== canvas.Image) {
       canvas.remove(canvas.getObjects()[length]);
@@ -767,17 +825,31 @@ var Whiteboard = function Whiteboard(_ref9) {
     }
   };
 
-  var _useState8 = (0, _react.useState)(false),
-      openDraw = _useState8[0],
-      setOpenDraw = _useState8[1];
-
   var _useState9 = (0, _react.useState)(false),
-      openThickness = _useState9[0],
-      setOpenThickness = _useState9[1];
+      openDraw = _useState9[0],
+      setOpenDraw = _useState9[1];
 
   var _useState10 = (0, _react.useState)(false),
-      openColor = _useState10[0],
-      setOpenColor = _useState10[1];
+      openThickness = _useState10[0],
+      setOpenThickness = _useState10[1];
+
+  var _useState11 = (0, _react.useState)(false),
+      openColor = _useState11[0],
+      setOpenColor = _useState11[1];
+
+  var startCounter = function startCounter(zoom) {
+    var value = zoomValue;
+    intervalRef.current = setInterval(function () {
+      if (zoom === "in") zoomIn(value += 0.01);else zoomOut(value -= 0.01);
+    }, 10);
+  };
+
+  var stopCounter = function stopCounter() {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  };
 
   return /*#__PURE__*/_react.default.createElement("div", {
     ref: whiteboardRef,
@@ -788,20 +860,42 @@ var Whiteboard = function Whiteboard(_ref9) {
   }), /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("div", null, !src && /*#__PURE__*/_react.default.createElement("div", {
     className: _indexModule.default.nextFixedButton
   }, " ", /*#__PURE__*/_react.default.createElement(_Button.default, {
-    className: _indexModule.default.floatingButtonsNextPrev,
+    className: _indexModule.default.floatingButtonsZoom,
     onClick: function onClick() {
       return previousPage(canvas);
     }
   }, /*#__PURE__*/_react.default.createElement(_ArrowBackIosNew.default, {
     className: _indexModule.default.blackIcon
   })), " ", /*#__PURE__*/_react.default.createElement(_Button.default, {
-    className: _indexModule.default.floatingButtonsNextPrev,
+    className: _indexModule.default.floatingButtonsZoom,
     onClick: function onClick() {
       return nextPage(canvas);
     }
   }, /*#__PURE__*/_react.default.createElement(_ArrowForwardIos.default, {
     className: _indexModule.default.blackIcon
-  })), " ")), pdfViewer && /*#__PURE__*/_react.default.createElement(_PdfReader.default, {
+  })), " "), /*#__PURE__*/_react.default.createElement("div", {
+    className: _indexModule.default.zoomFixedButton
+  }, " ", /*#__PURE__*/_react.default.createElement(_Button.default, {
+    className: _indexModule.default.floatingButtonsZoom,
+    onMouseDown: function onMouseDown() {
+      return startCounter("out");
+    },
+    onMouseUp: stopCounter,
+    onMouseLeave: stopCounter,
+    onClick: function onClick() {
+      return zoomOut(zoomValue - .01);
+    }
+  }, /*#__PURE__*/_react.default.createElement(_Remove.default, null)), (zoomValue * 100).toFixed(0), "%", /*#__PURE__*/_react.default.createElement(_Button.default, {
+    onMouseDown: function onMouseDown() {
+      return startCounter("in");
+    },
+    onMouseUp: stopCounter,
+    onClick: function onClick() {
+      return zoomIn(zoomValue + .01);
+    },
+    className: _indexModule.default.floatingButtonsZoom,
+    onMouseLeave: stopCounter
+  }, /*#__PURE__*/_react.default.createElement(_Add.default, null)), " ")), pdfViewer && /*#__PURE__*/_react.default.createElement(_PdfReader.default, {
     savePage: function savePage() {
       return nextPage(canvas);
     },
@@ -810,7 +904,7 @@ var Whiteboard = function Whiteboard(_ref9) {
   })), /*#__PURE__*/_react.default.createElement("div", {
     className: _indexModule.default.toolbarWithColor,
     style: {
-      backgroundColor: openDraw || openColor ? 'transparent' : 'white'
+      backgroundColor: 'transparent'
     }
   }, /*#__PURE__*/_react.default.createElement("div", {
     className: _indexModule.default.toolbar
@@ -997,7 +1091,7 @@ var Whiteboard = function Whiteboard(_ref9) {
   }), /*#__PURE__*/_react.default.createElement(_SpeedDial.default, {
     open: false,
     onClick: function onClick() {
-      return redoAll(canvas);
+      return redoCanvas(canvas);
     },
     direction: "up",
     icon: /*#__PURE__*/_react.default.createElement(_SpeedDialIcon.default, {

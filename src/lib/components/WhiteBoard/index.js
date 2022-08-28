@@ -30,6 +30,9 @@ import SpeedDialAction from '@mui/material/SpeedDialAction';
 import SpeedDialIcon from '@mui/material/SpeedDialIcon';
 import {saveAs} from 'file-saver';
 import InputSlider from './components/Slider';
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
+
 let drawInstance = null;
 let origX;
 let origY;
@@ -43,7 +46,9 @@ const options = {
   group: {},
 };
 
-let backUpCanvas = "";
+let backUpCanvas = [];
+let backupIndex = 0;
+
 
 const modes = {
   RECTANGLE: 'RECTANGLE',
@@ -76,8 +81,8 @@ const initCanvas = (width, height) => {
 
 function removeObject(canvas) {
   return (e) => {
-    backUpCanvas = canvas.toJSON();
     if (options.currentMode === modes.ERASER) {
+      pushToBackUp(canvas);
       canvas.remove(e.target);
     }
   };
@@ -354,6 +359,10 @@ function changeToErasingMode(canvas) {
   }
 }
 
+function canvasObjectsSize(canvas){
+  return canvas.getObjects().length;
+}
+
 function onSelectMode(canvas) {
   options.currentMode = '';
   canvas.isDrawingMode = false;
@@ -376,6 +385,20 @@ function clearCanvasNextPage(canvas) {
   canvas.getObjects().forEach((item) => {
       canvas.remove(item);
   });
+}
+
+function pushToBackUp(canvas){
+  if (canvasObjectsSize(canvas) === 0)
+    return;
+  backUpCanvas[backupIndex] = (canvas.toJSON());
+  backupIndex++;
+}
+
+function popFromBackUp(){
+  if(backupIndex - 1 >=0){
+  backupIndex--;
+  return (backUpCanvas[backupIndex]);
+  }
 }
 
 function draw(canvas) {
@@ -408,6 +431,18 @@ function resizeCanvas(canvas, whiteboard) {
   };
 }
 
+function zoomCanvas (canvas, whiteboard, zoomValue){
+  return () => {
+    console.log(zoomValue);
+    const ratio = canvas.getWidth() / canvas.getHeight();
+    const whiteboardWidth = whiteboard.clientWidth;
+
+    const zoom = canvas.getZoom() * zoomValue;
+    canvas.setDimensions({ width: whiteboardWidth, height: whiteboardWidth / ratio });
+    canvas.setViewportTransform([zoom, 0, 0, zoom, 0, 0]);
+  };
+}
+
 const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undefined, json }) => {
   const [currColor, setCurrColor] = useState(color[0]?.color);
   const [canvas, setCanvas] = useState(null);
@@ -415,6 +450,7 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
   const [pages, setPages] = useState({});
   const [canvasPage, setCanvasPage] = useState([]);
   const [index, setIndex] = useState(0);
+  const [zoomValue, setZoomValue] = useState(1);
 
   const [fileReaderInfo, setFileReaderInfo] = useState({
     file: '',
@@ -509,6 +545,29 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
     setCurrColor(e);
   }
 
+  const intervalRef = React.useRef(null);
+
+  function zoomIn(value){
+    const center = canvas.getCenter();
+
+    const centerPoint = new fabric.Point(center.left, center.top);
+
+    canvas.zoomToPoint(centerPoint, value+0.01);
+    setZoomValue(value + 0.01);
+
+    canvas.requestRenderAll();
+  }
+  function zoomOut(value) {
+    const center = canvas.getCenter();
+
+    const centerPoint = new fabric.Point(center.left, center.top);
+
+    canvas.zoomToPoint(centerPoint, value - 0.01);
+    setZoomValue(value - 0.01);
+
+    canvas.requestRenderAll();
+  }
+
   function onSaveCanvasAsImage() {
     if(src){
       var imageURI = canvas.toDataURL("image/jpg");
@@ -525,7 +584,7 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
   }
 
   function nextPage(canvas) {
-    backUpCanvas="";
+    backUpCanvas=[];
     setCanvasPage({...canvasPage, [index] : canvas.toJSON()});
     canvasRef.current.toBlob(function (blob) {
         setPages({...pages, [index] : blob});
@@ -538,7 +597,7 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
   }
 
   function previousPage(canvas){
-    backUpCanvas = "";
+    backUpCanvas = [];
     if(index - 1 <0){
       return;
     }
@@ -550,13 +609,15 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
     setIndex(index - 1);
   }
 
-  function redoAll() {
-    canvas.loadFromJSON(backUpCanvas);
+  function redoCanvas() {
+    if(backupIndex - 1 <0)
+      return;
+    canvas.loadFromJSON(popFromBackUp(canvas));
   }
 
   function undoCanvas(canvas) {
-    let length = canvas.getObjects().length - 1;
-    backUpCanvas = (canvas.toJSON());
+    let length = canvasObjectsSize(canvas) - 1;
+    pushToBackUp(canvas);
     if ((canvas.getObjects()[length] !== canvas.backgroundImage) || (canvas.getObjects()[length] !== canvas.Image) ) {
       canvas.remove(canvas.getObjects()[length]);
     }
@@ -618,16 +679,36 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
   const [openColor, setOpenColor] = useState(false);
 
 
+  const startCounter = (zoom) => {
+    let value = zoomValue;
+    intervalRef.current = setInterval(()=>{
+      if(zoom === "in")
+      zoomIn(value+=0.01);
+      else
+      zoomOut(value-=0.01);
+    }, 10);
+  };
+
+  const stopCounter = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  };
+
+
   return (
     <div ref={whiteboardRef} className={styles.whiteboard}>
       <canvas ref={canvasRef} id="canvas" />
       <div>
       <div>
-          { !src && <div className={styles.nextFixedButton}> <Button className={styles.floatingButtonsNextPrev} onClick={() => previousPage(canvas)}><ArrowBackIosNewIcon className={styles.blackIcon} /></Button> <Button className={styles.floatingButtonsNextPrev} onClick={() => nextPage(canvas)}><ArrowForwardIosIcon className={styles.blackIcon} /></Button> </div>}
+          {!src && <div className={styles.nextFixedButton}> <Button className={styles.floatingButtonsZoom} onClick={() => previousPage(canvas)}><ArrowBackIosNewIcon className={styles.blackIcon} /></Button> <Button className={styles.floatingButtonsZoom} onClick={() => nextPage(canvas)}><ArrowForwardIosIcon className={styles.blackIcon} /></Button> </div>}
+          {<div className={styles.zoomFixedButton}> <Button className={styles.floatingButtonsZoom} onMouseDown={() => startCounter("out")} onMouseUp={stopCounter} onMouseLeave={stopCounter} onClick={() => zoomOut(zoomValue - .01)}><RemoveIcon/></Button>{(zoomValue*100).toFixed(0)}%<Button onMouseDown={() => startCounter("in")} onMouseUp={stopCounter} onClick={() => zoomIn(zoomValue + .01)} className={styles.floatingButtonsZoom} onMouseLeave={stopCounter}><AddIcon/></Button> </div>}
+
       </div>
         {pdfViewer && <PdfReader savePage={() => nextPage(canvas)} fileReaderInfo={fileReaderInfo} updateFileReaderInfo={updateFileReaderInfo} />}
       </div>
-      <div className={styles.toolbarWithColor} style={{ backgroundColor: (openDraw || openColor) ? 'transparent' : 'white'}}>
+      <div className={styles.toolbarWithColor} style={{ backgroundColor: 'transparent'}}>
         <div className={styles.toolbar}>
           <Box className={openThickness ? styles.speeddialDivOpen : styles.speeddialDivClose}>
           <SpeedDial
@@ -761,7 +842,7 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
           />
           <SpeedDial
             open={false}
-            onClick={() => redoAll(canvas)}
+            onClick={() => redoCanvas(canvas)}
             direction='up'
             icon={<SpeedDialIcon icon={<Box className={styles.flexDiv}>
               <img src={RotateRight} />
