@@ -77,7 +77,7 @@ const App = () => {
   return (
     <div className={styles.app}>
       <main>
-        <Whiteboard aspectRatio={width/(height-120)} setFiles={setFiles} color={color} setJSON={setCanvasJSON} src={number % 2 === 0 && source} />
+        <Whiteboard aspectRatio={width/(height-150)} setFiles={setFiles} color={color} setJSON={setCanvasJSON} src={number % 2 === 0 && source} />
       </main>
     </div>
   );

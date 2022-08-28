@@ -32,6 +32,7 @@ import {saveAs} from 'file-saver';
 import InputSlider from './components/Slider';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
+import PageviewOutlinedIcon from '@mui/icons-material/PageviewOutlined';
 
 let drawInstance = null;
 let origX;
@@ -558,6 +559,8 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
     canvas.requestRenderAll();
   }
   function zoomOut(value) {
+    if(value <=0.01)
+    return;
     const center = canvas.getCenter();
 
     const centerPoint = new fabric.Point(center.left, center.top);
@@ -696,6 +699,8 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
     }
   };
 
+  const [zoomToggle, setZoomToggle] = useState(false);
+
 
   return (
     <div ref={whiteboardRef} className={styles.whiteboard}>
@@ -703,7 +708,14 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
       <div>
       <div>
           {!src && <div className={styles.nextFixedButton}> <Button className={styles.floatingButtonsZoom} onClick={() => previousPage(canvas)}><ArrowBackIosNewIcon className={styles.blackIcon} /></Button> <Button className={styles.floatingButtonsZoom} onClick={() => nextPage(canvas)}><ArrowForwardIosIcon className={styles.blackIcon} /></Button> </div>}
-          {<div className={styles.zoomFixedButton}> <Button className={styles.floatingButtonsZoom} onMouseDown={() => startCounter("out")} onMouseUp={stopCounter} onMouseLeave={stopCounter} onClick={() => zoomOut(zoomValue - .01)}><RemoveIcon/></Button>{(zoomValue*100).toFixed(0)}%<Button onMouseDown={() => startCounter("in")} onMouseUp={stopCounter} onClick={() => zoomIn(zoomValue + .01)} className={styles.floatingButtonsZoom} onMouseLeave={stopCounter}><AddIcon/></Button> </div>}
+          <div className={styles.zoomFixedButton}>
+              <Button onClick={() => setZoomToggle(!zoomToggle)}>
+                <PageviewOutlinedIcon />
+                </Button>
+              <div style={{display: zoomToggle ? 'flex' : 'none', flexDirection:'column-reverse', alignItems:'center' }}> 
+              <Button className={styles.floatingButtonsZoom} onMouseDown={() => startCounter("out")} onMouseUp={stopCounter} onMouseLeave={stopCounter} onClick={() => zoomOut(zoomValue - .01)}><RemoveIcon /></Button>{(zoomValue * 100).toFixed(0)}%<Button onMouseDown={() => startCounter("in")} onMouseUp={stopCounter} onClick={() => zoomIn(zoomValue + .01)} className={styles.floatingButtonsZoom} onMouseLeave={stopCounter}><AddIcon /></Button> 
+            </div>
+            </div>
 
       </div>
         {pdfViewer && <PdfReader savePage={() => nextPage(canvas)} fileReaderInfo={fileReaderInfo} updateFileReaderInfo={updateFileReaderInfo} />}
