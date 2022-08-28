@@ -71,6 +71,8 @@ var _Add = _interopRequireDefault(require("@mui/icons-material/Add"));
 
 var _Remove = _interopRequireDefault(require("@mui/icons-material/Remove"));
 
+var _PageviewOutlined = _interopRequireDefault(require("@mui/icons-material/PageviewOutlined"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
@@ -691,6 +693,7 @@ var Whiteboard = function Whiteboard(_ref9) {
   }
 
   function zoomOut(value) {
+    if (value <= 0.01) return;
     var center = canvas.getCenter();
     var centerPoint = new _fabric.fabric.Point(center.left, center.top);
     canvas.zoomToPoint(centerPoint, value - 0.01);
@@ -851,6 +854,10 @@ var Whiteboard = function Whiteboard(_ref9) {
     }
   };
 
+  var _useState12 = (0, _react.useState)(false),
+      zoomToggle = _useState12[0],
+      setZoomToggle = _useState12[1];
+
   return /*#__PURE__*/_react.default.createElement("div", {
     ref: whiteboardRef,
     className: _indexModule.default.whiteboard
@@ -875,7 +882,17 @@ var Whiteboard = function Whiteboard(_ref9) {
     className: _indexModule.default.blackIcon
   })), " "), /*#__PURE__*/_react.default.createElement("div", {
     className: _indexModule.default.zoomFixedButton
-  }, " ", /*#__PURE__*/_react.default.createElement(_Button.default, {
+  }, /*#__PURE__*/_react.default.createElement(_Button.default, {
+    onClick: function onClick() {
+      return setZoomToggle(!zoomToggle);
+    }
+  }, /*#__PURE__*/_react.default.createElement(_PageviewOutlined.default, null)), /*#__PURE__*/_react.default.createElement("div", {
+    style: {
+      display: zoomToggle ? 'flex' : 'none',
+      flexDirection: 'column-reverse',
+      alignItems: 'center'
+    }
+  }, /*#__PURE__*/_react.default.createElement(_Button.default, {
     className: _indexModule.default.floatingButtonsZoom,
     onMouseDown: function onMouseDown() {
       return startCounter("out");
@@ -895,7 +912,7 @@ var Whiteboard = function Whiteboard(_ref9) {
     },
     className: _indexModule.default.floatingButtonsZoom,
     onMouseLeave: stopCounter
-  }, /*#__PURE__*/_react.default.createElement(_Add.default, null)), " ")), pdfViewer && /*#__PURE__*/_react.default.createElement(_PdfReader.default, {
+  }, /*#__PURE__*/_react.default.createElement(_Add.default, null))))), pdfViewer && /*#__PURE__*/_react.default.createElement(_PdfReader.default, {
     savePage: function savePage() {
       return nextPage(canvas);
     },
