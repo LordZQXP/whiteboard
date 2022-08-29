@@ -528,7 +528,8 @@ var Whiteboard = function Whiteboard(_ref9) {
       _ref9$src = _ref9.src,
       src = _ref9$src === void 0 ? undefined : _ref9$src,
       json = _ref9.json,
-      pdfUrl = _ref9.pdfUrl;
+      pdfUrl = _ref9.pdfUrl,
+      resend = _ref9.resend;
 
   var _useState = (0, _react.useState)((_color$ = color[0]) == null ? void 0 : _color$.color),
       currColor = _useState[0],
@@ -1144,7 +1145,7 @@ var Whiteboard = function Whiteboard(_ref9) {
     }
   }, /*#__PURE__*/_react.default.createElement("img", {
     src: _Group4.default
-  }))), /*#__PURE__*/_react.default.createElement(_Button.default, null, /*#__PURE__*/_react.default.createElement(_Box.default, {
+  }))), resend && /*#__PURE__*/_react.default.createElement(_Button.default, null, /*#__PURE__*/_react.default.createElement(_Box.default, {
     className: _indexModule.default.flexDiv
   }, /*#__PURE__*/_react.default.createElement("img", {
     src: _Group2.default
@@ -1164,7 +1165,8 @@ Whiteboard.propTypes = {
   setJSON: _propTypes.default.any,
   src: _propTypes.default.any,
   json: _propTypes.default.any,
-  pdfUrl: _propTypes.default.any
+  pdfUrl: _propTypes.default.any,
+  resend: _propTypes.default.any
 };
 var _default = Whiteboard;
 exports.default = _default;

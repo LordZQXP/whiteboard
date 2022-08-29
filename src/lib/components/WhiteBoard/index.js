@@ -444,7 +444,7 @@ function zoomCanvas (canvas, whiteboard, zoomValue){
   };
 }
 
-const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undefined, json, pdfUrl }) => {
+const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undefined, json, pdfUrl, resend }) => {
   const [currColor, setCurrColor] = useState(color[0]?.color);
   const [canvas, setCanvas] = useState(null);
   const [brushWidth, setBrushWidth] = useState(5);
@@ -869,9 +869,9 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
               <Button><Box className={styles.flexDiv} onClick={() => setPdfViewer(false)}>
                 <img src={canvasIcon} />
               </Box></Button>}
-            <Button><Box className={styles.flexDiv}>
+            {resend && <Button><Box className={styles.flexDiv}>
               <img src={sendTostudent} />
-            </Box></Button>
+            </Box></Button>}
             <Button onClick={onSaveCanvasAsImage}><Box className={styles.flexDiv}>
               <img src={submit} />
             </Box></Button>
@@ -890,7 +890,8 @@ Whiteboard.propTypes = {
   setJSON : PropTypes.any,
   src : PropTypes.any,
   json : PropTypes.any,
-  pdfUrl: PropTypes.any
+  pdfUrl: PropTypes.any,
+  resend: PropTypes.any
 };
 
 export default Whiteboard;
