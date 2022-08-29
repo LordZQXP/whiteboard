@@ -13,72 +13,56 @@ var _indexModule = _interopRequireDefault(require("./index.module.scss"));
 
 var _material = require("@mui/material");
 
+var _ArrowForwardIos = _interopRequireDefault(require("@mui/icons-material/ArrowForwardIos"));
+
+var _ArrowBackIosNew = _interopRequireDefault(require("@mui/icons-material/ArrowBackIosNew"));
+
+var _indexModule2 = _interopRequireDefault(require("../WhiteBoard/index.module.scss"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 _reactPdf.pdfjs.GlobalWorkerOptions.workerSrc = "//cdnjs.cloudflare.com/ajax/libs/pdf.js/" + _reactPdf.pdfjs.version + "/pdf.worker.js";
 
 var PDFReader = function PDFReader(_ref) {
   var fileReaderInfo = _ref.fileReaderInfo,
-      updateFileReaderInfo = _ref.updateFileReaderInfo,
-      savePage = _ref.savePage;
+      open = _ref.open;
 
-  function onRenderSuccess() {
-    var importPDFCanvas = document.querySelector('.import-pdf-page canvas');
-    var pdfAsImageSrc = importPDFCanvas.toDataURL();
-    updateFileReaderInfo({
-      currentPage: pdfAsImageSrc
-    });
-  }
+  var _React$useState = _react.default.useState(null),
+      numPages = _React$useState[0],
+      setNumPages = _React$useState[1];
+
+  var _React$useState2 = _react.default.useState(1),
+      pageNumber = _React$useState2[0],
+      setPageNumber = _React$useState2[1];
 
   function onDocumentLoadSuccess(_ref2) {
     var numPages = _ref2.numPages;
-    updateFileReaderInfo({
-      totalPages: numPages
-    });
+    setNumPages(numPages);
   }
-
-  function changePage(offset) {
-    updateFileReaderInfo({
-      currentPageNumber: fileReaderInfo.currentPageNumber + offset
-    });
-  }
-
-  var nextPage = function nextPage() {
-    changePage(1);
-    savePage();
-  };
 
   return /*#__PURE__*/_react.default.createElement("div", {
-    className: _indexModule.default.pdfReader
-  }, /*#__PURE__*/_react.default.createElement("div", {
-    className: _indexModule.default.fileContainer
+    className: _indexModule.default.pdfFixedDiv
   }, /*#__PURE__*/_react.default.createElement(_entry.Document, {
-    className: _indexModule.default.document,
-    file: fileReaderInfo.file,
-    onLoadSuccess: onDocumentLoadSuccess,
-    onLoadProgress: function onLoadProgress(_ref3) {
-      var loaded = _ref3.loaded,
-          total = _ref3.total;
-      return console.log('Loading a document: ' + loaded / total * 100 + '%');
-    }
+    file: fileReaderInfo,
+    onLoadSuccess: onDocumentLoadSuccess
   }, /*#__PURE__*/_react.default.createElement(_entry.Page, {
-    className: "import-pdf-page",
-    onRenderSuccess: onRenderSuccess,
-    pageNumber: fileReaderInfo.currentPageNumber
-  }))), /*#__PURE__*/_react.default.createElement("div", {
-    className: _indexModule.default.pageInfo
-  }, /*#__PURE__*/_react.default.createElement("div", {
-    className: _indexModule.default.nextFixedButton
-  }, /*#__PURE__*/_react.default.createElement(_material.Button, {
-    style: {
-      borderRadius: '15px',
-      boxShadow: '0 0 10px #ccc',
-      width: '80px',
-      height: '60px'
-    },
-    disabled: fileReaderInfo.currentPageNumber >= fileReaderInfo.totalPages,
-    onClick: nextPage
-  }, fileReaderInfo.currentPageNumber, " of ", fileReaderInfo.totalPages || '--'), " ")));
+    pageNumber: pageNumber,
+    width: window.innerWidth > 500 ? 500 : window.innerWidth
+  })), open && /*#__PURE__*/_react.default.createElement("div", {
+    className: _indexModule2.default.nextFixedButton
+  }, " ", /*#__PURE__*/_react.default.createElement(_material.Button, {
+    className: _indexModule2.default.floatingButtonsZoom,
+    onClick: function onClick() {
+      return setPageNumber(pageNumber - 1 > 0 ? pageNumber - 1 : 1);
+    }
+  }, /*#__PURE__*/_react.default.createElement(_ArrowBackIosNew.default, {
+    className: _indexModule2.default.blackIcon
+  })), /*#__PURE__*/_react.default.createElement("p", null, "Page ", pageNumber, " of ", numPages), /*#__PURE__*/_react.default.createElement(_material.Button, {
+    className: _indexModule2.default.floatingButtonsZoom,
+    onClick: function onClick() {
+      return setPageNumber(pageNumber + 1 <= numPages ? pageNumber + 1 : pageNumber);
+    }
+  }, /*#__PURE__*/_react.default.createElement(_ArrowForwardIos.default, null)), " "));
 };
 
 var _default = PDFReader;

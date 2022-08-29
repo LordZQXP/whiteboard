@@ -9,8 +9,6 @@ var _propTypes = _interopRequireDefault(require("prop-types"));
 
 var _fabric = require("fabric");
 
-var _PdfReader = _interopRequireDefault(require("../PdfReader"));
-
 var _cursors = _interopRequireDefault(require("./cursors"));
 
 var _eraser = _interopRequireDefault(require("./images/eraser.svg"));
@@ -43,6 +41,8 @@ var _thickness = _interopRequireDefault(require("./images/thickness.png"));
 
 var _Group3 = _interopRequireDefault(require("./images/Group 6946.png"));
 
+var _Group4 = _interopRequireDefault(require("./images/Group 6947.png"));
+
 var _ArrowForwardIos = _interopRequireDefault(require("@mui/icons-material/ArrowForwardIos"));
 
 var _ArrowBackIosNew = _interopRequireDefault(require("@mui/icons-material/ArrowBackIosNew"));
@@ -72,6 +72,8 @@ var _Add = _interopRequireDefault(require("@mui/icons-material/Add"));
 var _Remove = _interopRequireDefault(require("@mui/icons-material/Remove"));
 
 var _PageviewOutlined = _interopRequireDefault(require("@mui/icons-material/PageviewOutlined"));
+
+var _PdfReader = _interopRequireDefault(require("../PdfReader"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -504,7 +506,6 @@ function resizeCanvas(canvas, whiteboard) {
 
 function zoomCanvas(canvas, whiteboard, zoomValue) {
   return function () {
-    console.log(zoomValue);
     var ratio = canvas.getWidth() / canvas.getHeight();
     var whiteboardWidth = whiteboard.clientWidth;
     var zoom = canvas.getZoom() * zoomValue;
@@ -526,7 +527,8 @@ var Whiteboard = function Whiteboard(_ref9) {
       setJSON = _ref9.setJSON,
       _ref9$src = _ref9.src,
       src = _ref9$src === void 0 ? undefined : _ref9$src,
-      json = _ref9.json;
+      json = _ref9.json,
+      pdfUrl = _ref9.pdfUrl;
 
   var _useState = (0, _react.useState)((_color$ = color[0]) == null ? void 0 : _color$.color),
       currColor = _useState[0],
@@ -782,8 +784,12 @@ var Whiteboard = function Whiteboard(_ref9) {
       pdfViewer = _React$useState[0],
       setPdfViewer = _React$useState[1];
 
+  var _useState9 = (0, _react.useState)(''),
+      imgSRC = _useState9[0],
+      setImgSRC = _useState9[1];
+
   function updateFileReaderInfo(data) {
-    setFileReaderInfo(_extends({}, fileReaderInfo, data));
+    setImgSRC(data);
   }
 
   var toolbarCommander = function toolbarCommander(props, canvas, options) {
@@ -828,17 +834,17 @@ var Whiteboard = function Whiteboard(_ref9) {
     }
   };
 
-  var _useState9 = (0, _react.useState)(false),
-      openDraw = _useState9[0],
-      setOpenDraw = _useState9[1];
-
   var _useState10 = (0, _react.useState)(false),
-      openThickness = _useState10[0],
-      setOpenThickness = _useState10[1];
+      openDraw = _useState10[0],
+      setOpenDraw = _useState10[1];
 
   var _useState11 = (0, _react.useState)(false),
-      openColor = _useState11[0],
-      setOpenColor = _useState11[1];
+      openThickness = _useState11[0],
+      setOpenThickness = _useState11[1];
+
+  var _useState12 = (0, _react.useState)(false),
+      openColor = _useState12[0],
+      setOpenColor = _useState12[1];
 
   var startCounter = function startCounter(zoom) {
     var value = zoomValue;
@@ -854,9 +860,9 @@ var Whiteboard = function Whiteboard(_ref9) {
     }
   };
 
-  var _useState12 = (0, _react.useState)(false),
-      zoomToggle = _useState12[0],
-      setZoomToggle = _useState12[1];
+  var _useState13 = (0, _react.useState)(false),
+      zoomToggle = _useState13[0],
+      setZoomToggle = _useState13[1];
 
   return /*#__PURE__*/_react.default.createElement("div", {
     ref: whiteboardRef,
@@ -864,7 +870,7 @@ var Whiteboard = function Whiteboard(_ref9) {
   }, /*#__PURE__*/_react.default.createElement("canvas", {
     ref: canvasRef,
     id: "canvas"
-  }), /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("div", null, !src && /*#__PURE__*/_react.default.createElement("div", {
+  }), /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("div", null, !pdfViewer && /*#__PURE__*/_react.default.createElement("div", {
     className: _indexModule.default.nextFixedButton
   }, " ", /*#__PURE__*/_react.default.createElement(_Button.default, {
     className: _indexModule.default.floatingButtonsZoom,
@@ -916,7 +922,8 @@ var Whiteboard = function Whiteboard(_ref9) {
     savePage: function savePage() {
       return nextPage(canvas);
     },
-    fileReaderInfo: fileReaderInfo,
+    fileReaderInfo: pdfUrl,
+    open: pdfViewer,
     updateFileReaderInfo: updateFileReaderInfo
   })), /*#__PURE__*/_react.default.createElement("div", {
     className: _indexModule.default.toolbarWithColor,
@@ -1122,23 +1129,21 @@ var Whiteboard = function Whiteboard(_ref9) {
   }), /*#__PURE__*/_react.default.createElement("div", {
     className: _indexModule.default.upperToolBar
   }, /*#__PURE__*/_react.default.createElement("div", {
-    className: _indexModule.default.uploadDropdown
-  }, /*#__PURE__*/_react.default.createElement("input", {
-    ref: uploadPdfRef,
-    accept: ".pdf",
-    type: "file",
-    onChange: onFileChange
-  }), /*#__PURE__*/_react.default.createElement(_Button.default, {
-    onClick: function onClick() {
-      uploadPdfRef.current.click();
-      setPdfViewer(true);
-    }
-  }, /*#__PURE__*/_react.default.createElement(_PictureAsPdf.default, null))), /*#__PURE__*/_react.default.createElement("div", {
     className: _indexModule.default.upperToolBarFlex
-  }, /*#__PURE__*/_react.default.createElement(_Button.default, null, /*#__PURE__*/_react.default.createElement(_Box.default, {
-    className: _indexModule.default.flexDiv
+  }, !pdfViewer ? /*#__PURE__*/_react.default.createElement(_Button.default, null, /*#__PURE__*/_react.default.createElement(_Box.default, {
+    className: _indexModule.default.flexDiv,
+    onClick: function onClick() {
+      return setPdfViewer(true);
+    }
   }, /*#__PURE__*/_react.default.createElement("img", {
     src: _Group3.default
+  }))) : /*#__PURE__*/_react.default.createElement(_Button.default, null, /*#__PURE__*/_react.default.createElement(_Box.default, {
+    className: _indexModule.default.flexDiv,
+    onClick: function onClick() {
+      return setPdfViewer(false);
+    }
+  }, /*#__PURE__*/_react.default.createElement("img", {
+    src: _Group4.default
   }))), /*#__PURE__*/_react.default.createElement(_Button.default, null, /*#__PURE__*/_react.default.createElement(_Box.default, {
     className: _indexModule.default.flexDiv
   }, /*#__PURE__*/_react.default.createElement("img", {
@@ -1158,7 +1163,8 @@ Whiteboard.propTypes = {
   color: _propTypes.default.any,
   setJSON: _propTypes.default.any,
   src: _propTypes.default.any,
-  json: _propTypes.default.any
+  json: _propTypes.default.any,
+  pdfUrl: _propTypes.default.any
 };
 var _default = Whiteboard;
 exports.default = _default;

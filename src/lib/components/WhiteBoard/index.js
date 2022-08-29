@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { fabric } from 'fabric';
-import PdfReader from '../PdfReader';
 import getCursor from './cursors';
 import EraserIcon from './images/eraser.svg';
 import HorizontalRuleIcon from '@mui/icons-material/HorizontalRule';
@@ -18,6 +17,7 @@ import submit from "./images/Group 6949.png"
 import sendTostudent from "./images/Group 6948.png"
 import thickness from "./images/thickness.png"
 import preview from "./images/Group 6946.png"
+import canvasIcon from "./images/Group 6947.png"
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import PictureAsPdf from '@mui/icons-material/PictureAsPdf';
@@ -33,6 +33,7 @@ import InputSlider from './components/Slider';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import PageviewOutlinedIcon from '@mui/icons-material/PageviewOutlined';
+import PdfReader from "../PdfReader";
 
 let drawInstance = null;
 let origX;
@@ -434,7 +435,6 @@ function resizeCanvas(canvas, whiteboard) {
 
 function zoomCanvas (canvas, whiteboard, zoomValue){
   return () => {
-    console.log(zoomValue);
     const ratio = canvas.getWidth() / canvas.getHeight();
     const whiteboardWidth = whiteboard.clientWidth;
 
@@ -444,7 +444,7 @@ function zoomCanvas (canvas, whiteboard, zoomValue){
   };
 }
 
-const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undefined, json }) => {
+const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undefined, json, pdfUrl }) => {
   const [currColor, setCurrColor] = useState(color[0]?.color);
   const [canvas, setCanvas] = useState(null);
   const [brushWidth, setBrushWidth] = useState(5);
@@ -631,9 +631,9 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
   }
 
   const [pdfViewer, setPdfViewer] = React.useState(false);
-
+  const [imgSRC, setImgSRC] = useState('');
   function updateFileReaderInfo(data) {
-    setFileReaderInfo({ ...fileReaderInfo, ...data });
+    setImgSRC(data);
   }
 
   const toolbarCommander = (props, canvas, options) =>{
@@ -707,7 +707,7 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
       <canvas ref={canvasRef} id="canvas" />
       <div>
       <div>
-          {!src && <div className={styles.nextFixedButton}> <Button className={styles.floatingButtonsZoom} onClick={() => previousPage(canvas)}><ArrowBackIosNewIcon className={styles.blackIcon} /></Button> <Button className={styles.floatingButtonsZoom} onClick={() => nextPage(canvas)}><ArrowForwardIosIcon className={styles.blackIcon} /></Button> </div>}
+          {(!pdfViewer) && <div className={styles.nextFixedButton}> <Button className={styles.floatingButtonsZoom} onClick={() => previousPage(canvas)}><ArrowBackIosNewIcon className={styles.blackIcon} /></Button> <Button className={styles.floatingButtonsZoom} onClick={() => nextPage(canvas)}><ArrowForwardIosIcon className={styles.blackIcon} /></Button> </div>}
           <div className={styles.zoomFixedButton}>
               <Button onClick={() => setZoomToggle(!zoomToggle)}>
                 <PageviewOutlinedIcon />
@@ -718,7 +718,7 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
             </div>
 
       </div>
-        {pdfViewer && <PdfReader savePage={() => nextPage(canvas)} fileReaderInfo={fileReaderInfo} updateFileReaderInfo={updateFileReaderInfo} />}
+       { pdfViewer && <PdfReader savePage={() => nextPage(canvas)} fileReaderInfo={pdfUrl} open={pdfViewer} updateFileReaderInfo={updateFileReaderInfo} />}
       </div>
       <div className={styles.toolbarWithColor} style={{ backgroundColor: 'transparent'}}>
         <div className={styles.toolbar}>
@@ -862,14 +862,13 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
             ariaLabel="SpeedDial openIcon example"
           />
        <div className={styles.upperToolBar}>
-       <div className={styles.uploadDropdown}>
-          <input ref={uploadPdfRef} accept=".pdf" type="file" onChange={onFileChange} />
-              <Button onClick={() => { uploadPdfRef.current.click(); setPdfViewer(true) }}><PictureAsPdf /></Button>
-        </div>
             <div className={styles.upperToolBarFlex}>
-            <Button><Box className={styles.flexDiv}>
+            { !pdfViewer ? <Button><Box className={styles.flexDiv} onClick={()=>setPdfViewer(true)}>
               <img src={preview} />
-            </Box></Button>
+            </Box></Button> : 
+              <Button><Box className={styles.flexDiv} onClick={() => setPdfViewer(false)}>
+                <img src={canvasIcon} />
+              </Box></Button>}
             <Button><Box className={styles.flexDiv}>
               <img src={sendTostudent} />
             </Box></Button>
@@ -890,7 +889,8 @@ Whiteboard.propTypes = {
   color: PropTypes.any,
   setJSON : PropTypes.any,
   src : PropTypes.any,
-  json : PropTypes.any
+  json : PropTypes.any,
+  pdfUrl: PropTypes.any
 };
 
 export default Whiteboard;
