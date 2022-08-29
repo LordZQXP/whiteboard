@@ -933,7 +933,7 @@ var Whiteboard = function Whiteboard(_ref9) {
     }
   }, /*#__PURE__*/_react.default.createElement("div", {
     className: _indexModule.default.toolbar
-  }, /*#__PURE__*/_react.default.createElement(_Box.default, {
+  }, !pdfViewer && /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, /*#__PURE__*/_react.default.createElement(_Box.default, {
     className: openThickness ? _indexModule.default.speeddialDivOpen : _indexModule.default.speeddialDivClose
   }, /*#__PURE__*/_react.default.createElement(_SpeedDial.default, {
     open: false,
@@ -1127,7 +1127,7 @@ var Whiteboard = function Whiteboard(_ref9) {
       }))
     }),
     ariaLabel: "SpeedDial openIcon example"
-  }), /*#__PURE__*/_react.default.createElement("div", {
+  })), /*#__PURE__*/_react.default.createElement("div", {
     className: _indexModule.default.upperToolBar
   }, /*#__PURE__*/_react.default.createElement("div", {
     className: _indexModule.default.upperToolBarFlex

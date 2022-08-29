@@ -720,8 +720,10 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
       </div>
        { pdfViewer && <PdfReader savePage={() => nextPage(canvas)} fileReaderInfo={pdfUrl} open={pdfViewer} updateFileReaderInfo={updateFileReaderInfo} />}
       </div>
-      <div className={styles.toolbarWithColor} style={{ backgroundColor: 'transparent'}}>
+    <div className={styles.toolbarWithColor} style={{ backgroundColor: 'transparent'}}>
         <div className={styles.toolbar}>
+    { !pdfViewer &&  
+    <>
           <Box className={openThickness ? styles.speeddialDivOpen : styles.speeddialDivClose}>
           <SpeedDial
               open={false}
@@ -861,6 +863,7 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
             </Box>} />}
             ariaLabel="SpeedDial openIcon example"
           />
+          </>}
        <div className={styles.upperToolBar}>
             <div className={styles.upperToolBarFlex}>
             { !pdfViewer ? <Button><Box className={styles.flexDiv} onClick={()=>setPdfViewer(true)}>
