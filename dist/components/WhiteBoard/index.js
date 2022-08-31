@@ -75,6 +75,8 @@ var _PageviewOutlined = _interopRequireDefault(require("@mui/icons-material/Page
 
 var _PdfReader = _interopRequireDefault(require("../PdfReader"));
 
+var _PdfCanvas = _interopRequireDefault(require("../PdfCanvas"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
@@ -529,7 +531,10 @@ var Whiteboard = function Whiteboard(_ref9) {
       src = _ref9$src === void 0 ? undefined : _ref9$src,
       json = _ref9.json,
       pdfUrl = _ref9.pdfUrl,
-      resend = _ref9.resend;
+      resend = _ref9.resend,
+      _ref9$pdf = _ref9.pdf,
+      pdf = _ref9$pdf === void 0 ? undefined : _ref9$pdf,
+      setResendFiles = _ref9.setResendFiles;
 
   var _useState = (0, _react.useState)((_color$ = color[0]) == null ? void 0 : _color$.color),
       currColor = _useState[0],
@@ -568,6 +573,15 @@ var Whiteboard = function Whiteboard(_ref9) {
       fileReaderInfo = _useState8[0],
       setFileReaderInfo = _useState8[1];
 
+  var _useState9 = (0, _react.useState)({
+    file: pdf,
+    totalPages: null,
+    currentPageNumber: 1,
+    currentPage: ''
+  }),
+      fileCanvasInfo = _useState9[0],
+      setFileCanvasInfo = _useState9[1];
+
   (0, _react.useEffect)(function () {
     options.currentColor = currColor;
   }, [color]);
@@ -583,23 +597,29 @@ var Whiteboard = function Whiteboard(_ref9) {
       });
       handleResize(resizeCanvas(_canvas, whiteboardRef.current)).observe(whiteboardRef.current);
     }
-  }, [canvasRef]);
-  (0, _react.useEffect)(function () {
-    if (canvas) {
-      var center = canvas.getCenter();
+  }, [canvasRef]); // useEffect(()=>{
+  //     const fetchImg = async()=>{
+  //       clearCanvasNextPage(canvas);
+  //       fetch(src)
+  //         .then(response => response.blob())
+  //         .then(imageBlob => {
+  //           const imageObjectURL = URL.createObjectURL(imageBlob);
+  //           fabric.Image.fromURL(imageObjectURL, (img) => {
+  //             img.scaleToHeight(window.innerWidth > 500 ? window.innerWidth : 360);
+  //             img.scaleToWidth(window.innerWidth > 500 ? window.innerHeight - 150 > 1000 ? 900 : window.innerHeight - 150 : 360);
+  //             img.evented = false;
+  //             img.selectable = false;
+  //             img.center().setCoords();
+  //             // canvas.add(img);
+  //             canvas.centerObject(img); 
+  //             canvas.setBackgroundImage(img);
+  //             canvas.setBackgroundColor("#fff");
+  //         });
+  //     })
+  //   }
+  //   if (src && canvas) fetchImg();
+  // },[src, canvas])
 
-      _fabric.fabric.Image.fromURL(fileReaderInfo.currentPage, function (img) {
-        img.scaleToHeight(canvas.height);
-        canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
-          top: center.top,
-          left: center.left,
-          originX: 'center',
-          originY: 'center'
-        });
-        canvas.renderAll();
-      });
-    }
-  }, [fileReaderInfo.currentPage]);
   (0, _react.useEffect)(function () {
     var fetchImg = /*#__PURE__*/function () {
       var _ref10 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
@@ -607,23 +627,10 @@ var Whiteboard = function Whiteboard(_ref9) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                clearCanvasNextPage(canvas);
-                fetch(src).then(function (response) {
-                  return response.blob();
-                }).then(function (imageBlob) {
-                  var imageObjectURL = URL.createObjectURL(imageBlob);
-
-                  _fabric.fabric.Image.fromURL(imageObjectURL, function (img) {
-                    img.scaleToHeight(window.innerWidth > 500 ? window.innerWidth : 360);
-                    img.scaleToWidth(window.innerWidth > 500 ? window.innerHeight - 150 > 1000 ? 900 : window.innerHeight - 150 : 360);
-                    img.evented = false;
-                    img.selectable = false;
-                    img.center().setCoords(); // canvas.add(img);
-
-                    canvas.centerObject(img);
-                    canvas.setBackgroundImage(img);
-                    canvas.setBackgroundColor("#fff");
-                  });
+                clearCanvas(canvas);
+                canvas.loadFromJSON(json, canvas.renderAll.bind(canvas), function (o, object) {
+                  object.set('selectable', false);
+                  object.set('evented', false);
                 });
 
               case 2:
@@ -636,34 +643,6 @@ var Whiteboard = function Whiteboard(_ref9) {
 
       return function fetchImg() {
         return _ref10.apply(this, arguments);
-      };
-    }();
-
-    if (src && canvas) fetchImg();
-  }, [src, canvas]);
-  (0, _react.useEffect)(function () {
-    var fetchImg = /*#__PURE__*/function () {
-      var _ref11 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
-        return _regeneratorRuntime().wrap(function _callee2$(_context2) {
-          while (1) {
-            switch (_context2.prev = _context2.next) {
-              case 0:
-                clearCanvas(canvas);
-                canvas.loadFromJSON(json, canvas.renderAll.bind(canvas), function (o, object) {
-                  object.set('selectable', false);
-                  object.set('evented', false);
-                });
-
-              case 2:
-              case "end":
-                return _context2.stop();
-            }
-          }
-        }, _callee2);
-      }));
-
-      return function fetchImg() {
-        return _ref11.apply(this, arguments);
       };
     }();
 
@@ -707,11 +686,10 @@ var Whiteboard = function Whiteboard(_ref9) {
   function onSaveCanvasAsImage() {
     var _extends4;
 
-    if (src) {
-      var imageURI = canvas.toDataURL("image/jpg");
-      (0, _fileSaver.saveAs)(imageURI, 'pic.jpg');
-    }
-
+    // if(src){
+    //   var imageURI = canvas.toDataURL("image/jpg");
+    //   saveAs(imageURI,'pic.jpg');
+    // }
     canvasRef.current.toBlob(function (blob) {
       var _extends2, _extends3;
 
@@ -721,7 +699,7 @@ var Whiteboard = function Whiteboard(_ref9) {
     setJSON(_extends({}, canvasPage, (_extends4 = {}, _extends4[index] = canvas.toJSON(), _extends4)));
     setPages({});
     clearCanvas(canvas);
-    updateFileReaderInfo({
+    updateFileCanvasInfo({
       file: "",
       currentPageNumber: 1
     });
@@ -774,20 +752,13 @@ var Whiteboard = function Whiteboard(_ref9) {
     }
   }
 
-  function onFileChange(event) {
-    updateFileReaderInfo({
-      file: event.target.files[0],
-      currentPageNumber: 1
-    });
-  }
-
   var _React$useState = _react.default.useState(false),
       pdfViewer = _React$useState[0],
       setPdfViewer = _React$useState[1];
 
-  var _useState9 = (0, _react.useState)(''),
-      imgSRC = _useState9[0],
-      setImgSRC = _useState9[1];
+  var _useState10 = (0, _react.useState)(''),
+      imgSRC = _useState10[0],
+      setImgSRC = _useState10[1];
 
   function updateFileReaderInfo(data) {
     setImgSRC(data);
@@ -835,17 +806,17 @@ var Whiteboard = function Whiteboard(_ref9) {
     }
   };
 
-  var _useState10 = (0, _react.useState)(false),
-      openDraw = _useState10[0],
-      setOpenDraw = _useState10[1];
-
   var _useState11 = (0, _react.useState)(false),
-      openThickness = _useState11[0],
-      setOpenThickness = _useState11[1];
+      openDraw = _useState11[0],
+      setOpenDraw = _useState11[1];
 
   var _useState12 = (0, _react.useState)(false),
-      openColor = _useState12[0],
-      setOpenColor = _useState12[1];
+      openThickness = _useState12[0],
+      setOpenThickness = _useState12[1];
+
+  var _useState13 = (0, _react.useState)(false),
+      openColor = _useState13[0],
+      setOpenColor = _useState13[1];
 
   var startCounter = function startCounter(zoom) {
     var value = zoomValue;
@@ -861,9 +832,30 @@ var Whiteboard = function Whiteboard(_ref9) {
     }
   };
 
-  var _useState13 = (0, _react.useState)(false),
-      zoomToggle = _useState13[0],
-      setZoomToggle = _useState13[1];
+  var _useState14 = (0, _react.useState)(false),
+      zoomToggle = _useState14[0],
+      setZoomToggle = _useState14[1];
+
+  (0, _react.useEffect)(function () {
+    if (canvas) {
+      var center = canvas.getCenter();
+
+      _fabric.fabric.Image.fromURL(fileCanvasInfo.currentPage, function (img) {
+        img.scaleToHeight(canvas.height);
+        canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
+          top: center.top,
+          left: center.left,
+          originX: 'center',
+          originY: 'center'
+        });
+        canvas.renderAll();
+      });
+    }
+  }, [fileCanvasInfo.currentPage]);
+
+  function updateFileCanvasInfo(data) {
+    setFileCanvasInfo(_extends({}, fileCanvasInfo, data));
+  }
 
   return /*#__PURE__*/_react.default.createElement("div", {
     ref: whiteboardRef,
@@ -871,7 +863,7 @@ var Whiteboard = function Whiteboard(_ref9) {
   }, /*#__PURE__*/_react.default.createElement("canvas", {
     ref: canvasRef,
     id: "canvas"
-  }), /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("div", null, !pdfViewer && /*#__PURE__*/_react.default.createElement("div", {
+  }), /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("div", null, !pdfViewer && !pdf && /*#__PURE__*/_react.default.createElement("div", {
     className: _indexModule.default.nextFixedButton
   }, " ", /*#__PURE__*/_react.default.createElement(_Button.default, {
     className: _indexModule.default.floatingButtonsZoom,
@@ -926,6 +918,15 @@ var Whiteboard = function Whiteboard(_ref9) {
     fileReaderInfo: pdfUrl,
     open: pdfViewer,
     updateFileReaderInfo: updateFileReaderInfo
+  }), pdf && /*#__PURE__*/_react.default.createElement(_PdfCanvas.default, {
+    next: function next() {
+      return nextPage(canvas);
+    },
+    back: function back() {
+      return previousPage(canvas);
+    },
+    fileCanvasInfo: fileCanvasInfo,
+    updateFileCanvasInfo: updateFileCanvasInfo
   })), /*#__PURE__*/_react.default.createElement("div", {
     className: _indexModule.default.toolbarWithColor,
     style: {
@@ -1145,7 +1146,12 @@ var Whiteboard = function Whiteboard(_ref9) {
     }
   }, /*#__PURE__*/_react.default.createElement("img", {
     src: _Group4.default
-  }))), resend && /*#__PURE__*/_react.default.createElement(_Button.default, null, /*#__PURE__*/_react.default.createElement(_Box.default, {
+  }))), resend && /*#__PURE__*/_react.default.createElement(_Button.default, {
+    onClick: function onClick() {
+      setResendFiles(true);
+      onSaveCanvasAsImage();
+    }
+  }, /*#__PURE__*/_react.default.createElement(_Box.default, {
     className: _indexModule.default.flexDiv
   }, /*#__PURE__*/_react.default.createElement("img", {
     src: _Group2.default
@@ -1161,12 +1167,14 @@ var Whiteboard = function Whiteboard(_ref9) {
 Whiteboard.propTypes = {
   aspectRatio: _propTypes.default.number,
   setFiles: _propTypes.default.any,
+  setResendFiles: _propTypes.default.any,
   color: _propTypes.default.any,
   setJSON: _propTypes.default.any,
   src: _propTypes.default.any,
   json: _propTypes.default.any,
   pdfUrl: _propTypes.default.any,
-  resend: _propTypes.default.any
+  resend: _propTypes.default.any,
+  pdf: _propTypes.default.any
 };
 var _default = Whiteboard;
 exports.default = _default;

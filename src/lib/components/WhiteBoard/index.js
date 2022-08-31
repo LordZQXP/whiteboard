@@ -34,6 +34,7 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import PageviewOutlinedIcon from '@mui/icons-material/PageviewOutlined';
 import PdfReader from "../PdfReader";
+import PDFCanvas from '../PdfCanvas';
 
 let drawInstance = null;
 let origX;
@@ -444,7 +445,7 @@ function zoomCanvas (canvas, whiteboard, zoomValue){
   };
 }
 
-const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undefined, json, pdfUrl, resend }) => {
+const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undefined, json, pdfUrl, resend, pdf = undefined, setResendFiles }) => {
   const [currColor, setCurrColor] = useState(color[0]?.color);
   const [canvas, setCanvas] = useState(null);
   const [brushWidth, setBrushWidth] = useState(5);
@@ -455,6 +456,13 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
 
   const [fileReaderInfo, setFileReaderInfo] = useState({
     file: '',
+    totalPages: null,
+    currentPageNumber: 1,
+    currentPage: '',
+  });
+
+  const [fileCanvasInfo, setFileCanvasInfo] = useState({
+    file: pdf,
     totalPages: null,
     currentPageNumber: 1,
     currentPage: '',
@@ -479,45 +487,28 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
     }
   }, [canvasRef]);
 
-  useEffect(() => {
-    if (canvas) {
-      const center = canvas.getCenter();
-      fabric.Image.fromURL(fileReaderInfo.currentPage, (img) => {
-        img.scaleToHeight(canvas.height);
-        canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
-          top: center.top,
-          left: center.left,
-          originX: 'center',
-          originY: 'center',
-        });
-        canvas.renderAll();
-      });
-    }
-  }, [fileReaderInfo.currentPage]);
-
-  useEffect(()=>{
-      const fetchImg = async()=>{
-        clearCanvasNextPage(canvas);
-        fetch(src)
-          .then(response => response.blob())
-          .then(imageBlob => {
-            const imageObjectURL = URL.createObjectURL(imageBlob);
-            fabric.Image.fromURL(imageObjectURL, (img) => {
-              img.scaleToHeight(window.innerWidth > 500 ? window.innerWidth : 360);
-              img.scaleToWidth(window.innerWidth > 500 ? window.innerHeight - 150 > 1000 ? 900 : window.innerHeight - 150 : 360);
-              img.evented = false;
-              img.selectable = false;
-              img.center().setCoords();
-              // canvas.add(img);
-              canvas.centerObject(img); 
-              canvas.setBackgroundImage(img);
-              canvas.setBackgroundColor("#fff");
-          });
-      })
-    }
-    if (src && canvas) fetchImg();
-  },[src, canvas])
-
+  // useEffect(()=>{
+  //     const fetchImg = async()=>{
+  //       clearCanvasNextPage(canvas);
+  //       fetch(src)
+  //         .then(response => response.blob())
+  //         .then(imageBlob => {
+  //           const imageObjectURL = URL.createObjectURL(imageBlob);
+  //           fabric.Image.fromURL(imageObjectURL, (img) => {
+  //             img.scaleToHeight(window.innerWidth > 500 ? window.innerWidth : 360);
+  //             img.scaleToWidth(window.innerWidth > 500 ? window.innerHeight - 150 > 1000 ? 900 : window.innerHeight - 150 : 360);
+  //             img.evented = false;
+  //             img.selectable = false;
+  //             img.center().setCoords();
+  //             // canvas.add(img);
+  //             canvas.centerObject(img); 
+  //             canvas.setBackgroundImage(img);
+  //             canvas.setBackgroundColor("#fff");
+  //         });
+  //     })
+  //   }
+  //   if (src && canvas) fetchImg();
+  // },[src, canvas])
 
 
   useEffect(() => {
@@ -572,10 +563,10 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
   }
 
   function onSaveCanvasAsImage() {
-    if(src){
-      var imageURI = canvas.toDataURL("image/jpg");
-      saveAs(imageURI,'pic.jpg');
-    }
+    // if(src){
+    //   var imageURI = canvas.toDataURL("image/jpg");
+    //   saveAs(imageURI,'pic.jpg');
+    // }
     canvasRef.current.toBlob(function (blob) {
       setPages({...pages, [index] : blob});
       setFiles({ ...pages, [index]: blob });
@@ -583,7 +574,7 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
     setJSON({...canvasPage, [index] : canvas.toJSON()});
     setPages({});
     clearCanvas(canvas);
-    updateFileReaderInfo({ file: "", currentPageNumber: 1 });
+    updateFileCanvasInfo({ file: "", currentPageNumber: 1 });
   }
 
   function nextPage(canvas) {
@@ -626,12 +617,9 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
     }
   }
 
-  function onFileChange(event) {
-    updateFileReaderInfo({ file: event.target.files[0], currentPageNumber: 1 });
-  }
-
   const [pdfViewer, setPdfViewer] = React.useState(false);
   const [imgSRC, setImgSRC] = useState('');
+  
   function updateFileReaderInfo(data) {
     setImgSRC(data);
   }
@@ -702,12 +690,33 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
   const [zoomToggle, setZoomToggle] = useState(false);
 
 
+  useEffect(() => {
+    if (canvas) {
+      const center = canvas.getCenter();
+      fabric.Image.fromURL(fileCanvasInfo.currentPage, (img) => {
+        img.scaleToHeight(canvas.height);
+        canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
+          top: center.top,
+          left: center.left,
+          originX: 'center',
+          originY: 'center',
+        });
+
+        canvas.renderAll();
+      });
+    }
+  }, [fileCanvasInfo.currentPage]);
+
+  function updateFileCanvasInfo(data) {
+    setFileCanvasInfo({ ...fileCanvasInfo, ...data });
+  }
+
   return (
     <div ref={whiteboardRef} className={styles.whiteboard}>
       <canvas ref={canvasRef} id="canvas" />
       <div>
       <div>
-          {(!pdfViewer) && <div className={styles.nextFixedButton}> <Button className={styles.floatingButtonsZoom} onClick={() => previousPage(canvas)}><ArrowBackIosNewIcon className={styles.blackIcon} /></Button> <Button className={styles.floatingButtonsZoom} onClick={() => nextPage(canvas)}><ArrowForwardIosIcon className={styles.blackIcon} /></Button> </div>}
+          {(!pdfViewer && !pdf) && <div className={styles.nextFixedButton}> <Button className={styles.floatingButtonsZoom} onClick={() => previousPage(canvas)}><ArrowBackIosNewIcon className={styles.blackIcon} /></Button> <Button className={styles.floatingButtonsZoom} onClick={() => nextPage(canvas)}><ArrowForwardIosIcon className={styles.blackIcon} /></Button> </div>}
           <div className={styles.zoomFixedButton}>
               <Button onClick={() => setZoomToggle(!zoomToggle)}>
                 <PageviewOutlinedIcon />
@@ -719,6 +728,7 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
 
       </div>
        { pdfViewer && <PdfReader savePage={() => nextPage(canvas)} fileReaderInfo={pdfUrl} open={pdfViewer} updateFileReaderInfo={updateFileReaderInfo} />}
+        {pdf && <PDFCanvas next={() => nextPage(canvas)} back={() => previousPage(canvas)} fileCanvasInfo={fileCanvasInfo} updateFileCanvasInfo={updateFileCanvasInfo} />}
       </div>
     <div className={styles.toolbarWithColor} style={{ backgroundColor: 'transparent'}}>
         <div className={styles.toolbar}>
@@ -872,7 +882,7 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
               <Button><Box className={styles.flexDiv} onClick={() => setPdfViewer(false)}>
                 <img src={canvasIcon} />
               </Box></Button>}
-            {resend && <Button><Box className={styles.flexDiv}>
+              {resend && <Button onClick={() => { setResendFiles(true); onSaveCanvasAsImage()}} ><Box className={styles.flexDiv}>
               <img src={sendTostudent} />
             </Box></Button>}
             <Button onClick={onSaveCanvasAsImage}><Box className={styles.flexDiv}>
@@ -889,12 +899,14 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
 Whiteboard.propTypes = {
   aspectRatio: PropTypes.number,
   setFiles: PropTypes.any,
+  setResendFiles: PropTypes.any,
   color: PropTypes.any,
   setJSON : PropTypes.any,
   src : PropTypes.any,
   json : PropTypes.any,
   pdfUrl: PropTypes.any,
-  resend: PropTypes.any
+  resend: PropTypes.any,
+  pdf : PropTypes.any
 };
 
 export default Whiteboard;

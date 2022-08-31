@@ -5,19 +5,25 @@ import styles from './app.module.scss';
 
 const App = () => {
   const [files, setFiles] = React.useState({});
+  const [resendFiles, setResendFiles] = React.useState(false);
+
   const [canvasJSON, setCanvasJSON] = React.useState({});
 
   let source = "https://i.postimg.cc/Dw97bv23/image-7.png";
   
   React.useEffect(()=>{
     if(Object.values(files).length >0){
+      if(resendFiles){
+        console.log("Resend")
+      }
     for (let i = 0; i < Object.values(files).length; i++){
       saveAs(Object.values(files)[i], `page${i+1}.png`);
       }
     }
+
     if (Object.values(files).length >0)
     window.location.reload();
-  },[files])
+  },[files, resendFiles])
 
   React.useEffect(() => {
     const json = async()=>{
@@ -75,12 +81,12 @@ const App = () => {
   const height = window.innerHeight;
   let number = Math.floor((Math.random() * 100) + 1);
 
-  const pdfUrl = "https://thirdinrev.s3.ap-south-1.amazonaws.com/invoice/104/Invoice.pdf"
+  const pdfUrl = "https://stemboard-stagging.s3.amazonaws.com/544514369223/489194663685/Cg4Ix9zG_oMHEIXemLKeDg/1661949028056.blob"
   
   return (
     <div className={styles.app}>
       <main>
-        <Whiteboard aspectRatio={width/(height-150)} setFiles={setFiles} color={color} setJSON={setCanvasJSON} src={number % 2 === 0 && source} pdfUrl={pdfUrl} resend={false} />
+        <Whiteboard aspectRatio={width/(height-150)} setFiles={setFiles} setResendFiles={setResendFiles} color={color} pdf={pdfUrl} setJSON={setCanvasJSON} pdfUrl={pdfUrl} resend={true} />
       </main>
     </div>
   );
