@@ -77,16 +77,16 @@ const App = () => {
     },
   ]
 
-  const width = window.innerWidth;
-  const height = window.innerHeight;
+  const width = window.innerWidth > 610 ? 610 : window.innerWidth;
+  const height = window.innerHeight > 670 ? 670 : window.innerHeight;
   let number = Math.floor((Math.random() * 100) + 1);
 
-  const pdfUrl = "https://stemboard-stagging.s3.amazonaws.com/544514369223/489194663685/Cg4Ix9zG_oMHEIXemLKeDg/1661949028056.blob"
+  const pdfUrl = "https://stemboard-stagging.s3.amazonaws.com/545148257444/545155562625/Cg4I956t4IUOEIH5tu7uDw/1662017782009.blob"
   
   return (
     <div className={styles.app}>
       <main>
-        <Whiteboard aspectRatio={width/(height-150)} setFiles={setFiles} setResendFiles={setResendFiles} color={color} pdf={pdfUrl} setJSON={setCanvasJSON} pdfUrl={pdfUrl} resend={true} />
+        <Whiteboard aspectRatio={width/(height)} setFiles={setFiles} setResendFiles={setResendFiles} color={color} pdf={pdfUrl} setJSON={setCanvasJSON} pdfUrl={pdfUrl} resend={true} />
       </main>
     </div>
   );

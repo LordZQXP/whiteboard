@@ -20,7 +20,7 @@ import preview from "./images/Group 6946.png"
 import canvasIcon from "./images/Group 6947.png"
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import PictureAsPdf from '@mui/icons-material/PictureAsPdf';
+import LineWeightIcon from '@mui/icons-material/LineWeight';
 import './eraserBrush';
 import styles from './index.module.scss';
 import Box from '@mui/material/Box';
@@ -35,6 +35,7 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import PageviewOutlinedIcon from '@mui/icons-material/PageviewOutlined';
 import PdfReader from "../PdfReader";
 import PDFCanvas from '../PdfCanvas';
+import swal from 'sweetalert';
 
 let drawInstance = null;
 let origX;
@@ -487,30 +488,6 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
     }
   }, [canvasRef]);
 
-  // useEffect(()=>{
-  //     const fetchImg = async()=>{
-  //       clearCanvasNextPage(canvas);
-  //       fetch(src)
-  //         .then(response => response.blob())
-  //         .then(imageBlob => {
-  //           const imageObjectURL = URL.createObjectURL(imageBlob);
-  //           fabric.Image.fromURL(imageObjectURL, (img) => {
-  //             img.scaleToHeight(window.innerWidth > 500 ? window.innerWidth : 360);
-  //             img.scaleToWidth(window.innerWidth > 500 ? window.innerHeight - 150 > 1000 ? 900 : window.innerHeight - 150 : 360);
-  //             img.evented = false;
-  //             img.selectable = false;
-  //             img.center().setCoords();
-  //             // canvas.add(img);
-  //             canvas.centerObject(img); 
-  //             canvas.setBackgroundImage(img);
-  //             canvas.setBackgroundColor("#fff");
-  //         });
-  //     })
-  //   }
-  //   if (src && canvas) fetchImg();
-  // },[src, canvas])
-
-
   useEffect(() => {
     const fetchImg = async () => {
       clearCanvas(canvas);
@@ -563,18 +540,27 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
   }
 
   function onSaveCanvasAsImage() {
-    // if(src){
-    //   var imageURI = canvas.toDataURL("image/jpg");
-    //   saveAs(imageURI,'pic.jpg');
-    // }
-    canvasRef.current.toBlob(function (blob) {
-      setPages({...pages, [index] : blob});
-      setFiles({ ...pages, [index]: blob });
+    swal({
+      title: "Are you sure?",
+      text: "",
+      icon: "warning",
+      customClass: "Custom_Cancel",
+      buttons: true,
+      dangerMode: true,
+    }).then(async (willDelete) => {
+      if (willDelete) {
+        canvasRef.current.toBlob(function (blob) {
+          setPages({ ...pages, [index]: blob });
+          setFiles({ ...pages, [index]: blob });
+        });
+        setJSON({ ...canvasPage, [index]: canvas.toJSON() });
+        setPages({});
+        clearCanvas(canvas);
+        updateFileCanvasInfo({ file: "", currentPageNumber: 1 });
+      } else {
+        return;
+      }
     });
-    setJSON({...canvasPage, [index] : canvas.toJSON()});
-    setPages({});
-    clearCanvas(canvas);
-    updateFileCanvasInfo({ file: "", currentPageNumber: 1 });
   }
 
   function nextPage(canvas) {
@@ -617,7 +603,7 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
     }
   }
 
-  const [pdfViewer, setPdfViewer] = React.useState(false);
+  const [pdfViewer, setPdfViewer] = React.useState(true);
   const [imgSRC, setImgSRC] = useState('');
   
   function updateFileReaderInfo(data) {
@@ -694,14 +680,14 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
     if (canvas) {
       const center = canvas.getCenter();
       fabric.Image.fromURL(fileCanvasInfo.currentPage, (img) => {
-        img.scaleToHeight(canvas.height);
+        img.scaleToHeight(window.innerWidth > 500 ? window.innerWidth : 360)
+        img.scaleToWidth(window.innerWidth > 500 ? window.innerHeight - 150 > 1000 ? 900 : window.innerHeight - 150 : 360);
         canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
           top: center.top,
           left: center.left,
           originX: 'center',
           originY: 'center',
         });
-
         canvas.renderAll();
       });
     }
@@ -728,7 +714,7 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
 
       </div>
        { pdfViewer && <PdfReader savePage={() => nextPage(canvas)} fileReaderInfo={pdfUrl} open={pdfViewer} updateFileReaderInfo={updateFileReaderInfo} />}
-        {pdf && <PDFCanvas next={() => nextPage(canvas)} back={() => previousPage(canvas)} fileCanvasInfo={fileCanvasInfo} updateFileCanvasInfo={updateFileCanvasInfo} />}
+        {(pdf && !pdfViewer) && <PDFCanvas next={() => nextPage(canvas)} back={() => previousPage(canvas)} fileCanvasInfo={fileCanvasInfo} updateFileCanvasInfo={updateFileCanvasInfo} />}
       </div>
     <div className={styles.toolbarWithColor} style={{ backgroundColor: 'transparent'}}>
         <div className={styles.toolbar}>
@@ -740,9 +726,7 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
               direction='up'
               ariaLabel="SpeedDial openIcon example"
             onClick={() => setOpenThickness(!openThickness)}
-              icon={<SpeedDialIcon icon={<Box className={styles.flexDiv}>
-                <img src={thickness} />
-              </Box>}/>}
+                icon={<SpeedDialIcon icon={<LineWeightIcon />}/>}
          />   
             <InputSlider changeHandler={(v)=>changeCurrentWidth(v)} open={openThickness && !openDraw && !openColor}  value={options.currentWidth}/>
           </Box>
@@ -753,8 +737,8 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
           direction='up'
           ariaLabel="SpeedDial openIcon example"
           icon={<SpeedDialIcon icon={<Box className={styles.flexDiv}>
-              <img src={Pencil} />
-            </Box>} />}
+                <img src={Pencil} />
+              </Box>} />}
           >
             <SpeedDialAction
               FabProps={{

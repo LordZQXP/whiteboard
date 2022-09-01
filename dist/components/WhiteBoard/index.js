@@ -47,7 +47,7 @@ var _ArrowForwardIos = _interopRequireDefault(require("@mui/icons-material/Arrow
 
 var _ArrowBackIosNew = _interopRequireDefault(require("@mui/icons-material/ArrowBackIosNew"));
 
-var _PictureAsPdf = _interopRequireDefault(require("@mui/icons-material/PictureAsPdf"));
+var _LineWeight = _interopRequireDefault(require("@mui/icons-material/LineWeight"));
 
 require("./eraserBrush");
 
@@ -76,6 +76,8 @@ var _PageviewOutlined = _interopRequireDefault(require("@mui/icons-material/Page
 var _PdfReader = _interopRequireDefault(require("../PdfReader"));
 
 var _PdfCanvas = _interopRequireDefault(require("../PdfCanvas"));
+
+var _sweetalert = _interopRequireDefault(require("sweetalert"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -597,29 +599,7 @@ var Whiteboard = function Whiteboard(_ref9) {
       });
       handleResize(resizeCanvas(_canvas, whiteboardRef.current)).observe(whiteboardRef.current);
     }
-  }, [canvasRef]); // useEffect(()=>{
-  //     const fetchImg = async()=>{
-  //       clearCanvasNextPage(canvas);
-  //       fetch(src)
-  //         .then(response => response.blob())
-  //         .then(imageBlob => {
-  //           const imageObjectURL = URL.createObjectURL(imageBlob);
-  //           fabric.Image.fromURL(imageObjectURL, (img) => {
-  //             img.scaleToHeight(window.innerWidth > 500 ? window.innerWidth : 360);
-  //             img.scaleToWidth(window.innerWidth > 500 ? window.innerHeight - 150 > 1000 ? 900 : window.innerHeight - 150 : 360);
-  //             img.evented = false;
-  //             img.selectable = false;
-  //             img.center().setCoords();
-  //             // canvas.add(img);
-  //             canvas.centerObject(img); 
-  //             canvas.setBackgroundImage(img);
-  //             canvas.setBackgroundColor("#fff");
-  //         });
-  //     })
-  //   }
-  //   if (src && canvas) fetchImg();
-  // },[src, canvas])
-
+  }, [canvasRef]);
   (0, _react.useEffect)(function () {
     var fetchImg = /*#__PURE__*/function () {
       var _ref10 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
@@ -684,25 +664,57 @@ var Whiteboard = function Whiteboard(_ref9) {
   }
 
   function onSaveCanvasAsImage() {
-    var _extends4;
+    (0, _sweetalert.default)({
+      title: "Are you sure?",
+      text: "",
+      icon: "warning",
+      customClass: "Custom_Cancel",
+      buttons: true,
+      dangerMode: true
+    }).then( /*#__PURE__*/function () {
+      var _ref11 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(willDelete) {
+        var _extends4;
 
-    // if(src){
-    //   var imageURI = canvas.toDataURL("image/jpg");
-    //   saveAs(imageURI,'pic.jpg');
-    // }
-    canvasRef.current.toBlob(function (blob) {
-      var _extends2, _extends3;
+        return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                if (!willDelete) {
+                  _context2.next = 8;
+                  break;
+                }
 
-      setPages(_extends({}, pages, (_extends2 = {}, _extends2[index] = blob, _extends2)));
-      setFiles(_extends({}, pages, (_extends3 = {}, _extends3[index] = blob, _extends3)));
-    });
-    setJSON(_extends({}, canvasPage, (_extends4 = {}, _extends4[index] = canvas.toJSON(), _extends4)));
-    setPages({});
-    clearCanvas(canvas);
-    updateFileCanvasInfo({
-      file: "",
-      currentPageNumber: 1
-    });
+                canvasRef.current.toBlob(function (blob) {
+                  var _extends2, _extends3;
+
+                  setPages(_extends({}, pages, (_extends2 = {}, _extends2[index] = blob, _extends2)));
+                  setFiles(_extends({}, pages, (_extends3 = {}, _extends3[index] = blob, _extends3)));
+                });
+                setJSON(_extends({}, canvasPage, (_extends4 = {}, _extends4[index] = canvas.toJSON(), _extends4)));
+                setPages({});
+                clearCanvas(canvas);
+                updateFileCanvasInfo({
+                  file: "",
+                  currentPageNumber: 1
+                });
+                _context2.next = 9;
+                break;
+
+              case 8:
+                return _context2.abrupt("return");
+
+              case 9:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2);
+      }));
+
+      return function (_x) {
+        return _ref11.apply(this, arguments);
+      };
+    }());
   }
 
   function nextPage(canvas) {
@@ -752,7 +764,7 @@ var Whiteboard = function Whiteboard(_ref9) {
     }
   }
 
-  var _React$useState = _react.default.useState(false),
+  var _React$useState = _react.default.useState(true),
       pdfViewer = _React$useState[0],
       setPdfViewer = _React$useState[1];
 
@@ -841,7 +853,8 @@ var Whiteboard = function Whiteboard(_ref9) {
       var center = canvas.getCenter();
 
       _fabric.fabric.Image.fromURL(fileCanvasInfo.currentPage, function (img) {
-        img.scaleToHeight(canvas.height);
+        img.scaleToHeight(window.innerWidth > 500 ? window.innerWidth : 360);
+        img.scaleToWidth(window.innerWidth > 500 ? window.innerHeight - 150 > 1000 ? 900 : window.innerHeight - 150 : 360);
         canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
           top: center.top,
           left: center.left,
@@ -918,7 +931,7 @@ var Whiteboard = function Whiteboard(_ref9) {
     fileReaderInfo: pdfUrl,
     open: pdfViewer,
     updateFileReaderInfo: updateFileReaderInfo
-  }), pdf && /*#__PURE__*/_react.default.createElement(_PdfCanvas.default, {
+  }), pdf && !pdfViewer && /*#__PURE__*/_react.default.createElement(_PdfCanvas.default, {
     next: function next() {
       return nextPage(canvas);
     },
@@ -944,11 +957,7 @@ var Whiteboard = function Whiteboard(_ref9) {
       return setOpenThickness(!openThickness);
     },
     icon: /*#__PURE__*/_react.default.createElement(_SpeedDialIcon.default, {
-      icon: /*#__PURE__*/_react.default.createElement(_Box.default, {
-        className: _indexModule.default.flexDiv
-      }, /*#__PURE__*/_react.default.createElement("img", {
-        src: _thickness.default
-      }))
+      icon: /*#__PURE__*/_react.default.createElement(_LineWeight.default, null)
     })
   }), /*#__PURE__*/_react.default.createElement(_Slider.default, {
     changeHandler: function changeHandler(v) {
