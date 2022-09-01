@@ -542,7 +542,7 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
   function onSaveCanvasAsImage() {
     swal({
       title: "Are you sure?",
-      text: "",
+      text: "Once submitted, you can't reverse the changes.",
       icon: "warning",
       customClass: "Custom_Cancel",
       buttons: true,

@@ -666,7 +666,7 @@ var Whiteboard = function Whiteboard(_ref9) {
   function onSaveCanvasAsImage() {
     (0, _sweetalert.default)({
       title: "Are you sure?",
-      text: "",
+      text: "Once submitted, you can't reverse the changes.",
       icon: "warning",
       customClass: "Custom_Cancel",
       buttons: true,
