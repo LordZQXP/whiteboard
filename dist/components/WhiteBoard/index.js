@@ -950,6 +950,7 @@ var Whiteboard = function Whiteboard(_ref9) {
   }, !pdfViewer && /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, /*#__PURE__*/_react.default.createElement(_Box.default, {
     className: openThickness ? _indexModule.default.speeddialDivOpen : _indexModule.default.speeddialDivClose
   }, /*#__PURE__*/_react.default.createElement(_Button.default, {
+    className: _indexModule.default.buttonThick,
     onClick: function onClick() {
       return setOpenThickness(!openThickness);
     }

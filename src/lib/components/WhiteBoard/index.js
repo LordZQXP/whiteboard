@@ -721,7 +721,7 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
     { !pdfViewer &&  
     <>
           <Box className={openThickness ? styles.speeddialDivOpen : styles.speeddialDivClose}>
-          <Button onClick={() => setOpenThickness(!openThickness)}> 
+            <Button className={styles.buttonThick} onClick={() => setOpenThickness(!openThickness)}> 
             <LineWeightIcon />
          </Button>  
             <InputSlider changeHandler={(v)=>changeCurrentWidth(v)} open={openThickness && !openDraw && !openColor}  value={options.currentWidth}/>
