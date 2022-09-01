@@ -721,13 +721,9 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
     { !pdfViewer &&  
     <>
           <Box className={openThickness ? styles.speeddialDivOpen : styles.speeddialDivClose}>
-          <SpeedDial
-              open={false}
-              direction='up'
-              ariaLabel="SpeedDial openIcon example"
-            onClick={() => setOpenThickness(!openThickness)}
-                icon={<SpeedDialIcon icon={<LineWeightIcon />}/>}
-         />   
+          <Button onClick={() => setOpenThickness(!openThickness)}> 
+            <LineWeightIcon />
+         </Button>  
             <InputSlider changeHandler={(v)=>changeCurrentWidth(v)} open={openThickness && !openDraw && !openColor}  value={options.currentWidth}/>
           </Box>
           <Box className={openDraw ? styles.speeddialDivOpen : styles.speeddialDivClose}>

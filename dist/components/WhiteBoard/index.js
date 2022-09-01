@@ -949,17 +949,11 @@ var Whiteboard = function Whiteboard(_ref9) {
     className: _indexModule.default.toolbar
   }, !pdfViewer && /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, /*#__PURE__*/_react.default.createElement(_Box.default, {
     className: openThickness ? _indexModule.default.speeddialDivOpen : _indexModule.default.speeddialDivClose
-  }, /*#__PURE__*/_react.default.createElement(_SpeedDial.default, {
-    open: false,
-    direction: "up",
-    ariaLabel: "SpeedDial openIcon example",
+  }, /*#__PURE__*/_react.default.createElement(_Button.default, {
     onClick: function onClick() {
       return setOpenThickness(!openThickness);
-    },
-    icon: /*#__PURE__*/_react.default.createElement(_SpeedDialIcon.default, {
-      icon: /*#__PURE__*/_react.default.createElement(_LineWeight.default, null)
-    })
-  }), /*#__PURE__*/_react.default.createElement(_Slider.default, {
+    }
+  }, /*#__PURE__*/_react.default.createElement(_LineWeight.default, null)), /*#__PURE__*/_react.default.createElement(_Slider.default, {
     changeHandler: function changeHandler(v) {
       return changeCurrentWidth(v);
     },

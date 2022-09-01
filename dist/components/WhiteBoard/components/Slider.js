@@ -48,7 +48,7 @@ function InputSlider(props) {
   return /*#__PURE__*/React.createElement(_Box.default, {
     sx: {
       width: 280,
-      marginBottom: "60px",
+      marginBottom: "120px",
       backgroundColor: 'white',
       display: props != null && props.open ? "flex" : "none",
       boxShadow: open ? '0 0 10px #ccc' : 'none',

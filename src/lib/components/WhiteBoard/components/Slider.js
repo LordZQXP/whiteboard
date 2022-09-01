@@ -25,7 +25,7 @@ export default function InputSlider(props) {
     };
 
     return (
-        <Box sx={{ width: 280, marginBottom: "60px", backgroundColor:'white', display: props?.open ? "flex" : "none", boxShadow: open ? '0 0 10px #ccc' : 'none', position:'absolute', zIndex:'999999999999', paddingLeft:'5px', paddingRight:'5px', justifyContent:'center', alignItems:'center' }}>
+        <Box sx={{ width: 280, marginBottom: "120px", backgroundColor:'white', display: props?.open ? "flex" : "none", boxShadow: open ? '0 0 10px #ccc' : 'none', position:'absolute', zIndex:'999999999999', paddingLeft:'5px', paddingRight:'5px', justifyContent:'center', alignItems:'center' }}>
             <Grid container spacing={2} alignItems="center" className={styles.slider}>
                 <Grid item xs className={styles.slider}>
                     <Slider
