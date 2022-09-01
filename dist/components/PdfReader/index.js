@@ -40,6 +40,16 @@ var PDFReader = function PDFReader(_ref) {
     setNumPages(numPages);
   }
 
+  var _React$useState3 = _react.default.useState(500),
+      width = _React$useState3[0],
+      setWidth = _React$useState3[1];
+
+  _react.default.useEffect(function () {
+    if (window.innerWidth > 900) setWidth(500);else if (window.innerWidth > 480 && window.innerWidth < 900) setWidth(window.innerWidth);else if (window.innerWidth > 350) {
+      setWidth(350);
+    } else if (window.innerWidth < 330) setWidth(200);
+  }, [window.innerWidth]);
+
   return /*#__PURE__*/_react.default.createElement("div", {
     className: _indexModule.default.pdfFixedDiv
   }, /*#__PURE__*/_react.default.createElement(_entry.Document, {
@@ -47,7 +57,7 @@ var PDFReader = function PDFReader(_ref) {
     onLoadSuccess: onDocumentLoadSuccess
   }, /*#__PURE__*/_react.default.createElement(_entry.Page, {
     pageNumber: pageNumber,
-    width: window.innerWidth > 500 ? 500 : window.innerWidth
+    width: width
   })), open && /*#__PURE__*/_react.default.createElement("div", {
     className: _indexModule2.default.nextFixedButton
   }, " ", /*#__PURE__*/_react.default.createElement(_material.Button, {

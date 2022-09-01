@@ -546,43 +546,47 @@ var Whiteboard = function Whiteboard(_ref9) {
       canvas = _useState2[0],
       setCanvas = _useState2[1];
 
-  var _useState3 = (0, _react.useState)(5),
-      brushWidth = _useState3[0],
-      setBrushWidth = _useState3[1];
+  var _useState3 = (0, _react.useState)(false),
+      submitPdf = _useState3[0],
+      setSubmitPdf = _useState3[1];
 
-  var _useState4 = (0, _react.useState)({}),
-      pages = _useState4[0],
-      setPages = _useState4[1];
+  var _useState4 = (0, _react.useState)(5),
+      brushWidth = _useState4[0],
+      setBrushWidth = _useState4[1];
 
-  var _useState5 = (0, _react.useState)([]),
-      canvasPage = _useState5[0],
-      setCanvasPage = _useState5[1];
+  var _useState5 = (0, _react.useState)({}),
+      pages = _useState5[0],
+      setPages = _useState5[1];
 
-  var _useState6 = (0, _react.useState)(0),
-      index = _useState6[0],
-      setIndex = _useState6[1];
+  var _useState6 = (0, _react.useState)([]),
+      canvasPage = _useState6[0],
+      setCanvasPage = _useState6[1];
 
-  var _useState7 = (0, _react.useState)(1),
-      zoomValue = _useState7[0],
-      setZoomValue = _useState7[1];
+  var _useState7 = (0, _react.useState)(0),
+      index = _useState7[0],
+      setIndex = _useState7[1];
 
-  var _useState8 = (0, _react.useState)({
+  var _useState8 = (0, _react.useState)(1),
+      zoomValue = _useState8[0],
+      setZoomValue = _useState8[1];
+
+  var _useState9 = (0, _react.useState)({
     file: '',
     totalPages: null,
     currentPageNumber: 1,
     currentPage: ''
   }),
-      fileReaderInfo = _useState8[0],
-      setFileReaderInfo = _useState8[1];
+      fileReaderInfo = _useState9[0],
+      setFileReaderInfo = _useState9[1];
 
-  var _useState9 = (0, _react.useState)({
+  var _useState10 = (0, _react.useState)({
     file: pdf,
     totalPages: null,
     currentPageNumber: 1,
     currentPage: ''
   }),
-      fileCanvasInfo = _useState9[0],
-      setFileCanvasInfo = _useState9[1];
+      fileCanvasInfo = _useState10[0],
+      setFileCanvasInfo = _useState10[1];
 
   (0, _react.useEffect)(function () {
     options.currentColor = currColor;
@@ -664,75 +668,133 @@ var Whiteboard = function Whiteboard(_ref9) {
   }
 
   function onSaveCanvasAsImage() {
-    (0, _sweetalert.default)({
-      title: "Are you sure?",
-      text: "Once submitted, you can't reverse the changes.",
-      icon: "warning",
-      customClass: "Custom_Cancel",
-      buttons: true,
-      dangerMode: true
-    }).then( /*#__PURE__*/function () {
-      var _ref11 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(willDelete) {
-        var _extends4;
+    console.log(submitPdf);
 
-        return _regeneratorRuntime().wrap(function _callee2$(_context2) {
-          while (1) {
-            switch (_context2.prev = _context2.next) {
-              case 0:
-                if (!willDelete) {
-                  _context2.next = 8;
+    if (submitPdf && pdf) {
+      (0, _sweetalert.default)({
+        title: "Are you sure?",
+        text: "Once submitted, you can't reverse the changes.",
+        icon: "warning",
+        customClass: "Custom_Cancel",
+        buttons: true,
+        dangerMode: true
+      }).then( /*#__PURE__*/function () {
+        var _ref11 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(willDelete) {
+          var _extends4;
+
+          return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+            while (1) {
+              switch (_context2.prev = _context2.next) {
+                case 0:
+                  if (!willDelete) {
+                    _context2.next = 8;
+                    break;
+                  }
+
+                  canvasRef.current.toBlob(function (blob) {
+                    var _extends2, _extends3;
+
+                    setPages(_extends({}, pages, (_extends2 = {}, _extends2[index] = blob, _extends2)));
+                    setFiles(_extends({}, pages, (_extends3 = {}, _extends3[index] = blob, _extends3)));
+                  });
+                  setJSON(_extends({}, canvasPage, (_extends4 = {}, _extends4[index] = canvas.toJSON(), _extends4)));
+                  setPages({});
+                  clearCanvas(canvas);
+                  updateFileCanvasInfo({
+                    file: "",
+                    currentPageNumber: 1
+                  });
+                  _context2.next = 9;
                   break;
-                }
 
-                canvasRef.current.toBlob(function (blob) {
-                  var _extends2, _extends3;
+                case 8:
+                  return _context2.abrupt("return");
 
-                  setPages(_extends({}, pages, (_extends2 = {}, _extends2[index] = blob, _extends2)));
-                  setFiles(_extends({}, pages, (_extends3 = {}, _extends3[index] = blob, _extends3)));
-                });
-                setJSON(_extends({}, canvasPage, (_extends4 = {}, _extends4[index] = canvas.toJSON(), _extends4)));
-                setPages({});
-                clearCanvas(canvas);
-                updateFileCanvasInfo({
-                  file: "",
-                  currentPageNumber: 1
-                });
-                _context2.next = 9;
-                break;
-
-              case 8:
-                return _context2.abrupt("return");
-
-              case 9:
-              case "end":
-                return _context2.stop();
+                case 9:
+                case "end":
+                  return _context2.stop();
+              }
             }
-          }
-        }, _callee2);
-      }));
+          }, _callee2);
+        }));
 
-      return function (_x) {
-        return _ref11.apply(this, arguments);
-      };
-    }());
+        return function (_x) {
+          return _ref11.apply(this, arguments);
+        };
+      }());
+    } else if (!submitPdf && pdf) {
+      (0, _sweetalert.default)("Info", "Please check the entire assignment", "info");
+    } else {
+      (0, _sweetalert.default)({
+        title: "Are you sure?",
+        text: "Once submitted, you can't reverse the changes.",
+        icon: "warning",
+        customClass: "Custom_Cancel",
+        buttons: true,
+        dangerMode: true
+      }).then( /*#__PURE__*/function () {
+        var _ref12 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(willDelete) {
+          var _extends7;
+
+          return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+            while (1) {
+              switch (_context3.prev = _context3.next) {
+                case 0:
+                  if (!willDelete) {
+                    _context3.next = 8;
+                    break;
+                  }
+
+                  canvasRef.current.toBlob(function (blob) {
+                    var _extends5, _extends6;
+
+                    setPages(_extends({}, pages, (_extends5 = {}, _extends5[index] = blob, _extends5)));
+                    setFiles(_extends({}, pages, (_extends6 = {}, _extends6[index] = blob, _extends6)));
+                  });
+                  setJSON(_extends({}, canvasPage, (_extends7 = {}, _extends7[index] = canvas.toJSON(), _extends7)));
+                  setPages({});
+                  clearCanvas(canvas);
+                  updateFileCanvasInfo({
+                    file: "",
+                    currentPageNumber: 1
+                  });
+                  _context3.next = 9;
+                  break;
+
+                case 8:
+                  return _context3.abrupt("return");
+
+                case 9:
+                case "end":
+                  return _context3.stop();
+              }
+            }
+          }, _callee3);
+        }));
+
+        return function (_x2) {
+          return _ref12.apply(this, arguments);
+        };
+      }());
+    }
   }
 
   function nextPage(canvas) {
-    var _extends5;
+    var _extends8;
 
     backUpCanvas = [];
-    setCanvasPage(_extends({}, canvasPage, (_extends5 = {}, _extends5[index] = canvas.toJSON(), _extends5)));
+    setCanvasPage(_extends({}, canvasPage, (_extends8 = {}, _extends8[index] = canvas.toJSON(), _extends8)));
     canvasRef.current.toBlob(function (blob) {
-      var _extends6;
+      var _extends9;
 
-      setPages(_extends({}, pages, (_extends6 = {}, _extends6[index] = blob, _extends6)));
+      setPages(_extends({}, pages, (_extends9 = {}, _extends9[index] = blob, _extends9)));
     });
     if (canvasPage[index + 1] !== undefined) canvas.loadFromJSON(canvasPage[index + 1]);else clearCanvasNextPage(canvas);
     setIndex(index + 1);
   }
 
   function previousPage(canvas) {
-    var _extends7;
+    var _extends10;
 
     backUpCanvas = [];
 
@@ -740,11 +802,11 @@ var Whiteboard = function Whiteboard(_ref9) {
       return;
     }
 
-    setCanvasPage(_extends({}, canvasPage, (_extends7 = {}, _extends7[index] = canvas.toJSON(), _extends7)));
+    setCanvasPage(_extends({}, canvasPage, (_extends10 = {}, _extends10[index] = canvas.toJSON(), _extends10)));
     canvasRef.current.toBlob(function (blob) {
-      var _extends8;
+      var _extends11;
 
-      setPages(_extends({}, pages, (_extends8 = {}, _extends8[index] = blob, _extends8)));
+      setPages(_extends({}, pages, (_extends11 = {}, _extends11[index] = blob, _extends11)));
     });
     canvas.loadFromJSON(canvasPage[index - 1]);
     setIndex(index - 1);
@@ -768,9 +830,9 @@ var Whiteboard = function Whiteboard(_ref9) {
       pdfViewer = _React$useState[0],
       setPdfViewer = _React$useState[1];
 
-  var _useState10 = (0, _react.useState)(''),
-      imgSRC = _useState10[0],
-      setImgSRC = _useState10[1];
+  var _useState11 = (0, _react.useState)(''),
+      imgSRC = _useState11[0],
+      setImgSRC = _useState11[1];
 
   function updateFileReaderInfo(data) {
     setImgSRC(data);
@@ -818,17 +880,17 @@ var Whiteboard = function Whiteboard(_ref9) {
     }
   };
 
-  var _useState11 = (0, _react.useState)(false),
-      openDraw = _useState11[0],
-      setOpenDraw = _useState11[1];
-
   var _useState12 = (0, _react.useState)(false),
-      openThickness = _useState12[0],
-      setOpenThickness = _useState12[1];
+      openDraw = _useState12[0],
+      setOpenDraw = _useState12[1];
 
   var _useState13 = (0, _react.useState)(false),
-      openColor = _useState13[0],
-      setOpenColor = _useState13[1];
+      openThickness = _useState13[0],
+      setOpenThickness = _useState13[1];
+
+  var _useState14 = (0, _react.useState)(false),
+      openColor = _useState14[0],
+      setOpenColor = _useState14[1];
 
   var startCounter = function startCounter(zoom) {
     var value = zoomValue;
@@ -844,9 +906,9 @@ var Whiteboard = function Whiteboard(_ref9) {
     }
   };
 
-  var _useState14 = (0, _react.useState)(false),
-      zoomToggle = _useState14[0],
-      setZoomToggle = _useState14[1];
+  var _useState15 = (0, _react.useState)(false),
+      zoomToggle = _useState15[0],
+      setZoomToggle = _useState15[1];
 
   (0, _react.useEffect)(function () {
     if (canvas) {
@@ -932,6 +994,7 @@ var Whiteboard = function Whiteboard(_ref9) {
     open: pdfViewer,
     updateFileReaderInfo: updateFileReaderInfo
   }), pdf && !pdfViewer && /*#__PURE__*/_react.default.createElement(_PdfCanvas.default, {
+    setSubmitPdf: setSubmitPdf,
     next: function next() {
       return nextPage(canvas);
     },

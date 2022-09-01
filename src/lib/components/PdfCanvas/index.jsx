@@ -9,11 +9,10 @@ import { Button } from '@mui/material';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
-const PDFCanvas = ({ fileCanvasInfo, updateFileCanvasInfo, back, next }) => {
+const PDFCanvas = ({ fileCanvasInfo, updateFileCanvasInfo, back, next, setSubmitPdf }) => {
     function onRenderSuccess() {
         const importPDFCanvas = document.querySelector('.import-pdf-page canvas');
         const pdfAsImageSrc = importPDFCanvas.toDataURL();
-
         updateFileCanvasInfo({ currentPage: pdfAsImageSrc });
     }
 
@@ -24,10 +23,16 @@ const PDFCanvas = ({ fileCanvasInfo, updateFileCanvasInfo, back, next }) => {
     function changePage(offset) {
         updateFileCanvasInfo({ currentPageNumber: fileCanvasInfo.currentPageNumber + offset });
     }
+    
+    function submitPdf() {
+        setSubmitPdf(true);
+    }
 
     const nextPage = () => {
-        changePage(1)
+        changePage(1);
         next();
+        if(fileCanvasInfo.currentPageNumber+1 == fileCanvasInfo.totalPages)
+        submitPdf() 
     };
     const previousPage = () => {
         changePage(-1);

@@ -449,6 +449,7 @@ function zoomCanvas (canvas, whiteboard, zoomValue){
 const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undefined, json, pdfUrl, resend, pdf = undefined, setResendFiles }) => {
   const [currColor, setCurrColor] = useState(color[0]?.color);
   const [canvas, setCanvas] = useState(null);
+  const [submitPdf, setSubmitPdf] = useState(false);
   const [brushWidth, setBrushWidth] = useState(5);
   const [pages, setPages] = useState({});
   const [canvasPage, setCanvasPage] = useState([]);
@@ -540,27 +541,57 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
   }
 
   function onSaveCanvasAsImage() {
-    swal({
-      title: "Are you sure?",
-      text: "Once submitted, you can't reverse the changes.",
-      icon: "warning",
-      customClass: "Custom_Cancel",
-      buttons: true,
-      dangerMode: true,
-    }).then(async (willDelete) => {
-      if (willDelete) {
-        canvasRef.current.toBlob(function (blob) {
-          setPages({ ...pages, [index]: blob });
-          setFiles({ ...pages, [index]: blob });
-        });
-        setJSON({ ...canvasPage, [index]: canvas.toJSON() });
-        setPages({});
-        clearCanvas(canvas);
-        updateFileCanvasInfo({ file: "", currentPageNumber: 1 });
-      } else {
-        return;
-      }
-    });
+    console.log(submitPdf);
+    if(submitPdf && pdf){
+      swal({
+        title: "Are you sure?",
+        text: "Once submitted, you can't reverse the changes.",
+        icon: "warning",
+        customClass: "Custom_Cancel",
+        buttons: true,
+        dangerMode: true,
+      }).then(async (willDelete) => {
+        if (willDelete) {
+          canvasRef.current.toBlob(function (blob) {
+            setPages({ ...pages, [index]: blob });
+            setFiles({ ...pages, [index]: blob });
+          });
+          setJSON({ ...canvasPage, [index]: canvas.toJSON() });
+          setPages({});
+          clearCanvas(canvas);
+          updateFileCanvasInfo({ file: "", currentPageNumber: 1 });
+        } else {
+          return;
+        }
+      });
+    }
+    else if(!submitPdf && pdf) {
+      swal("Info", "Please check the entire assignment", "info");
+    }
+    else{
+      swal({
+        title: "Are you sure?",
+        text: "Once submitted, you can't reverse the changes.",
+        icon: "warning",
+        customClass: "Custom_Cancel",
+        buttons: true,
+        dangerMode: true,
+      }).then(async (willDelete) => {
+        if (willDelete) {
+          canvasRef.current.toBlob(function (blob) {
+            setPages({ ...pages, [index]: blob });
+            setFiles({ ...pages, [index]: blob });
+          });
+          setJSON({ ...canvasPage, [index]: canvas.toJSON() });
+          setPages({});
+          clearCanvas(canvas);
+          updateFileCanvasInfo({ file: "", currentPageNumber: 1 });
+        } else {
+          return;
+        }
+      });
+    }
+
   }
 
   function nextPage(canvas) {
@@ -714,7 +745,7 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
 
       </div>
        { pdfViewer && <PdfReader savePage={() => nextPage(canvas)} fileReaderInfo={pdfUrl} open={pdfViewer} updateFileReaderInfo={updateFileReaderInfo} />}
-        {(pdf && !pdfViewer) && <PDFCanvas next={() => nextPage(canvas)} back={() => previousPage(canvas)} fileCanvasInfo={fileCanvasInfo} updateFileCanvasInfo={updateFileCanvasInfo} />}
+        {(pdf && !pdfViewer) && <PDFCanvas setSubmitPdf={setSubmitPdf} next={() => nextPage(canvas)} back={() => previousPage(canvas)} fileCanvasInfo={fileCanvasInfo} updateFileCanvasInfo={updateFileCanvasInfo} />}
       </div>
     <div className={styles.toolbarWithColor} style={{ backgroundColor: 'transparent'}}>
         <div className={styles.toolbar}>

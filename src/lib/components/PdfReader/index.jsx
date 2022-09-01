@@ -18,10 +18,24 @@ const PDFReader = ({ fileReaderInfo, open }) => {
     setNumPages(numPages);
   }
 
+  const [width, setWidth] = React.useState(500);
+
+  React.useEffect(()=>{
+    if (window.innerWidth > 900)
+      setWidth(500);
+    else if (window.innerWidth > 480 && window.innerWidth < 900)
+      setWidth(window.innerWidth);
+    else if(window.innerWidth > 350){
+      setWidth(350);
+    }
+    else if(window.innerWidth < 330)
+      setWidth(200);
+  },[window.innerWidth])
+
   return (
     <div className={styles.pdfFixedDiv}>
       <Document file={fileReaderInfo} onLoadSuccess={onDocumentLoadSuccess}>
-        <Page pageNumber={pageNumber} width={window.innerWidth > 500 ? 500 : window.innerWidth} />
+        <Page pageNumber={pageNumber} width={width} />
       </Document>
       {open && <div className={stylesW.nextFixedButton}> <Button className={stylesW.floatingButtonsZoom} onClick={() => setPageNumber(pageNumber - 1 >0 ? pageNumber - 1 : 1)}><ArrowBackIosNewIcon className={stylesW.blackIcon} /></Button> 
         <p>

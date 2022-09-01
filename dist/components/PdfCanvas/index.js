@@ -27,7 +27,8 @@ var PDFCanvas = function PDFCanvas(_ref) {
   var fileCanvasInfo = _ref.fileCanvasInfo,
       updateFileCanvasInfo = _ref.updateFileCanvasInfo,
       back = _ref.back,
-      next = _ref.next;
+      next = _ref.next,
+      setSubmitPdf = _ref.setSubmitPdf;
 
   function onRenderSuccess() {
     var importPDFCanvas = document.querySelector('.import-pdf-page canvas');
@@ -50,9 +51,14 @@ var PDFCanvas = function PDFCanvas(_ref) {
     });
   }
 
+  function submitPdf() {
+    setSubmitPdf(true);
+  }
+
   var nextPage = function nextPage() {
     changePage(1);
     next();
+    if (fileCanvasInfo.currentPageNumber + 1 == fileCanvasInfo.totalPages) submitPdf();
   };
 
   var previousPage = function previousPage() {
