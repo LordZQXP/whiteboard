@@ -14,7 +14,7 @@ const App = () => {
   React.useEffect(()=>{
     if(Object.values(files).length >0){
       if(resendFiles){
-        console.log("Resend")
+        
       }
     for (let i = 0; i < Object.values(files).length; i++){
       saveAs(Object.values(files)[i], `page${i+1}.png`);
@@ -81,7 +81,7 @@ const App = () => {
   const height = window.innerHeight > 670 ? 670 : window.innerHeight;
   let number = Math.floor((Math.random() * 100) + 1);
 
-  const pdfUrl = "https://stemboard-stagging.s3.amazonaws.com/545148257444/545155562625/Cg4I956t4IUOEIH5tu7uDw/1662017782009.blob"
+  const pdfUrl = "https://stemboard-stagging.s3.amazonaws.com/545148257444/545156996004/Cg4I956t4IUOEKS3ju_uDw/1662020088490.blob"
   
   return (
     <div className={styles.app}>

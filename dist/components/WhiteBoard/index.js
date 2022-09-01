@@ -853,10 +853,10 @@ var Whiteboard = function Whiteboard(_ref9) {
       var center = canvas.getCenter();
 
       _fabric.fabric.Image.fromURL(fileCanvasInfo.currentPage, function (img) {
-        img.scaleToHeight(window.innerWidth > 500 ? window.innerWidth : 360);
-        img.scaleToWidth(window.innerWidth > 500 ? window.innerHeight - 150 > 1000 ? 900 : window.innerHeight - 150 : 360);
+        img.scaleToHeight(whiteboardRef.current.clientWidth);
+        img.scaleToWidth(whiteboardRef.current.clientWidth);
         canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
-          top: center.top,
+          top: window.innerWidth > 500 ? center.top + 225 : center.top + 25,
           left: center.left,
           originX: 'center',
           originY: 'center'
