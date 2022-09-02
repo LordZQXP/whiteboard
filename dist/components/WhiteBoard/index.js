@@ -37,8 +37,6 @@ var _Group = _interopRequireDefault(require("./images/Group 6949.png"));
 
 var _Group2 = _interopRequireDefault(require("./images/Group 6948.png"));
 
-var _thickness = _interopRequireDefault(require("./images/thickness.png"));
-
 var _Group3 = _interopRequireDefault(require("./images/Group 6946.png"));
 
 var _Group4 = _interopRequireDefault(require("./images/Group 6947.png"));
@@ -62,8 +60,6 @@ var _SpeedDial = _interopRequireDefault(require("@mui/material/SpeedDial"));
 var _SpeedDialAction = _interopRequireDefault(require("@mui/material/SpeedDialAction"));
 
 var _SpeedDialIcon = _interopRequireDefault(require("@mui/material/SpeedDialIcon"));
-
-var _fileSaver = require("file-saver");
 
 var _Slider = _interopRequireDefault(require("./components/Slider"));
 
@@ -954,7 +950,7 @@ var Whiteboard = function Whiteboard(_ref9) {
     }
   }, /*#__PURE__*/_react.default.createElement(_ArrowForwardIos.default, {
     className: _indexModule.default.blackIcon
-  })), " "), /*#__PURE__*/_react.default.createElement("div", {
+  })), " "), !pdfViewer && /*#__PURE__*/_react.default.createElement("div", {
     className: _indexModule.default.zoomFixedButton
   }, /*#__PURE__*/_react.default.createElement(_Button.default, {
     onClick: function onClick() {

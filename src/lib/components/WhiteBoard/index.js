@@ -15,7 +15,6 @@ import RotateLeft from "./images/rotate-ccw@3x.png";
 import RotateRight from "./images/rotate-cw@3x.png";
 import submit from "./images/Group 6949.png"
 import sendTostudent from "./images/Group 6948.png"
-import thickness from "./images/thickness.png"
 import preview from "./images/Group 6946.png"
 import canvasIcon from "./images/Group 6947.png"
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
@@ -28,7 +27,6 @@ import Button from '@mui/material/Button';
 import SpeedDial from '@mui/material/SpeedDial';
 import SpeedDialAction from '@mui/material/SpeedDialAction';
 import SpeedDialIcon from '@mui/material/SpeedDialIcon';
-import {saveAs} from 'file-saver';
 import InputSlider from './components/Slider';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
@@ -734,14 +732,16 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
       <div>
       <div>
           {(!pdfViewer && !pdf) && <div className={styles.nextFixedButton}> <Button className={styles.floatingButtonsZoom} onClick={() => previousPage(canvas)}><ArrowBackIosNewIcon className={styles.blackIcon} /></Button> <Button className={styles.floatingButtonsZoom} onClick={() => nextPage(canvas)}><ArrowForwardIosIcon className={styles.blackIcon} /></Button> </div>}
-          <div className={styles.zoomFixedButton}>
+          {
+            (!pdfViewer) &&
+            <div className={styles.zoomFixedButton}>
               <Button onClick={() => setZoomToggle(!zoomToggle)}>
                 <PageviewOutlinedIcon />
                 </Button>
               <div style={{display: zoomToggle ? 'flex' : 'none', flexDirection:'column-reverse', alignItems:'center' }}> 
               <Button className={styles.floatingButtonsZoom} onMouseDown={() => startCounter("out")} onMouseUp={stopCounter} onMouseLeave={stopCounter} onClick={() => zoomOut(zoomValue - .01)}><RemoveIcon /></Button>{(zoomValue * 100).toFixed(0)}%<Button onMouseDown={() => startCounter("in")} onMouseUp={stopCounter} onClick={() => zoomIn(zoomValue + .01)} className={styles.floatingButtonsZoom} onMouseLeave={stopCounter}><AddIcon /></Button> 
             </div>
-            </div>
+            </div>}
 
       </div>
        { pdfViewer && <PdfReader savePage={() => nextPage(canvas)} fileReaderInfo={pdfUrl} open={pdfViewer} updateFileReaderInfo={updateFileReaderInfo} />}

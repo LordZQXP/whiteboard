@@ -19,6 +19,8 @@ var _ArrowBackIosNew = _interopRequireDefault(require("@mui/icons-material/Arrow
 
 var _material = require("@mui/material");
 
+var _CircularProgress = _interopRequireDefault(require("../CircularProgress"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 _reactPdf.pdfjs.GlobalWorkerOptions.workerSrc = "//cdnjs.cloudflare.com/ajax/libs/pdf.js/" + _reactPdf.pdfjs.version + "/pdf.worker.js";
@@ -30,6 +32,10 @@ var PDFCanvas = function PDFCanvas(_ref) {
       next = _ref.next,
       setSubmitPdf = _ref.setSubmitPdf;
 
+  var _React$useState = _react.default.useState(true),
+      spinnerValue = _React$useState[0],
+      setSpinnerValue = _React$useState[1];
+
   function onRenderSuccess() {
     var importPDFCanvas = document.querySelector('.import-pdf-page canvas');
     var pdfAsImageSrc = importPDFCanvas.toDataURL();
@@ -40,6 +46,7 @@ var PDFCanvas = function PDFCanvas(_ref) {
 
   function onDocumentLoadSuccess(_ref2) {
     var numPages = _ref2.numPages;
+    setSpinnerValue(false);
     updateFileCanvasInfo({
       totalPages: numPages
     });
@@ -68,15 +75,12 @@ var PDFCanvas = function PDFCanvas(_ref) {
 
   return /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("div", {
     className: _indexModule.default.fileContainer
-  }, /*#__PURE__*/_react.default.createElement(_entry.Document, {
+  }, spinnerValue && /*#__PURE__*/_react.default.createElement(_CircularProgress.default, {
+    open: true
+  }), /*#__PURE__*/_react.default.createElement(_entry.Document, {
     className: _indexModule.default.document,
     file: fileCanvasInfo.file,
-    onLoadSuccess: onDocumentLoadSuccess,
-    onLoadProgress: function onLoadProgress(_ref3) {
-      var loaded = _ref3.loaded,
-          total = _ref3.total;
-      return console.log('Loading a document: ' + loaded / total * 100 + '%');
-    }
+    onLoadSuccess: onDocumentLoadSuccess
   }, /*#__PURE__*/_react.default.createElement(_entry.Page, {
     className: "import-pdf-page",
     onRenderSuccess: onRenderSuccess,
@@ -89,7 +93,7 @@ var PDFCanvas = function PDFCanvas(_ref) {
     onClick: previousPage
   }, /*#__PURE__*/_react.default.createElement(_ArrowBackIosNew.default, {
     className: _indexModule2.default.blackIcon
-  })), /*#__PURE__*/_react.default.createElement("span", null, fileCanvasInfo.currentPageNumber, "-", fileCanvasInfo.totalPages || '--'), /*#__PURE__*/_react.default.createElement(_material.Button, {
+  })), /*#__PURE__*/_react.default.createElement("span", null, "Page ", fileCanvasInfo.currentPageNumber, " of ", fileCanvasInfo.totalPages || '--'), /*#__PURE__*/_react.default.createElement(_material.Button, {
     className: _indexModule2.default.floatingButtonsZoom,
     disabled: fileCanvasInfo.currentPageNumber >= fileCanvasInfo.totalPages,
     onClick: nextPage

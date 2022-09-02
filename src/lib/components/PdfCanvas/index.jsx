@@ -6,10 +6,12 @@ import styles2 from '../WhiteBoard/index.module.scss';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import { Button } from '@mui/material';
+import SimpleBackdrop from '../CircularProgress';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 const PDFCanvas = ({ fileCanvasInfo, updateFileCanvasInfo, back, next, setSubmitPdf }) => {
+    const [spinnerValue, setSpinnerValue] = React.useState(true);
     function onRenderSuccess() {
         const importPDFCanvas = document.querySelector('.import-pdf-page canvas');
         const pdfAsImageSrc = importPDFCanvas.toDataURL();
@@ -17,6 +19,7 @@ const PDFCanvas = ({ fileCanvasInfo, updateFileCanvasInfo, back, next, setSubmit
     }
 
     function onDocumentLoadSuccess({ numPages }) {
+        setSpinnerValue(false);
         updateFileCanvasInfo({ totalPages: numPages });
     }
 
@@ -42,13 +45,11 @@ const PDFCanvas = ({ fileCanvasInfo, updateFileCanvasInfo, back, next, setSubmit
     return (
         <div>
             <div className={styles.fileContainer}>
+               { spinnerValue && <SimpleBackdrop open={true} />}
                 <Document
                     className={styles.document}
                     file={fileCanvasInfo.file}
                     onLoadSuccess={onDocumentLoadSuccess}
-                    onLoadProgress={({ loaded, total }) =>
-                        console.log('Loading a document: ' + (loaded / total) * 100 + '%')
-                    }
                 >
                     <Page
                         className="import-pdf-page"
@@ -66,7 +67,7 @@ const PDFCanvas = ({ fileCanvasInfo, updateFileCanvasInfo, back, next, setSubmit
                     <ArrowBackIosNewIcon className={styles2.blackIcon} />
                 </Button>
                     <span>
-                        {fileCanvasInfo.currentPageNumber}-{fileCanvasInfo.totalPages || '--'}
+                       Page {fileCanvasInfo.currentPageNumber} of {fileCanvasInfo.totalPages || '--'}
                     </span>
                 <Button
                     className={styles2.floatingButtonsZoom}
