@@ -1,0 +1,257 @@
+.whiteboard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+
+  canvas {
+    border: 1px solid rgb(165, 165, 165);
+    border-radius: 3px;
+    margin-top: 60px;
+  }
+
+  button {
+    padding: 12px;
+    margin: 1px;
+    background-color: white;
+    border-radius: 3px;
+    box-shadow: none;
+    color: rgb(0, 0, 0);
+    border: none;
+    outline: none;
+    cursor: pointer;
+
+    &:hover {
+      background-color: white;
+    }
+  }
+  .canvas-container{
+    height: 600px !important;
+  }
+  
+}
+
+.colorToolbarDiv{
+  display:flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width:300px;
+  margin-top : 15px;
+  margin-bottom: 35px;
+}
+
+.colorDiv{
+   width:30px;
+   height:30px;
+   border-radius:50%;
+   cursor:pointer;
+}
+
+.upperToolBar{
+  position:fixed;
+  top:0;
+  width:100%;
+  background-color:white;
+  display: flex;
+  justify-content:center;
+}
+
+.upperToolBarFlex{
+  display: flex;
+  justify-content:space-between;
+  max-width:400px;
+  width:100%;
+}
+
+.nextFixedButton{
+  position: fixed; 
+  margin-bottom: 70px;
+  bottom: 0;
+  right: 0;
+  margin-right: 5px;
+  z-index: 1000;
+  display: flex; 
+  flex-direction: column-reverse;
+  justify-content: right;
+  background-color: white;
+
+}
+
+.zoomFixedButton{
+  position: fixed; 
+  margin-bottom: 70px;
+  bottom: 0;
+  left: 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column-reverse;
+  margin-left: 8px; 
+  justify-content: right;
+  align-items: center;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  position: relative;
+  align-items:flex-end;
+  padding-bottom: 10px;
+
+  img {
+    width: 22px;
+    vertical-align: middle;
+    padding: 2.5px;
+  }
+
+  input {
+    margin: 0 2px;
+  }
+
+  input:not([type='checkbox']) {
+    width: 50px;
+  }
+}
+
+.dropdownButton {
+  background-color: #7b7de0;
+  color: white;
+  padding: 11px 14px;
+  font-size: 14px;
+  border: none;
+}
+
+.uploadDropdown {
+  position: relative;
+  display: inline-block;
+
+  input {
+    display: none;
+  }
+}
+
+.toolbarWithColor{
+  display: flex;
+  flex-direction: column-reverse;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  z-index: 9999;
+  bottom: 0;
+  background-color: white;
+}
+
+.dropdownContent {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
+.dropdownContent span {
+  display: block;
+  color: black;
+  padding: 12px 16px;
+  cursor: pointer;
+}
+
+.dropdownContent span:hover {
+  background-color: #ddd;
+}
+
+.uploadDropdown:hover .dropdownContent {
+  display: block;
+}
+
+.uploadDropdown:hover .dropdownButton {
+  background-color: #c8c8c8;
+}
+
+.slider{
+   max-width: 240;
+   display: flex;
+   align-items: center;
+}
+
+.sliderbox {
+  width: 280;
+  margin-bottom: 60px;
+  background-color:white; 
+  display: flex;
+  box-shadow: 0 0 10px #ccc;
+  position:absolute;
+  z-index:999999999999;
+  padding-left:5px;
+  padding-right:5px;
+  justify-content:center;
+  align-items:center;
+}
+
+.flexDiv{
+  display:flex
+}
+
+.speeddialDivOpen{
+  display: flex;
+  flex-direction: column-reverse;
+  max-height: 100%;
+  // background-color: white;
+  box-shadow: 0 0 10px #ccc;
+}
+
+.buttonThick{
+  min-width: 56px;
+  min-height: 56px;
+}
+
+.speeddialDivClose{
+  display: flex;
+  flex-direction: column-reverse;
+  max-height: 50px; 
+  box-shadow: none;
+  background-color: transparent;
+}
+
+.speeddialColorDivOpen{
+  display: flex;
+  flex-direction: column-reverse;
+  max-height: 100%;
+  background-color: white;
+  box-shadow: 0 0 10px #ccc;
+
+}
+
+.speeddialColorDivClose{
+  display: flex;
+  flex-direction: column-reverse;
+  max-height: 50px; 
+   background-color: transparent;
+   box-shadow: none;
+}
+
+.blackIcon {
+  color : black
+}
+.blackSlantedIcon {
+  color : black;
+  rotate: -45deg
+
+}
+
+.floatingButtonsNextPrev{
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #ccc;
+}
+
+.floatingButtonsZoom{
+  width: 40px;
+  height: 40px;
+  border: 1px solid #ccc !important;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #ccc;
+}
