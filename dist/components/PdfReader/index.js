@@ -13,10 +13,6 @@ var _indexModule = _interopRequireDefault(require("./index.module.scss"));
 
 var _material = require("@mui/material");
 
-var _ArrowForwardIos = _interopRequireDefault(require("@mui/icons-material/ArrowForwardIos"));
-
-var _ArrowBackIosNew = _interopRequireDefault(require("@mui/icons-material/ArrowBackIosNew"));
-
 var _indexModule2 = _interopRequireDefault(require("../WhiteBoard/index.module.scss"));
 
 var _CircularProgress = _interopRequireDefault(require("../CircularProgress"));
@@ -54,14 +50,13 @@ var PDFReader = function PDFReader(_ref) {
   };
 
   var zoomOut = function zoomOut(value) {
-    setScale(value -= 0.01);
+    if (value > 1.0) setScale(value -= 0.01);
   };
 
   var startCounter = function startCounter(zoom) {
     var value = scale;
     intervalRef.current = setInterval(function () {
       if (zoom === "in") zoomIn(value);else {
-        if (value -= 0.01 < 1.0) return;
         zoomOut(value);
       }
     }, 10);
@@ -105,25 +100,14 @@ var PDFReader = function PDFReader(_ref) {
   }), /*#__PURE__*/_react.default.createElement(_entry.Document, {
     file: fileReaderInfo,
     onLoadSuccess: onDocumentLoadSuccess
-  }, /*#__PURE__*/_react.default.createElement(_entry.Page, {
-    pageNumber: pageNumber,
-    width: width,
-    scale: scale
+  }, Array.from(Array(numPages), function (e, x) {
+    return /*#__PURE__*/_react.default.createElement(_entry.Page, {
+      key: x,
+      pageNumber: x + 1,
+      width: width,
+      scale: scale
+    });
   })), open && /*#__PURE__*/_react.default.createElement("div", {
-    className: _indexModule2.default.nextFixedButton
-  }, " ", /*#__PURE__*/_react.default.createElement(_material.Button, {
-    className: _indexModule2.default.floatingButtonsZoom,
-    onClick: function onClick() {
-      return setPageNumber(pageNumber - 1 > 0 ? pageNumber - 1 : 1);
-    }
-  }, /*#__PURE__*/_react.default.createElement(_ArrowBackIosNew.default, {
-    className: _indexModule2.default.blackIcon
-  })), /*#__PURE__*/_react.default.createElement("p", null, "Page ", pageNumber, " of ", numPages), /*#__PURE__*/_react.default.createElement(_material.Button, {
-    className: _indexModule2.default.floatingButtonsZoom,
-    onClick: function onClick() {
-      return setPageNumber(pageNumber + 1 <= numPages ? pageNumber + 1 : pageNumber);
-    }
-  }, /*#__PURE__*/_react.default.createElement(_ArrowForwardIos.default, null)), " "), open && /*#__PURE__*/_react.default.createElement("div", {
     className: _indexModule2.default.zoomFixedButton
   }, /*#__PURE__*/_react.default.createElement(_material.Button, {
     onClick: function onClick() {

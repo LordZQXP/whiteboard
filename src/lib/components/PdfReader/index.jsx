@@ -3,8 +3,6 @@ import { Document, Page } from 'react-pdf/dist/esm/entry.webpack';
 import { pdfjs } from 'react-pdf';
 import styles from './index.module.scss';
 import { Button } from '@mui/material';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import stylesW from '../WhiteBoard/index.module.scss';
 import SimpleBackdrop from '../CircularProgress';
 import AddIcon from '@mui/icons-material/Add';
@@ -24,6 +22,7 @@ const PDFReader = ({ fileReaderInfo, open }) => {
   }
 
   const zoomOut = (value) => {
+    if (value > 1.0)
     setScale(value -= 0.01);
   }
 
@@ -33,8 +32,6 @@ const PDFReader = ({ fileReaderInfo, open }) => {
       if (zoom === "in")
         zoomIn(value);
       else{
-        if (value -= 0.01 < 1.0)
-        return;
         zoomOut(value);
       }
     }, 10);
@@ -73,13 +70,8 @@ const PDFReader = ({ fileReaderInfo, open }) => {
     <div className={styles.pdfFixedDiv}>
       {spinnerValue && <SimpleBackdrop open={true} />}
       <Document file={fileReaderInfo} onLoadSuccess={onDocumentLoadSuccess}>
-        <Page pageNumber={pageNumber} width={width} scale={scale} />
+        {Array.from(Array(numPages), (e,x) => <Page key={x} pageNumber={x+1} width={width} scale={scale} /> )}
       </Document>
-      {open && <div className={stylesW.nextFixedButton}> <Button className={stylesW.floatingButtonsZoom} onClick={() => setPageNumber(pageNumber - 1 >0 ? pageNumber - 1 : 1)}><ArrowBackIosNewIcon className={stylesW.blackIcon} /></Button> 
-        <p>
-          Page {pageNumber} of {numPages}
-        </p>
-      <Button className={stylesW.floatingButtonsZoom} onClick={() => setPageNumber(pageNumber + 1 <= numPages ? pageNumber+1 : pageNumber)}><ArrowForwardIosIcon /></Button> </div>}
       {
         (open) &&
         <div className={stylesW.zoomFixedButton}>
