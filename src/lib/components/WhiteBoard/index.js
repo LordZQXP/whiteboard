@@ -452,6 +452,7 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
   const [pages, setPages] = useState({});
   const [canvasPage, setCanvasPage] = useState([]);
   const [index, setIndex] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
   const [zoomValue, setZoomValue] = useState(1);
 
   const [fileReaderInfo, setFileReaderInfo] = useState({
@@ -539,7 +540,6 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
   }
 
   function onSaveCanvasAsImage() {
-    console.log(submitPdf);
     if(submitPdf && pdf){
       swal({
         title: "Are you sure?",
@@ -598,10 +598,13 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
     canvasRef.current.toBlob(function (blob) {
         setPages({...pages, [index] : blob});
       });
-    if(canvasPage[index+1] !== undefined)
+    if(canvasPage[index+1] !== undefined){
     canvas.loadFromJSON(canvasPage[index+1]);
-    else
+    }
+    else{
     clearCanvasNextPage(canvas);
+    setTotalPages(totalPages + 1);
+    }
     setIndex(index+1);
   }
 
@@ -731,7 +734,11 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
       <canvas ref={canvasRef} id="canvas" />
       <div>
       <div>
-          {(!pdfViewer && !pdf) && <div className={styles.nextFixedButton}> <Button className={styles.floatingButtonsZoom} onClick={() => previousPage(canvas)}><ArrowBackIosNewIcon className={styles.blackIcon} /></Button> <Button className={styles.floatingButtonsZoom} onClick={() => nextPage(canvas)}><ArrowForwardIosIcon className={styles.blackIcon} /></Button> </div>}
+          {(!pdfViewer && !pdf) && <div className={styles.nextFixedButton}> <Button className={styles.floatingButtonsZoom} onClick={() => previousPage(canvas)}><ArrowBackIosNewIcon className={styles.blackIcon} /></Button>
+            <p>
+            Page {index + 1} to { totalPages + 1 }
+            </p>
+           <Button className={styles.floatingButtonsZoom} onClick={() => nextPage(canvas)}><ArrowForwardIosIcon className={styles.blackIcon} /></Button> </div>}
           {
             (!pdfViewer) &&
             <div className={styles.zoomFixedButton}>

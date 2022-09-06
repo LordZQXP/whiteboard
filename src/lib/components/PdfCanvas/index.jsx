@@ -66,9 +66,9 @@ const PDFCanvas = ({ fileCanvasInfo, updateFileCanvasInfo, back, next, setSubmit
                     >
                     <ArrowBackIosNewIcon className={styles2.blackIcon} />
                 </Button>
-                    <span>
+                    <p>
                        Page {fileCanvasInfo.currentPageNumber} of {fileCanvasInfo.totalPages || '--'}
-                    </span>
+                    </p>
                 <Button
                     className={styles2.floatingButtonsZoom}
                     disabled={fileCanvasInfo.currentPageNumber >= fileCanvasInfo.totalPages}

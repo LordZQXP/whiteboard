@@ -562,27 +562,31 @@ var Whiteboard = function Whiteboard(_ref9) {
       index = _useState7[0],
       setIndex = _useState7[1];
 
-  var _useState8 = (0, _react.useState)(1),
-      zoomValue = _useState8[0],
-      setZoomValue = _useState8[1];
+  var _useState8 = (0, _react.useState)(0),
+      totalPages = _useState8[0],
+      setTotalPages = _useState8[1];
 
-  var _useState9 = (0, _react.useState)({
+  var _useState9 = (0, _react.useState)(1),
+      zoomValue = _useState9[0],
+      setZoomValue = _useState9[1];
+
+  var _useState10 = (0, _react.useState)({
     file: '',
     totalPages: null,
     currentPageNumber: 1,
     currentPage: ''
   }),
-      fileReaderInfo = _useState9[0],
-      setFileReaderInfo = _useState9[1];
+      fileReaderInfo = _useState10[0],
+      setFileReaderInfo = _useState10[1];
 
-  var _useState10 = (0, _react.useState)({
+  var _useState11 = (0, _react.useState)({
     file: pdf,
     totalPages: null,
     currentPageNumber: 1,
     currentPage: ''
   }),
-      fileCanvasInfo = _useState10[0],
-      setFileCanvasInfo = _useState10[1];
+      fileCanvasInfo = _useState11[0],
+      setFileCanvasInfo = _useState11[1];
 
   (0, _react.useEffect)(function () {
     options.currentColor = currColor;
@@ -664,8 +668,6 @@ var Whiteboard = function Whiteboard(_ref9) {
   }
 
   function onSaveCanvasAsImage() {
-    console.log(submitPdf);
-
     if (submitPdf && pdf) {
       (0, _sweetalert.default)({
         title: "Are you sure?",
@@ -785,7 +787,14 @@ var Whiteboard = function Whiteboard(_ref9) {
 
       setPages(_extends({}, pages, (_extends9 = {}, _extends9[index] = blob, _extends9)));
     });
-    if (canvasPage[index + 1] !== undefined) canvas.loadFromJSON(canvasPage[index + 1]);else clearCanvasNextPage(canvas);
+
+    if (canvasPage[index + 1] !== undefined) {
+      canvas.loadFromJSON(canvasPage[index + 1]);
+    } else {
+      clearCanvasNextPage(canvas);
+      setTotalPages(totalPages + 1);
+    }
+
     setIndex(index + 1);
   }
 
@@ -826,9 +835,9 @@ var Whiteboard = function Whiteboard(_ref9) {
       pdfViewer = _React$useState[0],
       setPdfViewer = _React$useState[1];
 
-  var _useState11 = (0, _react.useState)(''),
-      imgSRC = _useState11[0],
-      setImgSRC = _useState11[1];
+  var _useState12 = (0, _react.useState)(''),
+      imgSRC = _useState12[0],
+      setImgSRC = _useState12[1];
 
   function updateFileReaderInfo(data) {
     setImgSRC(data);
@@ -876,17 +885,17 @@ var Whiteboard = function Whiteboard(_ref9) {
     }
   };
 
-  var _useState12 = (0, _react.useState)(false),
-      openDraw = _useState12[0],
-      setOpenDraw = _useState12[1];
-
   var _useState13 = (0, _react.useState)(false),
-      openThickness = _useState13[0],
-      setOpenThickness = _useState13[1];
+      openDraw = _useState13[0],
+      setOpenDraw = _useState13[1];
 
   var _useState14 = (0, _react.useState)(false),
-      openColor = _useState14[0],
-      setOpenColor = _useState14[1];
+      openThickness = _useState14[0],
+      setOpenThickness = _useState14[1];
+
+  var _useState15 = (0, _react.useState)(false),
+      openColor = _useState15[0],
+      setOpenColor = _useState15[1];
 
   var startCounter = function startCounter(zoom) {
     var value = zoomValue;
@@ -902,9 +911,9 @@ var Whiteboard = function Whiteboard(_ref9) {
     }
   };
 
-  var _useState15 = (0, _react.useState)(false),
-      zoomToggle = _useState15[0],
-      setZoomToggle = _useState15[1];
+  var _useState16 = (0, _react.useState)(false),
+      zoomToggle = _useState16[0],
+      setZoomToggle = _useState16[1];
 
   (0, _react.useEffect)(function () {
     if (canvas) {
@@ -943,7 +952,7 @@ var Whiteboard = function Whiteboard(_ref9) {
     }
   }, /*#__PURE__*/_react.default.createElement(_ArrowBackIosNew.default, {
     className: _indexModule.default.blackIcon
-  })), " ", /*#__PURE__*/_react.default.createElement(_Button.default, {
+  })), /*#__PURE__*/_react.default.createElement("p", null, "Page ", index + 1, " to ", totalPages + 1), /*#__PURE__*/_react.default.createElement(_Button.default, {
     className: _indexModule.default.floatingButtonsZoom,
     onClick: function onClick() {
       return nextPage(canvas);

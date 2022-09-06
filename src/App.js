@@ -87,7 +87,7 @@ const App = () => {
   return (
     <div className={styles.app}>
       <main>
-        <Whiteboard aspectRatio={width/(height)} setFiles={setFiles} setResendFiles={setResendFiles} color={color} pdf={pdfUrl} setJSON={setCanvasJSON} pdfUrl={pdfUrl} resend={true} />
+        <Whiteboard aspectRatio={width/(height)} setFiles={setFiles} setResendFiles={setResendFiles} color={color} setJSON={setCanvasJSON} pdfUrl={pdfUrl} resend={true} />
       </main>
     </div>
   );

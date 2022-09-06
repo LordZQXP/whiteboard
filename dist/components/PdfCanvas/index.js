@@ -93,7 +93,7 @@ var PDFCanvas = function PDFCanvas(_ref) {
     onClick: previousPage
   }, /*#__PURE__*/_react.default.createElement(_ArrowBackIosNew.default, {
     className: _indexModule2.default.blackIcon
-  })), /*#__PURE__*/_react.default.createElement("span", null, "Page ", fileCanvasInfo.currentPageNumber, " of ", fileCanvasInfo.totalPages || '--'), /*#__PURE__*/_react.default.createElement(_material.Button, {
+  })), /*#__PURE__*/_react.default.createElement("p", null, "Page ", fileCanvasInfo.currentPageNumber, " of ", fileCanvasInfo.totalPages || '--'), /*#__PURE__*/_react.default.createElement(_material.Button, {
     className: _indexModule2.default.floatingButtonsZoom,
     disabled: fileCanvasInfo.currentPageNumber >= fileCanvasInfo.totalPages,
     onClick: nextPage
