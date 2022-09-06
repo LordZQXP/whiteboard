@@ -80,9 +80,8 @@ const App = () => {
 
   const width = window.innerWidth > 610 ? 610 : window.innerWidth;
   const height = window.innerHeight > 670 ? 670 : window.innerHeight;
-  let number = Math.floor((Math.random() * 100) + 1);
 
-  const pdfUrl = "https://stemboard-stagging.s3.amazonaws.com/545148257444/545156996004/Cg4I956t4IUOEKS3ju_uDw/1662020088490.blob";
+  const pdfUrl = "https://stemboard-stagging.s3.amazonaws.com/545148257444/1662465034153.pdf";
   
   return (
     <div className={styles.app}>

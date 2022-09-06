@@ -67,7 +67,7 @@ const PDFReader = ({ fileReaderInfo, open }) => {
   },[window.innerWidth])
 
   return (
-    <div className={styles.pdfFixedDiv}>
+    <div className={ numPages > 1 ? styles.pdfAbsoluteDiv : styles.pdfFixedDiv}>
       {spinnerValue && <SimpleBackdrop open={true} />}
       <Document file={fileReaderInfo} onLoadSuccess={onDocumentLoadSuccess}>
         {Array.from(Array(numPages), (e,x) => <Page key={x} pageNumber={x+1} width={width} scale={scale} /> )}
