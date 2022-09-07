@@ -100,7 +100,6 @@ function removeCanvasListener(canvas) {
   canvas.off('mouse:down');
   canvas.off('mouse:move');
   canvas.off('mouse:up');
-  canvas.off("touch:gesture");
   canvas.off("mouse:wheel");
 }
 
@@ -238,49 +237,26 @@ function createEllipse(canvas) {
 }
 
 /* ==== Zoom ==== */
-function panningZoom(canvas) {
+function panningZoom(canvas,zoomToggle) {
   if (options.currentMode !== modes.PANNING) {
     options.currentMode = modes.PANNING;
     removeCanvasListener(canvas);
 
-    canvas.on({
-      'touchstart': function (e) {
-        console.log("TERRER outside");
-        if (e.touches && e.touches.length == 2) {
-          console.log("TERRER");
-          pausePanning = true;
-          var point = new fabric.Point(e.self.x, e.self.y);
-          if (e.self.state == "start") {
-            zoomStartScale = self.canvas.getZoom();
-          }
-          var delta = zoomStartScale * e.self.scale;
-          self.canvas.zoomToPoint(point, delta);
-          pausePanning = false;
-        }
-      },
-      'object:selected': function () {
-        pausePanning = true;
-      },
-      'selection:cleared': function () {
-        pausePanning = false;
-      },
-      'touch:drag': function (e) {
-        if (pausePanning == false && undefined != e.layerX && undefined != e.layerY) {
-          currentX = e.layerX;
-          currentY = e.layerY;
-          xChange = currentX - lastX;
-          yChange = currentY - lastY;
-
-          if ((Math.abs(currentX - lastX) <= 50) && (Math.abs(currentY - lastY) <= 50)) {
-            var delta = new fabric.Point(xChange, yChange);
-            canvas.relativePan(delta);
-          }
-
-          lastX = e.layerX;
-          lastY = e.layerY;
-        }
-      }
-    });
+    // canvas.on({
+    //   'mouse:move': function (e) {
+    //     console.log("TERRER outside");
+    //     if (e.e.touches) {
+    //       console.log("TERRER");
+    //       console.log(e.e);
+    //       var point = new fabric.Point(e.x, e.y);
+    //       if (e.self.state == "start") {
+    //         zoomStartScale = self.canvas.getZoom();
+    //       }
+    //       var delta = zoomStartScale * e.self.scale;
+    //       self.canvas.zoomToPoint(point, delta);
+    //     }
+    //   }
+    // });
     canvas.on("mouse:wheel", opt => {
       if (!canvas.viewportTransform) {
         return;
@@ -302,8 +278,9 @@ function panningZoom(canvas) {
       opt.e.stopPropagation();
     });
   }
-  else{
+  else {
     removeCanvasListener(canvas);
+    draw(canvas);
   }
 }
 
@@ -814,7 +791,7 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
           {
             (!pdfViewer) &&
             <div className={styles.zoomFixedButton}>
-              <Button onClick={() => {panningZoom(canvas); setZoomToggle(!zoomToggle)}}>
+              <Button onClick={() => {panningZoom(canvas,!zoomToggle); setZoomToggle(!zoomToggle)}}>
                   {zoomToggle ? <SearchOffIcon /> : <ZoomOutMapIcon />}
                 </Button>
             </div>}

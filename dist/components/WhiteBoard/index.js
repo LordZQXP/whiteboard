@@ -152,7 +152,6 @@ function removeCanvasListener(canvas) {
   canvas.off('mouse:down');
   canvas.off('mouse:move');
   canvas.off('mouse:up');
-  canvas.off("touch:gesture");
   canvas.off("mouse:wheel");
 }
 /*  ==== line  ==== */
@@ -303,51 +302,25 @@ function createEllipse(canvas) {
 /* ==== Zoom ==== */
 
 
-function panningZoom(canvas) {
+function panningZoom(canvas, zoomToggle) {
   if (options.currentMode !== modes.PANNING) {
     options.currentMode = modes.PANNING;
-    removeCanvasListener(canvas);
-    canvas.on({
-      'touchstart': function touchstart(e) {
-        console.log("TERRER outside");
+    removeCanvasListener(canvas); // canvas.on({
+    //   'mouse:move': function (e) {
+    //     console.log("TERRER outside");
+    //     if (e.e.touches) {
+    //       console.log("TERRER");
+    //       console.log(e.e);
+    //       var point = new fabric.Point(e.x, e.y);
+    //       if (e.self.state == "start") {
+    //         zoomStartScale = self.canvas.getZoom();
+    //       }
+    //       var delta = zoomStartScale * e.self.scale;
+    //       self.canvas.zoomToPoint(point, delta);
+    //     }
+    //   }
+    // });
 
-        if (e.touches && e.touches.length == 2) {
-          console.log("TERRER");
-          pausePanning = true;
-          var point = new _fabric.fabric.Point(e.self.x, e.self.y);
-
-          if (e.self.state == "start") {
-            zoomStartScale = self.canvas.getZoom();
-          }
-
-          var delta = zoomStartScale * e.self.scale;
-          self.canvas.zoomToPoint(point, delta);
-          pausePanning = false;
-        }
-      },
-      'object:selected': function objectSelected() {
-        pausePanning = true;
-      },
-      'selection:cleared': function selectionCleared() {
-        pausePanning = false;
-      },
-      'touch:drag': function touchDrag(e) {
-        if (pausePanning == false && undefined != e.layerX && undefined != e.layerY) {
-          currentX = e.layerX;
-          currentY = e.layerY;
-          xChange = currentX - lastX;
-          yChange = currentY - lastY;
-
-          if (Math.abs(currentX - lastX) <= 50 && Math.abs(currentY - lastY) <= 50) {
-            var delta = new _fabric.fabric.Point(xChange, yChange);
-            canvas.relativePan(delta);
-          }
-
-          lastX = e.layerX;
-          lastY = e.layerY;
-        }
-      }
-    });
     canvas.on("mouse:wheel", function (opt) {
       if (!canvas.viewportTransform) {
         return;
@@ -366,6 +339,7 @@ function panningZoom(canvas) {
     });
   } else {
     removeCanvasListener(canvas);
+    draw(canvas);
   }
 }
 
@@ -1036,7 +1010,7 @@ var Whiteboard = function Whiteboard(_ref9) {
     className: _indexModule.default.zoomFixedButton
   }, /*#__PURE__*/_react.default.createElement(_Button.default, {
     onClick: function onClick() {
-      panningZoom(canvas);
+      panningZoom(canvas, !zoomToggle);
       setZoomToggle(!zoomToggle);
     }
   }, zoomToggle ? /*#__PURE__*/_react.default.createElement(_SearchOff.default, null) : /*#__PURE__*/_react.default.createElement(_ZoomOutMap.default, null)))), pdfViewer && /*#__PURE__*/_react.default.createElement(_PdfReader.default, {
