@@ -244,8 +244,10 @@ function panningZoom(canvas) {
     removeCanvasListener(canvas);
 
     canvas.on({
-      'touch:gesture': function (e) {
-        if (e.e.touches && e.e.touches.length == 2) {
+      'touchstart': function (e) {
+        console.log("TERRER outside");
+        if (e.touches && e.touches.length == 2) {
+          console.log("TERRER");
           pausePanning = true;
           var point = new fabric.Point(e.self.x, e.self.y);
           if (e.self.state == "start") {
@@ -263,9 +265,9 @@ function panningZoom(canvas) {
         pausePanning = false;
       },
       'touch:drag': function (e) {
-        if (pausePanning == false && undefined != e.e.layerX && undefined != e.e.layerY) {
-          currentX = e.e.layerX;
-          currentY = e.e.layerY;
+        if (pausePanning == false && undefined != e.layerX && undefined != e.layerY) {
+          currentX = e.layerX;
+          currentY = e.layerY;
           xChange = currentX - lastX;
           yChange = currentY - lastY;
 
@@ -274,8 +276,8 @@ function panningZoom(canvas) {
             canvas.relativePan(delta);
           }
 
-          lastX = e.e.layerX;
-          lastY = e.e.layerY;
+          lastX = e.layerX;
+          lastY = e.layerY;
         }
       }
     });
