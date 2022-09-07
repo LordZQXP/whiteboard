@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { fabric } from 'fabric';
 import getCursor from './cursors';
@@ -30,9 +30,10 @@ import SpeedDialIcon from '@mui/material/SpeedDialIcon';
 import InputSlider from './components/Slider';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
-import PageviewOutlinedIcon from '@mui/icons-material/PageviewOutlined';
+import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap';
 import PdfReader from "../PdfReader";
 import PDFCanvas from '../PdfCanvas';
+import SearchOffIcon from '@mui/icons-material/SearchOff';
 import swal from 'sweetalert';
 
 let drawInstance = null;
@@ -59,6 +60,7 @@ const modes = {
   LINE: 'LINE',
   PENCIL: 'PENCIL',
   ERASER: 'ERASER',
+  PANNING: 'PANNING'
 };
 
 const initCanvas = (width, height) => {
@@ -98,6 +100,8 @@ function removeCanvasListener(canvas) {
   canvas.off('mouse:down');
   canvas.off('mouse:move');
   canvas.off('mouse:up');
+  canvas.off("touch:gesture");
+  canvas.off("mouse:wheel");
 }
 
 /*  ==== line  ==== */
@@ -109,7 +113,6 @@ function createLine(canvas) {
     canvas.on('mouse:down', startAddLine(canvas));
     canvas.on('mouse:move', startDrawingLine(canvas));
     canvas.on('mouse:up', stopDrawing);
-    
     canvas.selection = false;
     canvas.hoverCursor = 'auto';
     canvas.isDrawingMode = false;
@@ -231,6 +234,74 @@ function createEllipse(canvas) {
     canvas.isDrawingMode = false;
     canvas.getObjects().map((item) => item.set({ selectable: false }));
     canvas.discardActiveObject().requestRenderAll();
+  }
+}
+
+/* ==== Zoom ==== */
+function panningZoom(canvas) {
+  if (options.currentMode !== modes.PANNING) {
+    options.currentMode = modes.PANNING;
+    removeCanvasListener(canvas);
+
+    canvas.on({
+      'touch:gesture': function (e) {
+        if (e.e.touches && e.e.touches.length == 2) {
+          pausePanning = true;
+          var point = new fabric.Point(e.self.x, e.self.y);
+          if (e.self.state == "start") {
+            zoomStartScale = self.canvas.getZoom();
+          }
+          var delta = zoomStartScale * e.self.scale;
+          self.canvas.zoomToPoint(point, delta);
+          pausePanning = false;
+        }
+      },
+      'object:selected': function () {
+        pausePanning = true;
+      },
+      'selection:cleared': function () {
+        pausePanning = false;
+      },
+      'touch:drag': function (e) {
+        if (pausePanning == false && undefined != e.e.layerX && undefined != e.e.layerY) {
+          currentX = e.e.layerX;
+          currentY = e.e.layerY;
+          xChange = currentX - lastX;
+          yChange = currentY - lastY;
+
+          if ((Math.abs(currentX - lastX) <= 50) && (Math.abs(currentY - lastY) <= 50)) {
+            var delta = new fabric.Point(xChange, yChange);
+            canvas.relativePan(delta);
+          }
+
+          lastX = e.e.layerX;
+          lastY = e.e.layerY;
+        }
+      }
+    });
+    canvas.on("mouse:wheel", opt => {
+      if (!canvas.viewportTransform) {
+        return;
+      }
+
+      var evt = opt.e;
+
+        var evt = opt.e;
+        var deltaY = evt.deltaY;
+        var zoom = canvas.getZoom();
+        zoom = zoom - deltaY / 100;
+        if (zoom > 20) zoom = 20;
+        if (zoom < 0.10) zoom = 0.10;
+        canvas.zoomToPoint(
+          new fabric.Point(evt.offsetX, evt.offsetY),
+          zoom
+        );
+      opt.e.preventDefault();
+      opt.e.stopPropagation();
+    });
+  }
+  else{
+    removeCanvasListener(canvas);
   }
 }
 
@@ -498,8 +569,7 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
 
     }
     if (json && canvas) fetchImg();
-  }, [json, canvas])
-
+  }, [json, canvas]);
 
   function changeCurrentWidth(value) {
     const intValue = parseInt(value);
@@ -742,12 +812,9 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
           {
             (!pdfViewer) &&
             <div className={styles.zoomFixedButton}>
-              <Button onClick={() => setZoomToggle(!zoomToggle)}>
-                <PageviewOutlinedIcon />
+              <Button onClick={() => {panningZoom(canvas); setZoomToggle(!zoomToggle)}}>
+                  {zoomToggle ? <SearchOffIcon /> : <ZoomOutMapIcon />}
                 </Button>
-              <div style={{display: zoomToggle ? 'flex' : 'none', flexDirection:'column-reverse', alignItems:'center' }}> 
-              <Button className={styles.floatingButtonsZoom} onMouseDown={() => startCounter("out")} onMouseUp={stopCounter} onMouseLeave={stopCounter} onClick={() => zoomOut(zoomValue - .01)}><RemoveIcon /></Button>{(zoomValue * 100).toFixed(0)}%<Button onMouseDown={() => startCounter("in")} onMouseUp={stopCounter} onClick={() => zoomIn(zoomValue + .01)} className={styles.floatingButtonsZoom} onMouseLeave={stopCounter}><AddIcon /></Button> 
-            </div>
             </div>}
 
       </div>

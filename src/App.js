@@ -81,12 +81,12 @@ const App = () => {
   const width = window.innerWidth > 610 ? 610 : window.innerWidth;
   const height = window.innerHeight > 670 ? 670 : window.innerHeight;
 
-  const pdfUrl = "https://stemboard-stagging.s3.amazonaws.com/545148257444/1662465034153.pdf";
+  const pdfUrl = "https://stemboard-stagging.s3.amazonaws.com/545148257444/1662064901130.pdf";
   
   return (
     <div className={styles.app}>
       <main>
-        <Whiteboard aspectRatio={width/(height)} setFiles={setFiles} setResendFiles={setResendFiles} color={color} setJSON={setCanvasJSON} pdfUrl={pdfUrl} resend={true} />
+        <Whiteboard aspectRatio={width / (height)} pdf="https://stemboard-stagging.s3.amazonaws.com/545148257444/545284835330/Cg4I956t4IUOEIKQiazvDw/1662065207007.blob" setFiles={setFiles} setResendFiles={setResendFiles} color={color} setJSON={setCanvasJSON} pdfUrl={pdfUrl} resend={true} />
       </main>
     </div>
   );

@@ -67,11 +67,13 @@ var _Add = _interopRequireDefault(require("@mui/icons-material/Add"));
 
 var _Remove = _interopRequireDefault(require("@mui/icons-material/Remove"));
 
-var _PageviewOutlined = _interopRequireDefault(require("@mui/icons-material/PageviewOutlined"));
+var _ZoomOutMap = _interopRequireDefault(require("@mui/icons-material/ZoomOutMap"));
 
 var _PdfReader = _interopRequireDefault(require("../PdfReader"));
 
 var _PdfCanvas = _interopRequireDefault(require("../PdfCanvas"));
+
+var _SearchOff = _interopRequireDefault(require("@mui/icons-material/SearchOff"));
 
 var _sweetalert = _interopRequireDefault(require("sweetalert"));
 
@@ -108,7 +110,8 @@ var modes = {
   ELLIPSE: 'ELLIPSE',
   LINE: 'LINE',
   PENCIL: 'PENCIL',
-  ERASER: 'ERASER'
+  ERASER: 'ERASER',
+  PANNING: 'PANNING'
 };
 
 var initCanvas = function initCanvas(width, height) {
@@ -149,6 +152,8 @@ function removeCanvasListener(canvas) {
   canvas.off('mouse:down');
   canvas.off('mouse:move');
   canvas.off('mouse:up');
+  canvas.off("touch:gesture");
+  canvas.off("mouse:wheel");
 }
 /*  ==== line  ==== */
 
@@ -293,6 +298,71 @@ function createEllipse(canvas) {
       });
     });
     canvas.discardActiveObject().requestRenderAll();
+  }
+}
+/* ==== Zoom ==== */
+
+
+function panningZoom(canvas) {
+  if (options.currentMode !== modes.PANNING) {
+    options.currentMode = modes.PANNING;
+    removeCanvasListener(canvas);
+    canvas.on({
+      'touch:gesture': function touchGesture(e) {
+        if (e.e.touches && e.e.touches.length == 2) {
+          pausePanning = true;
+          var point = new _fabric.fabric.Point(e.self.x, e.self.y);
+
+          if (e.self.state == "start") {
+            zoomStartScale = self.canvas.getZoom();
+          }
+
+          var delta = zoomStartScale * e.self.scale;
+          self.canvas.zoomToPoint(point, delta);
+          pausePanning = false;
+        }
+      },
+      'object:selected': function objectSelected() {
+        pausePanning = true;
+      },
+      'selection:cleared': function selectionCleared() {
+        pausePanning = false;
+      },
+      'touch:drag': function touchDrag(e) {
+        if (pausePanning == false && undefined != e.e.layerX && undefined != e.e.layerY) {
+          currentX = e.e.layerX;
+          currentY = e.e.layerY;
+          xChange = currentX - lastX;
+          yChange = currentY - lastY;
+
+          if (Math.abs(currentX - lastX) <= 50 && Math.abs(currentY - lastY) <= 50) {
+            var delta = new _fabric.fabric.Point(xChange, yChange);
+            canvas.relativePan(delta);
+          }
+
+          lastX = e.e.layerX;
+          lastY = e.e.layerY;
+        }
+      }
+    });
+    canvas.on("mouse:wheel", function (opt) {
+      if (!canvas.viewportTransform) {
+        return;
+      }
+
+      var evt = opt.e;
+      var evt = opt.e;
+      var deltaY = evt.deltaY;
+      var zoom = canvas.getZoom();
+      zoom = zoom - deltaY / 100;
+      if (zoom > 20) zoom = 20;
+      if (zoom < 0.10) zoom = 0.10;
+      canvas.zoomToPoint(new _fabric.fabric.Point(evt.offsetX, evt.offsetY), zoom);
+      opt.e.preventDefault();
+      opt.e.stopPropagation();
+    });
+  } else {
+    removeCanvasListener(canvas);
   }
 }
 
@@ -963,35 +1033,10 @@ var Whiteboard = function Whiteboard(_ref9) {
     className: _indexModule.default.zoomFixedButton
   }, /*#__PURE__*/_react.default.createElement(_Button.default, {
     onClick: function onClick() {
-      return setZoomToggle(!zoomToggle);
+      panningZoom(canvas);
+      setZoomToggle(!zoomToggle);
     }
-  }, /*#__PURE__*/_react.default.createElement(_PageviewOutlined.default, null)), /*#__PURE__*/_react.default.createElement("div", {
-    style: {
-      display: zoomToggle ? 'flex' : 'none',
-      flexDirection: 'column-reverse',
-      alignItems: 'center'
-    }
-  }, /*#__PURE__*/_react.default.createElement(_Button.default, {
-    className: _indexModule.default.floatingButtonsZoom,
-    onMouseDown: function onMouseDown() {
-      return startCounter("out");
-    },
-    onMouseUp: stopCounter,
-    onMouseLeave: stopCounter,
-    onClick: function onClick() {
-      return zoomOut(zoomValue - .01);
-    }
-  }, /*#__PURE__*/_react.default.createElement(_Remove.default, null)), (zoomValue * 100).toFixed(0), "%", /*#__PURE__*/_react.default.createElement(_Button.default, {
-    onMouseDown: function onMouseDown() {
-      return startCounter("in");
-    },
-    onMouseUp: stopCounter,
-    onClick: function onClick() {
-      return zoomIn(zoomValue + .01);
-    },
-    className: _indexModule.default.floatingButtonsZoom,
-    onMouseLeave: stopCounter
-  }, /*#__PURE__*/_react.default.createElement(_Add.default, null))))), pdfViewer && /*#__PURE__*/_react.default.createElement(_PdfReader.default, {
+  }, zoomToggle ? /*#__PURE__*/_react.default.createElement(_SearchOff.default, null) : /*#__PURE__*/_react.default.createElement(_ZoomOutMap.default, null)))), pdfViewer && /*#__PURE__*/_react.default.createElement(_PdfReader.default, {
     savePage: function savePage() {
       return nextPage(canvas);
     },
