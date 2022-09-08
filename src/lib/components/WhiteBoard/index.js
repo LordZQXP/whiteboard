@@ -9,14 +9,14 @@ import ChangeHistoryIcon from '@mui/icons-material/ChangeHistory';
 import CreateIcon from '@mui/icons-material/Create';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import TitleRoundedIcon from '@mui/icons-material/TitleRounded';
-import Brush from "./images/brush@3x.png";
-import Pencil from "./images/pencil-create@3x.png";
-import RotateLeft from "./images/rotate-ccw@3x.png";
-import RotateRight from "./images/rotate-cw@3x.png";
-import submit from "./images/Group 6949.png"
-import sendTostudent from "./images/Group 6948.png"
-import preview from "./images/Group 6946.png"
-import canvasIcon from "./images/Group 6947.png"
+import Brush from './images/brush@3x.png';
+import Pencil from './images/pencil-create@3x.png';
+import RotateLeft from './images/rotate-ccw@3x.png';
+import RotateRight from './images/rotate-cw@3x.png';
+import submit from './images/Group 6949.png';
+import sendTostudent from './images/Group 6948.png';
+import preview from './images/Group 6946.png';
+import canvasIcon from './images/Group 6947.png';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import LineWeightIcon from '@mui/icons-material/LineWeight';
@@ -28,10 +28,8 @@ import SpeedDial from '@mui/material/SpeedDial';
 import SpeedDialAction from '@mui/material/SpeedDialAction';
 import SpeedDialIcon from '@mui/material/SpeedDialIcon';
 import InputSlider from './components/Slider';
-import AddIcon from '@mui/icons-material/Add';
-import RemoveIcon from '@mui/icons-material/Remove';
 import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap';
-import PdfReader from "../PdfReader";
+import PdfReader from '../PdfReader';
 import PDFCanvas from '../PdfCanvas';
 import SearchOffIcon from '@mui/icons-material/SearchOff';
 import swal from 'sweetalert';
@@ -43,7 +41,7 @@ let mouseDown = false;
 
 const options = {
   currentMode: '',
-  currentColor: "#000000",
+  currentColor: '#000000',
   currentWidth: 5,
   fill: false,
   group: {},
@@ -52,7 +50,6 @@ const options = {
 let backUpCanvas = [];
 let backupIndex = 0;
 
-
 const modes = {
   RECTANGLE: 'RECTANGLE',
   TRIANGLE: 'TRIANGLE',
@@ -60,7 +57,7 @@ const modes = {
   LINE: 'LINE',
   PENCIL: 'PENCIL',
   ERASER: 'ERASER',
-  PANNING: 'PANNING'
+  PANNING: 'PANNING',
 };
 
 const initCanvas = (width, height) => {
@@ -72,14 +69,12 @@ const initCanvas = (width, height) => {
   fabric.Object.prototype.cornerSize = 6;
   fabric.Object.prototype.padding = 10;
   fabric.Object.prototype.borderDashArray = [5, 5];
-
   canvas.on('object:added', (e) => {
     e.target.on('mousedown', removeObject(canvas));
   });
   canvas.on('path:created', (e) => {
     e.path.on('mousedown', removeObject(canvas));
   });
-
   return canvas;
 };
 
@@ -100,14 +95,13 @@ function removeCanvasListener(canvas) {
   canvas.off('mouse:down');
   canvas.off('mouse:move');
   canvas.off('mouse:up');
-  canvas.off("mouse:wheel");
+  canvas.off('mouse:wheel');
 }
 
 /*  ==== line  ==== */
 function createLine(canvas) {
   if (modes.currentMode !== modes.LINE) {
     options.currentMode = modes.LINE;
-
     removeCanvasListener(canvas);
     canvas.on('mouse:down', startAddLine(canvas));
     canvas.on('mouse:move', startDrawingLine(canvas));
@@ -123,7 +117,6 @@ function createLine(canvas) {
 function startAddLine(canvas) {
   return ({ e }) => {
     mouseDown = true;
-
     let pointer = canvas.getPointer(e);
     drawInstance = new fabric.Line([pointer.x, pointer.y, pointer.x, pointer.y], {
       strokeWidth: options.currentWidth,
@@ -152,14 +145,11 @@ function startDrawingLine(canvas) {
 /* ==== rectangle ==== */
 function createRect(canvas) {
   if (options.currentMode !== modes.RECTANGLE) {
-    options.currentMode = modes.RECTANGLE
-    
+    options.currentMode = modes.RECTANGLE;
     removeCanvasListener(canvas);
-    
     canvas.on('mouse:down', startAddRect(canvas));
     canvas.on('mouse:move', startDrawingRect(canvas));
     canvas.on('mouse:up', stopDrawing);
-    
     canvas.selection = false;
     canvas.hoverCursor = 'auto';
     canvas.isDrawingMode = false;
@@ -171,11 +161,9 @@ function createRect(canvas) {
 function startAddRect(canvas) {
   return ({ e }) => {
     mouseDown = true;
-
     const pointer = canvas.getPointer(e);
     origX = pointer.x;
     origY = pointer.y;
-
     drawInstance = new fabric.Rect({
       stroke: options.currentColor,
       strokeWidth: options.currentWidth,
@@ -186,7 +174,6 @@ function startAddRect(canvas) {
       height: 0,
       selectable: false,
     });
-
     canvas.add(drawInstance);
     drawInstance.on('mousedown', (e) => {
       if (options.currentMode === modes.ERASER) {
@@ -221,13 +208,10 @@ function startDrawingRect(canvas) {
 function createEllipse(canvas) {
   if (options.currentMode !== modes.ELLIPSE) {
     options.currentMode = modes.ELLIPSE;
-    
     removeCanvasListener(canvas);
-    
     canvas.on('mouse:down', startAddEllipse(canvas));
     canvas.on('mouse:move', startDrawingEllipse(canvas));
     canvas.on('mouse:up', stopDrawing);
-    
     canvas.selection = false;
     canvas.hoverCursor = 'auto';
     canvas.isDrawingMode = false;
@@ -236,49 +220,25 @@ function createEllipse(canvas) {
   }
 }
 
-/* ==== Zoom ==== */
-function panningZoom(canvas,zoomToggle) {
+function panningZoom(canvas) {
   if (options.currentMode !== modes.PANNING) {
     options.currentMode = modes.PANNING;
     removeCanvasListener(canvas);
-
-    // canvas.on({
-    //   'mouse:move': function (e) {
-    //     console.log("TERRER outside");
-    //     if (e.e.touches) {
-    //       console.log("TERRER");
-    //       console.log(e.e);
-    //       var point = new fabric.Point(e.x, e.y);
-    //       if (e.self.state == "start") {
-    //         zoomStartScale = self.canvas.getZoom();
-    //       }
-    //       var delta = zoomStartScale * e.self.scale;
-    //       self.canvas.zoomToPoint(point, delta);
-    //     }
-    //   }
-    // });
-    canvas.on("mouse:wheel", opt => {
+    canvas.on('mouse:wheel', (opt) => {
       if (!canvas.viewportTransform) {
         return;
       }
-
       var evt = opt.e;
-
-        var evt = opt.e;
-        var deltaY = evt.deltaY;
-        var zoom = canvas.getZoom();
-        zoom = zoom - deltaY / 100;
-        if (zoom > 20) zoom = 20;
-        if (zoom < 0.10) zoom = 0.10;
-        canvas.zoomToPoint(
-          new fabric.Point(evt.offsetX, evt.offsetY),
-          zoom
-        );
+      var deltaY = evt.deltaY;
+      var zoom = canvas.getZoom();
+      zoom = zoom - deltaY / 100;
+      if (zoom > 20) zoom = 20;
+      if (zoom < 0.1) zoom = 0.1;
+      canvas.zoomToPoint(new fabric.Point(evt.offsetX, evt.offsetY), zoom);
       opt.e.preventDefault();
       opt.e.stopPropagation();
     });
-  }
-  else {
+  } else {
     removeCanvasListener(canvas);
     draw(canvas);
   }
@@ -287,7 +247,6 @@ function panningZoom(canvas,zoomToggle) {
 function startAddEllipse(canvas) {
   return ({ e }) => {
     mouseDown = true;
-
     const pointer = canvas.getPointer(e);
     origX = pointer.x;
     origY = pointer.y;
@@ -328,11 +287,9 @@ function startDrawingEllipse(canvas) {
 /* === triangle === */
 function createTriangle(canvas) {
   removeCanvasListener(canvas);
-
   canvas.on('mouse:down', startAddTriangle(canvas));
   canvas.on('mouse:move', startDrawingTriangle(canvas));
   canvas.on('mouse:up', stopDrawing);
-
   canvas.selection = false;
   canvas.hoverCursor = 'auto';
   canvas.isDrawingMode = false;
@@ -343,8 +300,7 @@ function createTriangle(canvas) {
 function startAddTriangle(canvas) {
   return ({ e }) => {
     mouseDown = true;
-    options.currentMode = modes.TRIANGLE
-
+    options.currentMode = modes.TRIANGLE;
     const pointer = canvas.getPointer(e);
     origX = pointer.x;
     origY = pointer.y;
@@ -385,9 +341,7 @@ function startDrawingTriangle(canvas) {
 
 function createText(canvas) {
   removeCanvasListener(canvas);
-
   canvas.isDrawingMode = false;
-
   const text = new fabric.Textbox('text', {
     left: 100,
     top: 100,
@@ -399,28 +353,22 @@ function createText(canvas) {
 }
 
 function changeToErasingMode(canvas) {
-
   if (options.currentMode !== modes.ERASER) {
     removeCanvasListener(canvas);
-
     canvas.isDrawingMode = false;
-
     options.currentMode = modes.ERASER;
-
     canvas.hoverCursor = `url(${getCursor({ type: 'eraser' })}), default`;
   }
 }
 
-function canvasObjectsSize(canvas){
+function canvasObjectsSize(canvas) {
   return canvas.getObjects().length;
 }
 
 function onSelectMode(canvas) {
   options.currentMode = '';
   canvas.isDrawingMode = false;
-
   removeCanvasListener(canvas);
-
   canvas.getObjects().map((item) => item.set({ selectable: true }));
   canvas.hoverCursor = 'all-scroll';
 }
@@ -435,30 +383,27 @@ function clearCanvas(canvas) {
 
 function clearCanvasNextPage(canvas) {
   canvas.getObjects().forEach((item) => {
-      canvas.remove(item);
+    canvas.remove(item);
   });
 }
 
-function pushToBackUp(canvas){
-  if (canvasObjectsSize(canvas) === 0)
-    return;
-  backUpCanvas[backupIndex] = (canvas.toJSON());
+function pushToBackUp(canvas) {
+  if (canvasObjectsSize(canvas) === 0) return;
+  backUpCanvas[backupIndex] = canvas.toJSON();
   backupIndex++;
 }
 
-function popFromBackUp(){
-  if(backupIndex - 1 >=0){
-  backupIndex--;
-  return (backUpCanvas[backupIndex]);
+function popFromBackUp() {
+  if (backupIndex - 1 >= 0) {
+    backupIndex--;
+    return backUpCanvas[backupIndex];
   }
 }
 
 function draw(canvas) {
   if (options.currentMode !== modes.PENCIL) {
     removeCanvasListener(canvas);
-
     options.currentMode = modes.PENCIL;
-    // canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
     canvas.freeDrawingBrush.width = parseInt(options.currentWidth, 10) || 1;
     canvas.freeDrawingBrush.color = options.currentColor;
     canvas.isDrawingMode = true;
@@ -467,7 +412,6 @@ function draw(canvas) {
 
 function handleResize(callback) {
   const resize_ob = new ResizeObserver(callback);
-
   return resize_ob;
 }
 
@@ -475,7 +419,6 @@ function resizeCanvas(canvas, whiteboard) {
   return () => {
     const ratio = canvas.getWidth() / canvas.getHeight();
     const whiteboardWidth = whiteboard.clientWidth;
-
     const scale = whiteboardWidth / canvas.getWidth();
     const zoom = canvas.getZoom() * scale;
     canvas.setDimensions({ width: whiteboardWidth, height: whiteboardWidth / ratio });
@@ -483,34 +426,24 @@ function resizeCanvas(canvas, whiteboard) {
   };
 }
 
-function zoomCanvas (canvas, whiteboard, zoomValue){
-  return () => {
-    const ratio = canvas.getWidth() / canvas.getHeight();
-    const whiteboardWidth = whiteboard.clientWidth;
-
-    const zoom = canvas.getZoom() * zoomValue;
-    canvas.setDimensions({ width: whiteboardWidth, height: whiteboardWidth / ratio });
-    canvas.setViewportTransform([zoom, 0, 0, zoom, 0, 0]);
-  };
-}
-
-const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undefined, json, pdfUrl, resend, pdf = undefined, setResendFiles }) => {
+const Whiteboard = ({
+  aspectRatio = 4 / 3,
+  setFiles,
+  color,
+  setJSON,
+  json,
+  pdfUrl,
+  resend,
+  pdf = undefined,
+  setResendFiles,
+}) => {
   const [currColor, setCurrColor] = useState(color[0]?.color);
   const [canvas, setCanvas] = useState(null);
   const [submitPdf, setSubmitPdf] = useState(false);
-  const [brushWidth, setBrushWidth] = useState(5);
   const [pages, setPages] = useState({});
   const [canvasPage, setCanvasPage] = useState([]);
   const [index, setIndex] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-  const [zoomValue, setZoomValue] = useState(1);
-
-  const [fileReaderInfo, setFileReaderInfo] = useState({
-    file: '',
-    totalPages: null,
-    currentPageNumber: 1,
-    currentPage: '',
-  });
 
   const [fileCanvasInfo, setFileCanvasInfo] = useState({
     file: pdf,
@@ -519,13 +452,8 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
     currentPage: '',
   });
 
-  useEffect(()=>{
-    options.currentColor = currColor;
-  },[color]);
-
   var canvasRef = useRef(null);
   const whiteboardRef = useRef(null);
-  const uploadPdfRef = useRef(null);
 
   useEffect(() => {
     if (!canvas && canvasRef.current) {
@@ -543,18 +471,21 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
       clearCanvas(canvas);
       canvas.loadFromJSON(json, canvas.renderAll.bind(canvas), function (o, object) {
         object.set('selectable', false);
-        object.set('evented' , false);
+        object.set('evented', false);
       });
-
-    }
+    };
     if (json && canvas) fetchImg();
   }, [json, canvas]);
+
+  useEffect(() => {
+    options.currentColor = currColor;
+    if (canvas) draw(canvas);
+  }, [canvas, color]);
 
   function changeCurrentWidth(value) {
     const intValue = parseInt(value);
     options.currentWidth = intValue;
     canvas.freeDrawingBrush.width = intValue;
-    setBrushWidth(() => intValue);
   }
 
   function changeCurrentColor(e) {
@@ -563,38 +494,13 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
     setCurrColor(e);
   }
 
-  const intervalRef = React.useRef(null);
-
-  function zoomIn(value){
-    const center = canvas.getCenter();
-
-    const centerPoint = new fabric.Point(center.left, center.top);
-
-    canvas.zoomToPoint(centerPoint, value+0.01);
-    setZoomValue(value + 0.01);
-
-    canvas.requestRenderAll();
-  }
-  function zoomOut(value) {
-    if(value <=0.01)
-    return;
-    const center = canvas.getCenter();
-
-    const centerPoint = new fabric.Point(center.left, center.top);
-
-    canvas.zoomToPoint(centerPoint, value - 0.01);
-    setZoomValue(value - 0.01);
-
-    canvas.requestRenderAll();
-  }
-
   function onSaveCanvasAsImage() {
-    if(submitPdf && pdf){
+    if (submitPdf && pdf) {
       swal({
-        title: "Are you sure?",
+        title: 'Are you sure?',
         text: "Once submitted, you can't reverse the changes.",
-        icon: "warning",
-        customClass: "Custom_Cancel",
+        icon: 'warning',
+        customClass: 'Custom_Cancel',
         buttons: true,
         dangerMode: true,
       }).then(async (willDelete) => {
@@ -606,21 +512,19 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
           setJSON({ ...canvasPage, [index]: canvas.toJSON() });
           setPages({});
           clearCanvas(canvas);
-          updateFileCanvasInfo({ file: "", currentPageNumber: 1 });
+          updateFileCanvasInfo({ file: '', currentPageNumber: 1 });
         } else {
           return;
         }
       });
-    }
-    else if(!submitPdf && pdf) {
-      swal("Info", "Please check the entire assignment", "info");
-    }
-    else{
+    } else if (!submitPdf && pdf) {
+      swal('Info', 'Please check the entire assignment', 'info');
+    } else {
       swal({
-        title: "Are you sure?",
+        title: 'Are you sure?',
         text: "Once submitted, you can't reverse the changes.",
-        icon: "warning",
-        customClass: "Custom_Cancel",
+        icon: 'warning',
+        customClass: 'Custom_Cancel',
         buttons: true,
         dangerMode: true,
       }).then(async (willDelete) => {
@@ -632,73 +536,68 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
           setJSON({ ...canvasPage, [index]: canvas.toJSON() });
           setPages({});
           clearCanvas(canvas);
-          updateFileCanvasInfo({ file: "", currentPageNumber: 1 });
+          updateFileCanvasInfo({ file: '', currentPageNumber: 1 });
         } else {
           return;
         }
       });
     }
-
   }
 
   function nextPage(canvas) {
-    backUpCanvas=[];
-    setCanvasPage({...canvasPage, [index] : canvas.toJSON()});
+    backUpCanvas = [];
+    setCanvasPage({ ...canvasPage, [index]: canvas.toJSON() });
     canvasRef.current.toBlob(function (blob) {
-        setPages({...pages, [index] : blob});
-      });
-    if(canvasPage[index+1] !== undefined){
-    canvas.loadFromJSON(canvasPage[index+1]);
+      setPages({ ...pages, [index]: blob });
+    });
+    if (canvasPage[index + 1] !== undefined) {
+      canvas.loadFromJSON(canvasPage[index + 1]);
+    } else {
+      clearCanvasNextPage(canvas);
+      setTotalPages(totalPages + 1);
     }
-    else{
-    clearCanvasNextPage(canvas);
-    setTotalPages(totalPages + 1);
-    }
-    setIndex(index+1);
+    setIndex(index + 1);
   }
 
-  function previousPage(canvas){
+  function previousPage(canvas) {
     backUpCanvas = [];
-    if(index - 1 <0){
+    if (index - 1 < 0) {
       return;
     }
     setCanvasPage({ ...canvasPage, [index]: canvas.toJSON() });
     canvasRef.current.toBlob(function (blob) {
       setPages({ ...pages, [index]: blob });
     });
-    canvas.loadFromJSON(canvasPage[index-1]);
+    canvas.loadFromJSON(canvasPage[index - 1]);
     setIndex(index - 1);
   }
 
   function redoCanvas() {
-    if(backupIndex - 1 <0)
-      return;
+    if (backupIndex - 1 < 0) return;
     canvas.loadFromJSON(popFromBackUp(canvas));
   }
 
   function undoCanvas(canvas) {
     let length = canvasObjectsSize(canvas) - 1;
     pushToBackUp(canvas);
-    if ((canvas.getObjects()[length] !== canvas.backgroundImage) || (canvas.getObjects()[length] !== canvas.Image) ) {
+    if (
+      canvas.getObjects()[length] !== canvas.backgroundImage ||
+      canvas.getObjects()[length] !== canvas.Image
+    ) {
       canvas.remove(canvas.getObjects()[length]);
     }
   }
 
   const [pdfViewer, setPdfViewer] = React.useState(true);
-  const [imgSRC, setImgSRC] = useState('');
-  
-  function updateFileReaderInfo(data) {
-    setImgSRC(data);
-  }
 
-  const toolbarCommander = (props, canvas, options) =>{
-    setOpenDraw(false)
-    switch(props){
-      case modes.LINE :
+  const toolbarCommander = (props, canvas, options) => {
+    setOpenDraw(false);
+    switch (props) {
+      case modes.LINE:
         createLine(canvas);
         break;
 
-        case modes.RECTANGLE:
+      case modes.RECTANGLE:
         createRect(canvas);
         break;
 
@@ -707,18 +606,18 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
         break;
 
       case modes.TRIANGLE:
-        createTriangle(canvas,options);
+        createTriangle(canvas, options);
         break;
 
       case modes.PENCIL:
         draw(canvas);
         break;
-      
-      case "TEXT":
+
+      case 'TEXT':
         createText(canvas);
         break;
 
-      case "SELECT":
+      case 'SELECT':
         onSelectMode(canvas);
         break;
 
@@ -726,48 +625,28 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
         changeToErasingMode(canvas);
         break;
 
-      case "CLEAR":
+      case 'CLEAR':
         clearCanvas(canvas);
         break;
     }
-  }
+  };
 
   const [openDraw, setOpenDraw] = useState(false);
   const [openThickness, setOpenThickness] = useState(false);
   const [openColor, setOpenColor] = useState(false);
-
-
-  const startCounter = (zoom) => {
-    let value = zoomValue;
-    intervalRef.current = setInterval(()=>{
-      if(zoom === "in")
-      zoomIn(value+=0.01);
-      else
-      zoomOut(value-=0.01);
-    }, 10);
-  };
-
-  const stopCounter = () => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-  };
-
   const [zoomToggle, setZoomToggle] = useState(false);
-
 
   useEffect(() => {
     if (canvas) {
       const center = canvas.getCenter();
       fabric.Image.fromURL(fileCanvasInfo.currentPage, (img) => {
-        img.scaleToHeight(whiteboardRef.current.clientWidth)
+        img.scaleToHeight(whiteboardRef.current.clientWidth);
         img.scaleToWidth(whiteboardRef.current.clientWidth);
         canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
-          top: window.innerWidth > 500 ? center.top +  225 : center.top+ 25,
+          top: window.innerWidth > 500 ? center.top + 225 : center.top + 25,
           left: center.left,
           originX: 'center',
-          originY: 'center'
+          originY: 'center',
         });
         canvas.renderAll();
       });
@@ -782,179 +661,269 @@ const Whiteboard = ({ aspectRatio = 4 / 3, setFiles, color, setJSON, src = undef
     <div ref={whiteboardRef} className={styles.whiteboard}>
       <canvas ref={canvasRef} id="canvas" />
       <div>
-      <div>
-          {(!pdfViewer && !pdf) && <div className={styles.nextFixedButton}> <Button className={styles.floatingButtonsZoom} onClick={() => previousPage(canvas)}><ArrowBackIosNewIcon className={styles.blackIcon} /></Button>
-            <p>
-            Page {index + 1} to { totalPages + 1 }
-            </p>
-           <Button className={styles.floatingButtonsZoom} onClick={() => nextPage(canvas)}><ArrowForwardIosIcon className={styles.blackIcon} /></Button> </div>}
-          {
-            (!pdfViewer) &&
+        <div>
+          {!pdfViewer && !pdf && (
+            <div className={styles.nextFixedButton}>
+              {' '}
+              <Button className={styles.floatingButtonsZoom} onClick={() => previousPage(canvas)}>
+                <ArrowBackIosNewIcon className={styles.blackIcon} />
+              </Button>
+              <p>
+                Page {index + 1} to {totalPages + 1}
+              </p>
+              <Button className={styles.floatingButtonsZoom} onClick={() => nextPage(canvas)}>
+                <ArrowForwardIosIcon className={styles.blackIcon} />
+              </Button>{' '}
+            </div>
+          )}
+          {!pdfViewer && (
             <div className={styles.zoomFixedButton}>
-              <Button onClick={() => {panningZoom(canvas,!zoomToggle); setZoomToggle(!zoomToggle)}}>
-                  {zoomToggle ? <SearchOffIcon /> : <ZoomOutMapIcon />}
-                </Button>
-            </div>}
-
-      </div>
-       { pdfViewer && <PdfReader savePage={() => nextPage(canvas)} fileReaderInfo={pdfUrl} open={pdfViewer} updateFileReaderInfo={updateFileReaderInfo} />}
-        {(pdf && !pdfViewer) && <PDFCanvas setSubmitPdf={setSubmitPdf} next={() => nextPage(canvas)} back={() => previousPage(canvas)} fileCanvasInfo={fileCanvasInfo} updateFileCanvasInfo={updateFileCanvasInfo} />}
-      </div>
-    <div className={styles.toolbarWithColor} style={{ backgroundColor: 'transparent'}}>
-        <div className={styles.toolbar}>
-    { !pdfViewer &&  
-    <>
-          <Box className={openThickness ? styles.speeddialDivOpen : styles.speeddialDivClose}>
-            <Button className={styles.buttonThick} onClick={() => setOpenThickness(!openThickness)}> 
-            <LineWeightIcon />
-         </Button>  
-            <InputSlider changeHandler={(v)=>changeCurrentWidth(v)} open={openThickness && !openDraw && !openColor}  value={options.currentWidth}/>
-          </Box>
-          <Box className={openDraw ? styles.speeddialDivOpen : styles.speeddialDivClose}>
-          <SpeedDial
-          open={openDraw}
-          onClick={()=>{setOpenDraw(!openDraw); setOpenColor(false); setOpenThickness(false);}}
-          direction='up'
-          ariaLabel="SpeedDial openIcon example"
-          icon={<SpeedDialIcon icon={<Box className={styles.flexDiv}>
-                <img src={Pencil} />
-              </Box>} />}
-          >
-            <SpeedDialAction
-              FabProps={{
-                style: {
-                  boxShadow : 'none'
-                }
-              }}
-                icon={<HorizontalRuleIcon className={styles.blackSlantedIcon} /> }
-                tooltipTitle="Line"
-                onClick={() => toolbarCommander(modes.LINE, canvas)}
-            />
-            <SpeedDialAction
-              FabProps={{
-                style: {
-                  boxShadow : 'none'
-                }
-              }}
-              icon={<Crop169Icon className={styles.blackIcon} />}
-              tooltipTitle="Rectangle"
-              onClick={() => toolbarCommander(modes.RECTANGLE, canvas)}
-            />
-            <SpeedDialAction
-              FabProps={{
-                style: {
-                  boxShadow : 'none'
-                }
-              }}
-              icon={<RadioButtonUncheckedIcon className={styles.blackIcon} />}
-              tooltipTitle="Ellipse"
-              onClick={() => toolbarCommander(modes.ELLIPSE, canvas)}
-            />
-            <SpeedDialAction
-              FabProps={{
-                style: {
-                  boxShadow : 'none'
-                }
-              }}
-              icon={<ChangeHistoryIcon className={styles.blackIcon} />}
-              tooltipTitle="Triangle"
-              onClick={() => toolbarCommander(modes.TRIANGLE, canvas,options)}
-            />
-            <SpeedDialAction
-              FabProps={{
-                style: {
-                  boxShadow : 'none'
-                }
-              }}
-              icon={<CreateIcon className={styles.blackIcon} />}
-              tooltipTitle="Pencil"
-              onClick={() => toolbarCommander(modes.PENCIL, canvas)}
-            />
-            <SpeedDialAction
-              FabProps={{
-                style: {
-                  boxShadow : 'none'
-                }
-              }}
-              icon={<TitleRoundedIcon className={styles.blackIcon} />}
-              tooltipTitle="Text"
-              onClick={() => toolbarCommander("TEXT", canvas)}
-            />
-            
-          </SpeedDial>
-          </Box>
-          <Box className={openColor ? styles.speeddialColorDivOpen : styles.speeddialColorDivClose}>
-          <SpeedDial
-            open={openColor}
-              onClick={() => { setOpenColor(!openColor); setOpenDraw(false); setOpenThickness(false); }}
-            direction='up'
-            ariaLabel="SpeedDial openIcon example"
-            icon={  <SpeedDialIcon icon={<Box className={styles.flexDiv}>
-                <img src={Brush} />
-                 </Box>} />}
-          >
-            {color.map(col => 
-            <SpeedDialAction
-              key={col.color}
-                FabProps={{
-                  style: {
-                    background: col.color,
-                    boxShadow: currColor === col.color && "0 0 10px black",
-                  }
+              <Button
+                onClick={() => {
+                  panningZoom(canvas, !zoomToggle);
+                  setZoomToggle(!zoomToggle);
                 }}
-                className='floating_buttons'
-                tooltipTitle={col.title}
-                onClick={() => { changeCurrentColor(col.color); setOpenColor(!openColor) }}
-            >
-            </SpeedDialAction>
-            )}
-          </SpeedDial>
-          </Box>
-          <SpeedDial
-            open={false}
-            onClick={() => toolbarCommander(modes.ERASER, canvas)}
-            direction='up'
-            icon={<SpeedDialIcon icon={<Box className={styles.flexDiv}>
-              <img src={EraserIcon} />
-            </Box>} />}
-            ariaLabel="SpeedDial openIcon example"
+              >
+                {zoomToggle ? <SearchOffIcon /> : <ZoomOutMapIcon />}
+              </Button>
+            </div>
+          )}
+        </div>
+        {pdfViewer && (
+          <PdfReader savePage={() => nextPage(canvas)} fileReaderInfo={pdfUrl} open={pdfViewer} />
+        )}
+        {pdf && !pdfViewer && (
+          <PDFCanvas
+            setSubmitPdf={setSubmitPdf}
+            next={() => nextPage(canvas)}
+            back={() => previousPage(canvas)}
+            fileCanvasInfo={fileCanvasInfo}
+            updateFileCanvasInfo={updateFileCanvasInfo}
           />
-          <SpeedDial
-            open={false}
-            onClick={() => undoCanvas(canvas)}
-            direction='up'
-            ariaLabel="SpeedDial openIcon example"
-            icon={<SpeedDialIcon icon={<Box className={styles.flexDiv}>
-              <img src={RotateLeft} />
-            </Box>} />}
-          />
-          <SpeedDial
-            open={false}
-            onClick={() => redoCanvas(canvas)}
-            direction='up'
-            icon={<SpeedDialIcon icon={<Box className={styles.flexDiv}>
-              <img src={RotateRight} />
-            </Box>} />}
-            ariaLabel="SpeedDial openIcon example"
-          />
-          </>}
-       <div className={styles.upperToolBar}>
+        )}
+      </div>
+      <div className={styles.toolbarWithColor} style={{ backgroundColor: 'transparent' }}>
+        <div className={styles.toolbar}>
+          {!pdfViewer && (
+            <>
+              <Box className={openThickness ? styles.speeddialDivOpen : styles.speeddialDivClose}>
+                <Button
+                  className={styles.buttonThick}
+                  onClick={() => setOpenThickness(!openThickness)}
+                >
+                  <LineWeightIcon />
+                </Button>
+                <InputSlider
+                  changeHandler={(v) => changeCurrentWidth(v)}
+                  open={openThickness && !openDraw && !openColor}
+                  value={options.currentWidth}
+                />
+              </Box>
+              <Box className={openDraw ? styles.speeddialDivOpen : styles.speeddialDivClose}>
+                <SpeedDial
+                  open={openDraw}
+                  onClick={() => {
+                    setOpenDraw(!openDraw);
+                    setOpenColor(false);
+                    setOpenThickness(false);
+                  }}
+                  direction="up"
+                  ariaLabel="SpeedDial openIcon example"
+                  icon={
+                    <SpeedDialIcon
+                      icon={
+                        <Box className={styles.flexDiv}>
+                          <img src={Pencil} />
+                        </Box>
+                      }
+                    />
+                  }
+                >
+                  <SpeedDialAction
+                    FabProps={{
+                      style: {
+                        boxShadow: 'none',
+                      },
+                    }}
+                    icon={<HorizontalRuleIcon className={styles.blackSlantedIcon} />}
+                    tooltipTitle="Line"
+                    onClick={() => toolbarCommander(modes.LINE, canvas)}
+                  />
+                  <SpeedDialAction
+                    FabProps={{
+                      style: {
+                        boxShadow: 'none',
+                      },
+                    }}
+                    icon={<Crop169Icon className={styles.blackIcon} />}
+                    tooltipTitle="Rectangle"
+                    onClick={() => toolbarCommander(modes.RECTANGLE, canvas)}
+                  />
+                  <SpeedDialAction
+                    FabProps={{
+                      style: {
+                        boxShadow: 'none',
+                      },
+                    }}
+                    icon={<RadioButtonUncheckedIcon className={styles.blackIcon} />}
+                    tooltipTitle="Ellipse"
+                    onClick={() => toolbarCommander(modes.ELLIPSE, canvas)}
+                  />
+                  <SpeedDialAction
+                    FabProps={{
+                      style: {
+                        boxShadow: 'none',
+                      },
+                    }}
+                    icon={<ChangeHistoryIcon className={styles.blackIcon} />}
+                    tooltipTitle="Triangle"
+                    onClick={() => toolbarCommander(modes.TRIANGLE, canvas, options)}
+                  />
+                  <SpeedDialAction
+                    FabProps={{
+                      style: {
+                        boxShadow: 'none',
+                      },
+                    }}
+                    icon={<CreateIcon className={styles.blackIcon} />}
+                    tooltipTitle="Pencil"
+                    onClick={() => toolbarCommander(modes.PENCIL, canvas)}
+                  />
+                  <SpeedDialAction
+                    FabProps={{
+                      style: {
+                        boxShadow: 'none',
+                      },
+                    }}
+                    icon={<TitleRoundedIcon className={styles.blackIcon} />}
+                    tooltipTitle="Text"
+                    onClick={() => toolbarCommander('TEXT', canvas)}
+                  />
+                </SpeedDial>
+              </Box>
+              <Box
+                className={openColor ? styles.speeddialColorDivOpen : styles.speeddialColorDivClose}
+              >
+                <SpeedDial
+                  open={openColor}
+                  onClick={() => {
+                    setOpenColor(!openColor);
+                    setOpenDraw(false);
+                    setOpenThickness(false);
+                  }}
+                  direction="up"
+                  ariaLabel="SpeedDial openIcon example"
+                  icon={
+                    <SpeedDialIcon
+                      icon={
+                        <Box className={styles.flexDiv}>
+                          <img src={Brush} />
+                        </Box>
+                      }
+                    />
+                  }
+                >
+                  {color.map((col) => (
+                    <SpeedDialAction
+                      key={col.color}
+                      FabProps={{
+                        style: {
+                          background: col.color,
+                          boxShadow: currColor === col.color && '0 0 10px black',
+                        },
+                      }}
+                      className="floating_buttons"
+                      tooltipTitle={col.title}
+                      onClick={() => {
+                        changeCurrentColor(col.color);
+                        setOpenColor(!openColor);
+                      }}
+                    ></SpeedDialAction>
+                  ))}
+                </SpeedDial>
+              </Box>
+              <SpeedDial
+                open={false}
+                onClick={() => toolbarCommander(modes.ERASER, canvas)}
+                direction="up"
+                icon={
+                  <SpeedDialIcon
+                    icon={
+                      <Box className={styles.flexDiv}>
+                        <img src={EraserIcon} />
+                      </Box>
+                    }
+                  />
+                }
+                ariaLabel="SpeedDial openIcon example"
+              />
+              <SpeedDial
+                open={false}
+                onClick={() => undoCanvas(canvas)}
+                direction="up"
+                ariaLabel="SpeedDial openIcon example"
+                icon={
+                  <SpeedDialIcon
+                    icon={
+                      <Box className={styles.flexDiv}>
+                        <img src={RotateLeft} />
+                      </Box>
+                    }
+                  />
+                }
+              />
+              <SpeedDial
+                open={false}
+                onClick={() => redoCanvas(canvas)}
+                direction="up"
+                icon={
+                  <SpeedDialIcon
+                    icon={
+                      <Box className={styles.flexDiv}>
+                        <img src={RotateRight} />
+                      </Box>
+                    }
+                  />
+                }
+                ariaLabel="SpeedDial openIcon example"
+              />
+            </>
+          )}
+          <div className={styles.upperToolBar}>
             <div className={styles.upperToolBarFlex}>
-            { !pdfViewer ? <Button><Box className={styles.flexDiv} onClick={()=>setPdfViewer(true)}>
-              <img src={preview} />
-            </Box></Button> : 
-              <Button><Box className={styles.flexDiv} onClick={() => setPdfViewer(false)}>
-                <img src={canvasIcon} />
-              </Box></Button>}
-              {resend && <Button onClick={() => { setResendFiles(true); onSaveCanvasAsImage()}} ><Box className={styles.flexDiv}>
-              <img src={sendTostudent} />
-            </Box></Button>}
-            <Button onClick={onSaveCanvasAsImage}><Box className={styles.flexDiv}>
-              <img src={submit} />
-            </Box></Button>
+              {!pdfViewer ? (
+                <Button>
+                  <Box className={styles.flexDiv} onClick={() => setPdfViewer(true)}>
+                    <img src={preview} />
+                  </Box>
+                </Button>
+              ) : (
+                <Button>
+                  <Box className={styles.flexDiv} onClick={() => setPdfViewer(false)}>
+                    <img src={canvasIcon} />
+                  </Box>
+                </Button>
+              )}
+              {resend && (
+                <Button
+                  onClick={() => {
+                    setResendFiles(true);
+                    onSaveCanvasAsImage();
+                  }}
+                >
+                  <Box className={styles.flexDiv}>
+                    <img src={sendTostudent} />
+                  </Box>
+                </Button>
+              )}
+              <Button onClick={onSaveCanvasAsImage}>
+                <Box className={styles.flexDiv}>
+                  <img src={submit} />
+                </Box>
+              </Button>
+            </div>
+          </div>
         </div>
-        </div>
-       </div>
       </div>
     </div>
   );
@@ -965,12 +934,11 @@ Whiteboard.propTypes = {
   setFiles: PropTypes.any,
   setResendFiles: PropTypes.any,
   color: PropTypes.any,
-  setJSON : PropTypes.any,
-  src : PropTypes.any,
-  json : PropTypes.any,
+  setJSON: PropTypes.any,
+  json: PropTypes.any,
   pdfUrl: PropTypes.any,
   resend: PropTypes.any,
-  pdf : PropTypes.any
+  pdf: PropTypes.any,
 };
 
 export default Whiteboard;
