@@ -30,11 +30,17 @@ var PDFCanvas = function PDFCanvas(_ref) {
       updateFileCanvasInfo = _ref.updateFileCanvasInfo,
       back = _ref.back,
       next = _ref.next,
-      setSubmitPdf = _ref.setSubmitPdf;
+      setSubmitPdf = _ref.setSubmitPdf,
+      extend = _ref.extend,
+      revision = _ref.revision;
 
   var _React$useState = _react.default.useState(true),
       spinnerValue = _React$useState[0],
       setSpinnerValue = _React$useState[1];
+
+  var _React$useState2 = _react.default.useState(1),
+      totalIndex = _React$useState2[0],
+      setTotalIndex = _React$useState2[1];
 
   function onRenderSuccess() {
     var importPDFCanvas = document.querySelector('.import-pdf-page canvas');
@@ -50,6 +56,8 @@ var PDFCanvas = function PDFCanvas(_ref) {
     updateFileCanvasInfo({
       totalPages: numPages
     });
+    setTotalIndex(numPages);
+    if (numPages === 1) setSubmitPdf(true);
   }
 
   function changePage(offset) {
@@ -63,8 +71,19 @@ var PDFCanvas = function PDFCanvas(_ref) {
   }
 
   var nextPage = function nextPage() {
-    changePage(1);
-    next();
+    if (fileCanvasInfo.currentPageNumber + 1 <= fileCanvasInfo.totalPages) {
+      changePage(1);
+      next();
+    } else if (fileCanvasInfo.currentPageNumber + 1 > fileCanvasInfo.totalPages) {
+      console.log("NIceeee");
+      updateFileCanvasInfo({
+        totalPages: fileCanvasInfo.currentPageNumber + 1
+      });
+      extend();
+      changePage(1);
+      setTotalIndex(Math.max(totalIndex, fileCanvasInfo.currentPageNumber + 1));
+    }
+
     if (fileCanvasInfo.currentPageNumber + 1 == fileCanvasInfo.totalPages) submitPdf();
   };
 
@@ -93,9 +112,9 @@ var PDFCanvas = function PDFCanvas(_ref) {
     onClick: previousPage
   }, /*#__PURE__*/_react.default.createElement(_ArrowBackIosNew.default, {
     className: _indexModule2.default.blackIcon
-  })), /*#__PURE__*/_react.default.createElement("p", null, "Page ", fileCanvasInfo.currentPageNumber, " of ", fileCanvasInfo.totalPages || '--'), /*#__PURE__*/_react.default.createElement(_material.Button, {
+  })), /*#__PURE__*/_react.default.createElement("p", null, "Page ", fileCanvasInfo.currentPageNumber, " of ", totalIndex || '--'), /*#__PURE__*/_react.default.createElement(_material.Button, {
     className: _indexModule2.default.floatingButtonsZoom,
-    disabled: fileCanvasInfo.currentPageNumber >= fileCanvasInfo.totalPages,
+    disabled: fileCanvasInfo.currentPageNumber >= fileCanvasInfo.totalPages && !revision,
     onClick: nextPage
   }, /*#__PURE__*/_react.default.createElement(_ArrowForwardIos.default, null))));
 };

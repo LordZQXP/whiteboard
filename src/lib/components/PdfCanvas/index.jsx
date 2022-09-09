@@ -10,8 +10,9 @@ import SimpleBackdrop from '../CircularProgress';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
-const PDFCanvas = ({ fileCanvasInfo, updateFileCanvasInfo, back, next, setSubmitPdf }) => {
+const PDFCanvas = ({ fileCanvasInfo, updateFileCanvasInfo, back, next, setSubmitPdf, extend, revision }) => {
     const [spinnerValue, setSpinnerValue] = React.useState(true);
+    const [totalIndex, setTotalIndex] = React.useState(1);
     function onRenderSuccess() {
         const importPDFCanvas = document.querySelector('.import-pdf-page canvas');
         const pdfAsImageSrc = importPDFCanvas.toDataURL();
@@ -21,6 +22,9 @@ const PDFCanvas = ({ fileCanvasInfo, updateFileCanvasInfo, back, next, setSubmit
     function onDocumentLoadSuccess({ numPages }) {
         setSpinnerValue(false);
         updateFileCanvasInfo({ totalPages: numPages });
+        setTotalIndex(numPages);
+        if(numPages === 1)
+            setSubmitPdf(true);
     }
 
     function changePage(offset) {
@@ -32,10 +36,19 @@ const PDFCanvas = ({ fileCanvasInfo, updateFileCanvasInfo, back, next, setSubmit
     }
 
     const nextPage = () => {
-        changePage(1);
-        next();
+        if (fileCanvasInfo.currentPageNumber + 1 <=  fileCanvasInfo.totalPages){
+            changePage(1);
+            next();
+        }
+        else if(fileCanvasInfo.currentPageNumber +1 > fileCanvasInfo.totalPages){
+            console.log("NIceeee");
+            updateFileCanvasInfo({ totalPages: fileCanvasInfo.currentPageNumber + 1 });
+            extend();
+            changePage(1);
+            setTotalIndex(Math.max(totalIndex, fileCanvasInfo.currentPageNumber+1));
+        }
         if(fileCanvasInfo.currentPageNumber+1 == fileCanvasInfo.totalPages)
-        submitPdf() 
+        submitPdf(); 
     };
     const previousPage = () => {
         changePage(-1);
@@ -67,11 +80,11 @@ const PDFCanvas = ({ fileCanvasInfo, updateFileCanvasInfo, back, next, setSubmit
                     <ArrowBackIosNewIcon className={styles2.blackIcon} />
                 </Button>
                     <p>
-                       Page {fileCanvasInfo.currentPageNumber} of {fileCanvasInfo.totalPages || '--'}
+                    Page {fileCanvasInfo.currentPageNumber} of {totalIndex || '--'}
                     </p>
                 <Button
                     className={styles2.floatingButtonsZoom}
-                    disabled={fileCanvasInfo.currentPageNumber >= fileCanvasInfo.totalPages}
+                    disabled={fileCanvasInfo.currentPageNumber >= fileCanvasInfo.totalPages && !revision}
                     onClick={nextPage}
                 >
                     <ArrowForwardIosIcon />

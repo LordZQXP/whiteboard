@@ -382,6 +382,7 @@ function clearCanvas(canvas) {
 }
 
 function clearCanvasNextPage(canvas) {
+  console.log("Deleted");
   canvas.getObjects().forEach((item) => {
     canvas.remove(item);
   });
@@ -433,9 +434,10 @@ const Whiteboard = ({
   setJSON,
   json,
   pdfUrl,
+  revision,
   resend,
   pdf = undefined,
-  setResendFiles,
+  setResendFiles
 }) => {
   const [currColor, setCurrColor] = useState(color[0]?.color);
   const [canvas, setCanvas] = useState(null);
@@ -494,11 +496,12 @@ const Whiteboard = ({
     setCurrColor(e);
   }
 
-  function onSaveCanvasAsImage() {
+  function onSaveCanvasAsImage(resendText) {
     if (submitPdf && pdf) {
+      let textSwal = resendText ? "You cannot undo the action once the assignment has been sent for revision." : "Once submitted, you can't reverse the changes.";
       swal({
         title: 'Are you sure?',
-        text: "Once submitted, you can't reverse the changes.",
+        text: textSwal,
         icon: 'warning',
         customClass: 'Custom_Cancel',
         buttons: true,
@@ -542,6 +545,11 @@ const Whiteboard = ({
         }
       });
     }
+  }
+
+  function extendPage(canvas){
+    nextPage(canvas);
+    canvas.setBackgroundImage(null, canvas.renderAll.bind(canvas));
   }
 
   function nextPage(canvas) {
@@ -638,6 +646,7 @@ const Whiteboard = ({
 
   useEffect(() => {
     if (canvas) {
+      console.log('rendered.');
       const center = canvas.getCenter();
       fabric.Image.fromURL(fileCanvasInfo.currentPage, (img) => {
         img.scaleToHeight(whiteboardRef.current.clientWidth);
@@ -699,6 +708,8 @@ const Whiteboard = ({
             back={() => previousPage(canvas)}
             fileCanvasInfo={fileCanvasInfo}
             updateFileCanvasInfo={updateFileCanvasInfo}
+            extend={()=>extendPage(canvas)}
+            revision={revision}
           />
         )}
       </div>
@@ -908,7 +919,7 @@ const Whiteboard = ({
                 <Button
                   onClick={() => {
                     setResendFiles(true);
-                    onSaveCanvasAsImage();
+                    onSaveCanvasAsImage(true);
                   }}
                 >
                   <Box className={styles.flexDiv}>
@@ -916,7 +927,10 @@ const Whiteboard = ({
                   </Box>
                 </Button>
               )}
-              <Button onClick={onSaveCanvasAsImage}>
+              <Button onClick={() => {
+                setResendFiles(false);
+                onSaveCanvasAsImage(false);
+              }}>
                 <Box className={styles.flexDiv}>
                   <img src={submit} />
                 </Box>
@@ -937,8 +951,9 @@ Whiteboard.propTypes = {
   setJSON: PropTypes.any,
   json: PropTypes.any,
   pdfUrl: PropTypes.any,
+  revision: PropTypes.any,
   resend: PropTypes.any,
-  pdf: PropTypes.any,
+  pdf: PropTypes.any
 };
 
 export default Whiteboard;

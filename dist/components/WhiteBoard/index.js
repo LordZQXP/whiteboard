@@ -481,6 +481,7 @@ function clearCanvas(canvas) {
 }
 
 function clearCanvasNextPage(canvas) {
+  console.log("Deleted");
   canvas.getObjects().forEach(function (item) {
     canvas.remove(item);
   });
@@ -538,6 +539,7 @@ var Whiteboard = function Whiteboard(_ref9) {
       setJSON = _ref9.setJSON,
       json = _ref9.json,
       pdfUrl = _ref9.pdfUrl,
+      revision = _ref9.revision,
       resend = _ref9.resend,
       _ref9$pdf = _ref9.pdf,
       pdf = _ref9$pdf === void 0 ? undefined : _ref9$pdf,
@@ -637,11 +639,12 @@ var Whiteboard = function Whiteboard(_ref9) {
     setCurrColor(e);
   }
 
-  function onSaveCanvasAsImage() {
+  function onSaveCanvasAsImage(resendText) {
     if (submitPdf && pdf) {
+      var textSwal = resendText ? "You cannot undo the action once the assignment has been sent for revision." : "Once submitted, you can't reverse the changes.";
       (0, _sweetalert.default)({
         title: 'Are you sure?',
-        text: "Once submitted, you can't reverse the changes.",
+        text: textSwal,
         icon: 'warning',
         customClass: 'Custom_Cancel',
         buttons: true,
@@ -745,6 +748,11 @@ var Whiteboard = function Whiteboard(_ref9) {
         };
       }());
     }
+  }
+
+  function extendPage(canvas) {
+    nextPage(canvas);
+    canvas.setBackgroundImage(null, canvas.renderAll.bind(canvas));
   }
 
   function nextPage(canvas) {
@@ -865,6 +873,7 @@ var Whiteboard = function Whiteboard(_ref9) {
 
   (0, _react.useEffect)(function () {
     if (canvas) {
+      console.log('rendered.');
       var center = canvas.getCenter();
 
       _fabric.fabric.Image.fromURL(fileCanvasInfo.currentPage, function (img) {
@@ -929,7 +938,11 @@ var Whiteboard = function Whiteboard(_ref9) {
       return previousPage(canvas);
     },
     fileCanvasInfo: fileCanvasInfo,
-    updateFileCanvasInfo: updateFileCanvasInfo
+    updateFileCanvasInfo: updateFileCanvasInfo,
+    extend: function extend() {
+      return extendPage(canvas);
+    },
+    revision: revision
   })), /*#__PURE__*/_react.default.createElement("div", {
     className: _indexModule.default.toolbarWithColor,
     style: {
@@ -1143,14 +1156,17 @@ var Whiteboard = function Whiteboard(_ref9) {
   }))), resend && /*#__PURE__*/_react.default.createElement(_Button.default, {
     onClick: function onClick() {
       setResendFiles(true);
-      onSaveCanvasAsImage();
+      onSaveCanvasAsImage(true);
     }
   }, /*#__PURE__*/_react.default.createElement(_Box.default, {
     className: _indexModule.default.flexDiv
   }, /*#__PURE__*/_react.default.createElement("img", {
     src: _Group2.default
   }))), /*#__PURE__*/_react.default.createElement(_Button.default, {
-    onClick: onSaveCanvasAsImage
+    onClick: function onClick() {
+      setResendFiles(false);
+      onSaveCanvasAsImage(false);
+    }
   }, /*#__PURE__*/_react.default.createElement(_Box.default, {
     className: _indexModule.default.flexDiv
   }, /*#__PURE__*/_react.default.createElement("img", {
@@ -1166,6 +1182,7 @@ Whiteboard.propTypes = {
   setJSON: _propTypes.default.any,
   json: _propTypes.default.any,
   pdfUrl: _propTypes.default.any,
+  revision: _propTypes.default.any,
   resend: _propTypes.default.any,
   pdf: _propTypes.default.any
 };
