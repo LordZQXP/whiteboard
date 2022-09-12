@@ -253,3 +253,9 @@
   border-radius: 50%;
   box-shadow: 0 0 10px #ccc;
 }
+
+@media (max-width:'900px') {
+  .zoomFixedButton{
+    display: none;
+  }
+}

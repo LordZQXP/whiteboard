@@ -72,16 +72,6 @@ const PDFReader = ({ fileReaderInfo, open }) => {
       <Document file={fileReaderInfo} onLoadSuccess={onDocumentLoadSuccess}>
         {Array.from(Array(numPages), (e,x) => <Page key={x} pageNumber={x+1} width={width} scale={scale} /> )}
       </Document>
-      {
-        (open) &&
-        <div className={stylesW.zoomFixedButton}>
-          <Button onClick={() => setZoomToggle(!zoomToggle)}>
-            <PageviewOutlinedIcon />
-          </Button>
-          <div style={{ display: zoomToggle ? 'flex' : 'none', flexDirection: 'column-reverse', alignItems: 'center' }}>
-            <Button className={stylesW.floatingButtonsZoom} onMouseDown={() => startCounter("out")} onMouseUp={stopCounter} onMouseLeave={stopCounter} onClick={() => zoomOut(scale)}><RemoveIcon /></Button>{(scale * 100).toFixed(0)}%<Button onMouseDown={() => startCounter("in")} onMouseUp={stopCounter} onClick={() => zoomIn(scale)} className={stylesW.floatingButtonsZoom} onMouseLeave={stopCounter}><AddIcon /></Button>
-          </div>
-        </div>}
     </div>
   );
 };

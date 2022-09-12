@@ -107,39 +107,7 @@ var PDFReader = function PDFReader(_ref) {
       width: width,
       scale: scale
     });
-  })), open && /*#__PURE__*/_react.default.createElement("div", {
-    className: _indexModule2.default.zoomFixedButton
-  }, /*#__PURE__*/_react.default.createElement(_material.Button, {
-    onClick: function onClick() {
-      return setZoomToggle(!zoomToggle);
-    }
-  }, /*#__PURE__*/_react.default.createElement(_PageviewOutlined.default, null)), /*#__PURE__*/_react.default.createElement("div", {
-    style: {
-      display: zoomToggle ? 'flex' : 'none',
-      flexDirection: 'column-reverse',
-      alignItems: 'center'
-    }
-  }, /*#__PURE__*/_react.default.createElement(_material.Button, {
-    className: _indexModule2.default.floatingButtonsZoom,
-    onMouseDown: function onMouseDown() {
-      return startCounter("out");
-    },
-    onMouseUp: stopCounter,
-    onMouseLeave: stopCounter,
-    onClick: function onClick() {
-      return zoomOut(scale);
-    }
-  }, /*#__PURE__*/_react.default.createElement(_Remove.default, null)), (scale * 100).toFixed(0), "%", /*#__PURE__*/_react.default.createElement(_material.Button, {
-    onMouseDown: function onMouseDown() {
-      return startCounter("in");
-    },
-    onMouseUp: stopCounter,
-    onClick: function onClick() {
-      return zoomIn(scale);
-    },
-    className: _indexModule2.default.floatingButtonsZoom,
-    onMouseLeave: stopCounter
-  }, /*#__PURE__*/_react.default.createElement(_Add.default, null)))));
+  })));
 };
 
 var _default = PDFReader;
