@@ -24,6 +24,19 @@
       background-color: white;
     }
   }
+  
+  .disabledButton {
+    padding: 12px;
+    margin: 1px;
+    background-color: white;
+    border-radius: 3px;
+    box-shadow: none;
+    color: rgb(0, 0, 0);
+    border: none;
+    outline: none;
+    cursor: not-allowed;
+  }
+
   .canvas-container{
     height: 600px !important;
   }

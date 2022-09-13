@@ -14,6 +14,8 @@ import Pencil from './images/pencil-create@3x.png';
 import RotateLeft from './images/rotate-ccw@3x.png';
 import RotateRight from './images/rotate-cw@3x.png';
 import submit from './images/Group 6949.png';
+import disabledSubmit from './images/disalbedSubmit.png';
+import disabledRevise from './images/disabledRevise.png';
 import sendTostudent from './images/Group 6948.png';
 import preview from './images/Group 6946.png';
 import canvasIcon from './images/Group 6947.png';
@@ -437,7 +439,8 @@ const Whiteboard = ({
   revision,
   resend,
   pdf = undefined,
-  setResendFiles
+  setResendFiles,
+  buttonFlag
 }) => {
   const [currColor, setCurrColor] = useState(color[0]?.color);
   const [canvas, setCanvas] = useState(null);
@@ -917,22 +920,29 @@ const Whiteboard = ({
               )}
               {resend && (
                 <Button
+                className={!buttonFlag ? styles.disabledButton : ''}
                   onClick={() => {
+                    if(!buttonFlag)
+                      return;
                     setResendFiles(true);
                     onSaveCanvasAsImage(true);
                   }}
                 >
                   <Box className={styles.flexDiv}>
-                    <img src={sendTostudent} />
+                    {buttonFlag ? <img src={sendTostudent} /> : <img src={disabledRevise}/>}
                   </Box>
                 </Button>
               )}
-              <Button onClick={() => {
+              <Button 
+              className={!buttonFlag ? styles.disabledButton : ''}
+              onClick={() => {
+                if(!buttonFlag)
+                return;
                 setResendFiles(false);
                 onSaveCanvasAsImage(false);
               }}>
                 <Box className={styles.flexDiv}>
-                  <img src={submit} />
+                  {buttonFlag ? <img src={submit} /> : <img src={disabledSubmit}/>}
                 </Box>
               </Button>
             </div>
@@ -953,7 +963,8 @@ Whiteboard.propTypes = {
   pdfUrl: PropTypes.any,
   revision: PropTypes.any,
   resend: PropTypes.any,
-  pdf: PropTypes.any
+  pdf: PropTypes.any,
+  buttonFlag : PropTypes.any
 };
 
 export default Whiteboard;

@@ -35,6 +35,10 @@ var _rotateCw3x = _interopRequireDefault(require("./images/rotate-cw@3x.png"));
 
 var _Group = _interopRequireDefault(require("./images/Group 6949.png"));
 
+var _disalbedSubmit = _interopRequireDefault(require("./images/disalbedSubmit.png"));
+
+var _disabledRevise = _interopRequireDefault(require("./images/disabledRevise.png"));
+
 var _Group2 = _interopRequireDefault(require("./images/Group 6948.png"));
 
 var _Group3 = _interopRequireDefault(require("./images/Group 6946.png"));
@@ -543,7 +547,8 @@ var Whiteboard = function Whiteboard(_ref9) {
       resend = _ref9.resend,
       _ref9$pdf = _ref9.pdf,
       pdf = _ref9$pdf === void 0 ? undefined : _ref9$pdf,
-      setResendFiles = _ref9.setResendFiles;
+      setResendFiles = _ref9.setResendFiles,
+      buttonFlag = _ref9.buttonFlag;
 
   var _useState = (0, _react.useState)((_color$ = color[0]) == null ? void 0 : _color$.color),
       currColor = _useState[0],
@@ -1154,23 +1159,31 @@ var Whiteboard = function Whiteboard(_ref9) {
   }, /*#__PURE__*/_react.default.createElement("img", {
     src: _Group4.default
   }))), resend && /*#__PURE__*/_react.default.createElement(_Button.default, {
+    className: !buttonFlag ? _indexModule.default.disabledButton : '',
     onClick: function onClick() {
+      if (!buttonFlag) return;
       setResendFiles(true);
       onSaveCanvasAsImage(true);
     }
   }, /*#__PURE__*/_react.default.createElement(_Box.default, {
     className: _indexModule.default.flexDiv
-  }, /*#__PURE__*/_react.default.createElement("img", {
+  }, buttonFlag ? /*#__PURE__*/_react.default.createElement("img", {
     src: _Group2.default
+  }) : /*#__PURE__*/_react.default.createElement("img", {
+    src: _disabledRevise.default
   }))), /*#__PURE__*/_react.default.createElement(_Button.default, {
+    className: !buttonFlag ? _indexModule.default.disabledButton : '',
     onClick: function onClick() {
+      if (!buttonFlag) return;
       setResendFiles(false);
       onSaveCanvasAsImage(false);
     }
   }, /*#__PURE__*/_react.default.createElement(_Box.default, {
     className: _indexModule.default.flexDiv
-  }, /*#__PURE__*/_react.default.createElement("img", {
+  }, buttonFlag ? /*#__PURE__*/_react.default.createElement("img", {
     src: _Group.default
+  }) : /*#__PURE__*/_react.default.createElement("img", {
+    src: _disalbedSubmit.default
   }))))))));
 };
 
@@ -1184,7 +1197,8 @@ Whiteboard.propTypes = {
   pdfUrl: _propTypes.default.any,
   revision: _propTypes.default.any,
   resend: _propTypes.default.any,
-  pdf: _propTypes.default.any
+  pdf: _propTypes.default.any,
+  buttonFlag: _propTypes.default.any
 };
 var _default = Whiteboard;
 exports.default = _default;
