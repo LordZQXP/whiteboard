@@ -341,26 +341,11 @@ function startDrawingTriangle(canvas) {
   };
 }
 
-function createText(canvas) {
-  removeCanvasListener(canvas);
-  canvas.isDrawingMode = false;
-  const text = new fabric.Textbox('text', {
-    left: 100,
-    top: 100,
-    fill: options.currentColor,
-    editable: true,
-  });
-  canvas.add(text);
-  canvas.renderAll();
-}
-
 function changeToErasingMode(canvas) {
-  if (options.currentMode !== modes.ERASER) {
     removeCanvasListener(canvas);
     canvas.isDrawingMode = false;
     options.currentMode = modes.ERASER;
     canvas.hoverCursor = `url(${getCursor({ type: 'eraser' })}), default`;
-  }
 }
 
 function canvasObjectsSize(canvas) {
@@ -384,7 +369,6 @@ function clearCanvas(canvas) {
 }
 
 function clearCanvasNextPage(canvas) {
-  console.log("Deleted");
   canvas.getObjects().forEach((item) => {
     canvas.remove(item);
   });
@@ -404,13 +388,27 @@ function popFromBackUp() {
 }
 
 function draw(canvas) {
-  if (options.currentMode !== modes.PENCIL) {
     removeCanvasListener(canvas);
     options.currentMode = modes.PENCIL;
     canvas.freeDrawingBrush.width = parseInt(options.currentWidth, 10) || 1;
     canvas.freeDrawingBrush.color = options.currentColor;
     canvas.isDrawingMode = true;
-  }
+}
+
+
+function createText(canvas) {
+  canvas.hoverCursor = `default`;
+  draw(canvas);
+  removeCanvasListener(canvas);
+  canvas.isDrawingMode = false;
+  const text = new fabric.Textbox('text', {
+    left: 100,
+    top: 100,
+    fill: options.currentColor,
+    editable: true,
+  });
+  canvas.add(text);
+  canvas.renderAll();
 }
 
 function handleResize(callback) {
@@ -649,7 +647,6 @@ const Whiteboard = ({
 
   useEffect(() => {
     if (canvas) {
-      console.log('rendered.');
       const center = canvas.getCenter();
       fabric.Image.fromURL(fileCanvasInfo.currentPage, (img) => {
         img.scaleToHeight(whiteboardRef.current.clientWidth);

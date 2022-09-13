@@ -436,28 +436,13 @@ function startDrawingTriangle(canvas) {
   };
 }
 
-function createText(canvas) {
+function changeToErasingMode(canvas) {
   removeCanvasListener(canvas);
   canvas.isDrawingMode = false;
-  var text = new _fabric.fabric.Textbox('text', {
-    left: 100,
-    top: 100,
-    fill: options.currentColor,
-    editable: true
-  });
-  canvas.add(text);
-  canvas.renderAll();
-}
-
-function changeToErasingMode(canvas) {
-  if (options.currentMode !== modes.ERASER) {
-    removeCanvasListener(canvas);
-    canvas.isDrawingMode = false;
-    options.currentMode = modes.ERASER;
-    canvas.hoverCursor = "url(" + (0, _cursors.default)({
-      type: 'eraser'
-    }) + "), default";
-  }
+  options.currentMode = modes.ERASER;
+  canvas.hoverCursor = "url(" + (0, _cursors.default)({
+    type: 'eraser'
+  }) + "), default";
 }
 
 function canvasObjectsSize(canvas) {
@@ -485,7 +470,6 @@ function clearCanvas(canvas) {
 }
 
 function clearCanvasNextPage(canvas) {
-  console.log("Deleted");
   canvas.getObjects().forEach(function (item) {
     canvas.remove(item);
   });
@@ -505,13 +489,26 @@ function popFromBackUp() {
 }
 
 function draw(canvas) {
-  if (options.currentMode !== modes.PENCIL) {
-    removeCanvasListener(canvas);
-    options.currentMode = modes.PENCIL;
-    canvas.freeDrawingBrush.width = parseInt(options.currentWidth, 10) || 1;
-    canvas.freeDrawingBrush.color = options.currentColor;
-    canvas.isDrawingMode = true;
-  }
+  removeCanvasListener(canvas);
+  options.currentMode = modes.PENCIL;
+  canvas.freeDrawingBrush.width = parseInt(options.currentWidth, 10) || 1;
+  canvas.freeDrawingBrush.color = options.currentColor;
+  canvas.isDrawingMode = true;
+}
+
+function createText(canvas) {
+  canvas.hoverCursor = "default";
+  draw(canvas);
+  removeCanvasListener(canvas);
+  canvas.isDrawingMode = false;
+  var text = new _fabric.fabric.Textbox('text', {
+    left: 100,
+    top: 100,
+    fill: options.currentColor,
+    editable: true
+  });
+  canvas.add(text);
+  canvas.renderAll();
 }
 
 function handleResize(callback) {
@@ -878,7 +875,6 @@ var Whiteboard = function Whiteboard(_ref9) {
 
   (0, _react.useEffect)(function () {
     if (canvas) {
-      console.log('rendered.');
       var center = canvas.getCenter();
 
       _fabric.fabric.Image.fromURL(fileCanvasInfo.currentPage, function (img) {
