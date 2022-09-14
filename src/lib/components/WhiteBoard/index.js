@@ -342,10 +342,10 @@ function startDrawingTriangle(canvas) {
 }
 
 function changeToErasingMode(canvas) {
-    removeCanvasListener(canvas);
-    canvas.isDrawingMode = false;
-    options.currentMode = modes.ERASER;
-    canvas.hoverCursor = `url(${getCursor({ type: 'eraser' })}), default`;
+  removeCanvasListener(canvas);
+  canvas.isDrawingMode = false;
+  options.currentMode = modes.ERASER;
+  canvas.hoverCursor = `url(${getCursor({ type: 'eraser' })}), default`;
 }
 
 function canvasObjectsSize(canvas) {
@@ -388,11 +388,11 @@ function popFromBackUp() {
 }
 
 function draw(canvas) {
-    removeCanvasListener(canvas);
-    options.currentMode = modes.PENCIL;
-    canvas.freeDrawingBrush.width = parseInt(options.currentWidth, 10) || 1;
-    canvas.freeDrawingBrush.color = options.currentColor;
-    canvas.isDrawingMode = true;
+  removeCanvasListener(canvas);
+  options.currentMode = modes.PENCIL;
+  canvas.freeDrawingBrush.width = parseInt(options.currentWidth, 10) || 1;
+  canvas.freeDrawingBrush.color = options.currentColor;
+  canvas.isDrawingMode = true;
 }
 
 
@@ -447,6 +447,7 @@ const Whiteboard = ({
   const [canvasPage, setCanvasPage] = useState([]);
   const [index, setIndex] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+  const [disableButtons, setDisableButtons] = useState(false);
 
   const [fileCanvasInfo, setFileCanvasInfo] = useState({
     file: pdf,
@@ -513,6 +514,7 @@ const Whiteboard = ({
             setPages({ ...pages, [index]: blob });
             setFiles({ ...pages, [index]: blob });
           });
+          setDisableButtons(true);
           setJSON({ ...canvasPage, [index]: canvas.toJSON() });
           setPages({});
           clearCanvas(canvas);
@@ -548,7 +550,7 @@ const Whiteboard = ({
     }
   }
 
-  function extendPage(canvas){
+  function extendPage(canvas) {
     nextPage(canvas);
     canvas.setBackgroundImage(null, canvas.renderAll.bind(canvas));
   }
@@ -708,7 +710,7 @@ const Whiteboard = ({
             back={() => previousPage(canvas)}
             fileCanvasInfo={fileCanvasInfo}
             updateFileCanvasInfo={updateFileCanvasInfo}
-            extend={()=>extendPage(canvas)}
+            extend={() => extendPage(canvas)}
             revision={revision}
           />
         )}
@@ -721,6 +723,7 @@ const Whiteboard = ({
                 <Button
                   className={styles.buttonThick}
                   onClick={() => setOpenThickness(!openThickness)}
+                  disabled={disableButtons}
                 >
                   <LineWeightIcon />
                 </Button>
@@ -732,6 +735,7 @@ const Whiteboard = ({
               </Box>
               <Box className={openDraw ? styles.speeddialDivOpen : styles.speeddialDivClose}>
                 <SpeedDial
+                  disabled={disableButtons}
                   open={openDraw}
                   onClick={() => {
                     setOpenDraw(!openDraw);
@@ -816,6 +820,7 @@ const Whiteboard = ({
                 className={openColor ? styles.speeddialColorDivOpen : styles.speeddialColorDivClose}
               >
                 <SpeedDial
+                  disabled={disableButtons}
                   open={openColor}
                   onClick={() => {
                     setOpenColor(!openColor);
@@ -854,6 +859,7 @@ const Whiteboard = ({
                 </SpeedDial>
               </Box>
               <SpeedDial
+                disabled={disableButtons}
                 open={false}
                 onClick={() => toolbarCommander(modes.ERASER, canvas)}
                 direction="up"
@@ -869,6 +875,7 @@ const Whiteboard = ({
                 ariaLabel="SpeedDial openIcon example"
               />
               <SpeedDial
+                disabled={disableButtons}
                 open={false}
                 onClick={() => undoCanvas(canvas)}
                 direction="up"
@@ -884,6 +891,7 @@ const Whiteboard = ({
                 }
               />
               <SpeedDial
+                disabled={disableButtons}
                 open={false}
                 onClick={() => redoCanvas(canvas)}
                 direction="up"
@@ -917,29 +925,29 @@ const Whiteboard = ({
               )}
               {resend && (
                 <Button
-                className={!buttonFlag ? styles.disabledButton : ''}
+                  className={!buttonFlag ? styles.disabledButton : ''}
                   onClick={() => {
-                    if(!buttonFlag)
+                    if (!buttonFlag)
                       return;
                     setResendFiles(true);
                     onSaveCanvasAsImage(true);
                   }}
                 >
                   <Box className={styles.flexDiv}>
-                    {buttonFlag ? <img src={sendTostudent} /> : <img src={disabledRevise}/>}
+                    {buttonFlag ? <img src={sendTostudent} /> : <img src={disabledRevise} />}
                   </Box>
                 </Button>
               )}
-              <Button 
-              className={!buttonFlag ? styles.disabledButton : ''}
-              onClick={() => {
-                if(!buttonFlag)
-                return;
-                setResendFiles(false);
-                onSaveCanvasAsImage(false);
-              }}>
+              <Button
+                className={!buttonFlag ? styles.disabledButton : ''}
+                onClick={() => {
+                  if (!buttonFlag)
+                    return;
+                  setResendFiles(false);
+                  onSaveCanvasAsImage(false);
+                }}>
                 <Box className={styles.flexDiv}>
-                  {buttonFlag ? <img src={submit} /> : <img src={disabledSubmit}/>}
+                  {buttonFlag ? <img src={submit} /> : <img src={disabledSubmit} />}
                 </Box>
               </Button>
             </div>
@@ -961,7 +969,7 @@ Whiteboard.propTypes = {
   revision: PropTypes.any,
   resend: PropTypes.any,
   pdf: PropTypes.any,
-  buttonFlag : PropTypes.any
+  buttonFlag: PropTypes.any
 };
 
 export default Whiteboard;

@@ -575,14 +575,18 @@ var Whiteboard = function Whiteboard(_ref9) {
       totalPages = _useState7[0],
       setTotalPages = _useState7[1];
 
-  var _useState8 = (0, _react.useState)({
+  var _useState8 = (0, _react.useState)(false),
+      disableButtons = _useState8[0],
+      setDisableButtons = _useState8[1];
+
+  var _useState9 = (0, _react.useState)({
     file: pdf,
     totalPages: null,
     currentPageNumber: 1,
     currentPage: ''
   }),
-      fileCanvasInfo = _useState8[0],
-      setFileCanvasInfo = _useState8[1];
+      fileCanvasInfo = _useState9[0],
+      setFileCanvasInfo = _useState9[1];
 
   var canvasRef = (0, _react.useRef)(null);
   var whiteboardRef = (0, _react.useRef)(null);
@@ -660,7 +664,7 @@ var Whiteboard = function Whiteboard(_ref9) {
               switch (_context2.prev = _context2.next) {
                 case 0:
                   if (!willDelete) {
-                    _context2.next = 8;
+                    _context2.next = 9;
                     break;
                   }
 
@@ -670,6 +674,7 @@ var Whiteboard = function Whiteboard(_ref9) {
                     setPages(_extends({}, pages, (_extends2 = {}, _extends2[index] = blob, _extends2)));
                     setFiles(_extends({}, pages, (_extends3 = {}, _extends3[index] = blob, _extends3)));
                   });
+                  setDisableButtons(true);
                   setJSON(_extends({}, canvasPage, (_extends4 = {}, _extends4[index] = canvas.toJSON(), _extends4)));
                   setPages({});
                   clearCanvas(canvas);
@@ -677,13 +682,13 @@ var Whiteboard = function Whiteboard(_ref9) {
                     file: '',
                     currentPageNumber: 1
                   });
-                  _context2.next = 9;
+                  _context2.next = 10;
                   break;
 
-                case 8:
+                case 9:
                   return _context2.abrupt("return");
 
-                case 9:
+                case 10:
                 case "end":
                   return _context2.stop();
               }
@@ -857,21 +862,21 @@ var Whiteboard = function Whiteboard(_ref9) {
     }
   };
 
-  var _useState9 = (0, _react.useState)(false),
-      openDraw = _useState9[0],
-      setOpenDraw = _useState9[1];
-
   var _useState10 = (0, _react.useState)(false),
-      openThickness = _useState10[0],
-      setOpenThickness = _useState10[1];
+      openDraw = _useState10[0],
+      setOpenDraw = _useState10[1];
 
   var _useState11 = (0, _react.useState)(false),
-      openColor = _useState11[0],
-      setOpenColor = _useState11[1];
+      openThickness = _useState11[0],
+      setOpenThickness = _useState11[1];
 
   var _useState12 = (0, _react.useState)(false),
-      zoomToggle = _useState12[0],
-      setZoomToggle = _useState12[1];
+      openColor = _useState12[0],
+      setOpenColor = _useState12[1];
+
+  var _useState13 = (0, _react.useState)(false),
+      zoomToggle = _useState13[0],
+      setZoomToggle = _useState13[1];
 
   (0, _react.useEffect)(function () {
     if (canvas) {
@@ -957,7 +962,8 @@ var Whiteboard = function Whiteboard(_ref9) {
     className: _indexModule.default.buttonThick,
     onClick: function onClick() {
       return setOpenThickness(!openThickness);
-    }
+    },
+    disabled: disableButtons
   }, /*#__PURE__*/_react.default.createElement(_LineWeight.default, null)), /*#__PURE__*/_react.default.createElement(_Slider.default, {
     changeHandler: function changeHandler(v) {
       return changeCurrentWidth(v);
@@ -967,6 +973,7 @@ var Whiteboard = function Whiteboard(_ref9) {
   })), /*#__PURE__*/_react.default.createElement(_Box.default, {
     className: openDraw ? _indexModule.default.speeddialDivOpen : _indexModule.default.speeddialDivClose
   }, /*#__PURE__*/_react.default.createElement(_SpeedDial.default, {
+    disabled: disableButtons,
     open: openDraw,
     onClick: function onClick() {
       setOpenDraw(!openDraw);
@@ -1063,6 +1070,7 @@ var Whiteboard = function Whiteboard(_ref9) {
   }))), /*#__PURE__*/_react.default.createElement(_Box.default, {
     className: openColor ? _indexModule.default.speeddialColorDivOpen : _indexModule.default.speeddialColorDivClose
   }, /*#__PURE__*/_react.default.createElement(_SpeedDial.default, {
+    disabled: disableButtons,
     open: openColor,
     onClick: function onClick() {
       setOpenColor(!openColor);
@@ -1095,6 +1103,7 @@ var Whiteboard = function Whiteboard(_ref9) {
       }
     });
   }))), /*#__PURE__*/_react.default.createElement(_SpeedDial.default, {
+    disabled: disableButtons,
     open: false,
     onClick: function onClick() {
       return toolbarCommander(modes.ERASER, canvas);
@@ -1109,6 +1118,7 @@ var Whiteboard = function Whiteboard(_ref9) {
     }),
     ariaLabel: "SpeedDial openIcon example"
   }), /*#__PURE__*/_react.default.createElement(_SpeedDial.default, {
+    disabled: disableButtons,
     open: false,
     onClick: function onClick() {
       return undoCanvas(canvas);
@@ -1123,6 +1133,7 @@ var Whiteboard = function Whiteboard(_ref9) {
       }))
     })
   }), /*#__PURE__*/_react.default.createElement(_SpeedDial.default, {
+    disabled: disableButtons,
     open: false,
     onClick: function onClick() {
       return redoCanvas(canvas);
