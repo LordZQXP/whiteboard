@@ -664,7 +664,7 @@ var Whiteboard = function Whiteboard(_ref9) {
               switch (_context2.prev = _context2.next) {
                 case 0:
                   if (!willDelete) {
-                    _context2.next = 9;
+                    _context2.next = 10;
                     break;
                   }
 
@@ -675,6 +675,7 @@ var Whiteboard = function Whiteboard(_ref9) {
                     setFiles(_extends({}, pages, (_extends3 = {}, _extends3[index] = blob, _extends3)));
                   });
                   setDisableButtons(true);
+                  options.currentMode = '';
                   setJSON(_extends({}, canvasPage, (_extends4 = {}, _extends4[index] = canvas.toJSON(), _extends4)));
                   setPages({});
                   clearCanvas(canvas);
@@ -682,13 +683,13 @@ var Whiteboard = function Whiteboard(_ref9) {
                     file: '',
                     currentPageNumber: 1
                   });
-                  _context2.next = 10;
+                  _context2.next = 11;
                   break;
 
-                case 9:
+                case 10:
                   return _context2.abrupt("return");
 
-                case 10:
+                case 11:
                 case "end":
                   return _context2.stop();
               }
@@ -973,9 +974,9 @@ var Whiteboard = function Whiteboard(_ref9) {
   })), /*#__PURE__*/_react.default.createElement(_Box.default, {
     className: openDraw ? _indexModule.default.speeddialDivOpen : _indexModule.default.speeddialDivClose
   }, /*#__PURE__*/_react.default.createElement(_SpeedDial.default, {
-    disabled: disableButtons,
     open: openDraw,
     onClick: function onClick() {
+      if (disableButtons) return;
       setOpenDraw(!openDraw);
       setOpenColor(false);
       setOpenThickness(false);
@@ -1070,9 +1071,9 @@ var Whiteboard = function Whiteboard(_ref9) {
   }))), /*#__PURE__*/_react.default.createElement(_Box.default, {
     className: openColor ? _indexModule.default.speeddialColorDivOpen : _indexModule.default.speeddialColorDivClose
   }, /*#__PURE__*/_react.default.createElement(_SpeedDial.default, {
-    disabled: disableButtons,
     open: openColor,
     onClick: function onClick() {
+      if (disableButtons) return;
       setOpenColor(!openColor);
       setOpenDraw(false);
       setOpenThickness(false);
@@ -1103,10 +1104,10 @@ var Whiteboard = function Whiteboard(_ref9) {
       }
     });
   }))), /*#__PURE__*/_react.default.createElement(_SpeedDial.default, {
-    disabled: disableButtons,
     open: false,
     onClick: function onClick() {
-      return toolbarCommander(modes.ERASER, canvas);
+      if (disableButtons) return;
+      toolbarCommander(modes.ERASER, canvas);
     },
     direction: "up",
     icon: /*#__PURE__*/_react.default.createElement(_SpeedDialIcon.default, {
@@ -1118,10 +1119,10 @@ var Whiteboard = function Whiteboard(_ref9) {
     }),
     ariaLabel: "SpeedDial openIcon example"
   }), /*#__PURE__*/_react.default.createElement(_SpeedDial.default, {
-    disabled: disableButtons,
     open: false,
     onClick: function onClick() {
-      return undoCanvas(canvas);
+      if (disableButtons) return;
+      undoCanvas(canvas);
     },
     direction: "up",
     ariaLabel: "SpeedDial openIcon example",
@@ -1133,10 +1134,10 @@ var Whiteboard = function Whiteboard(_ref9) {
       }))
     })
   }), /*#__PURE__*/_react.default.createElement(_SpeedDial.default, {
-    disabled: disableButtons,
     open: false,
     onClick: function onClick() {
-      return redoCanvas(canvas);
+      if (disableButtons) return;
+      redoCanvas(canvas);
     },
     direction: "up",
     icon: /*#__PURE__*/_react.default.createElement(_SpeedDialIcon.default, {

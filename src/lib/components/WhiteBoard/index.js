@@ -515,6 +515,7 @@ const Whiteboard = ({
             setFiles({ ...pages, [index]: blob });
           });
           setDisableButtons(true);
+          options.currentMode='';
           setJSON({ ...canvasPage, [index]: canvas.toJSON() });
           setPages({});
           clearCanvas(canvas);
@@ -735,9 +736,10 @@ const Whiteboard = ({
               </Box>
               <Box className={openDraw ? styles.speeddialDivOpen : styles.speeddialDivClose}>
                 <SpeedDial
-                  disabled={disableButtons}
                   open={openDraw}
                   onClick={() => {
+                    if(disableButtons)
+                    return;
                     setOpenDraw(!openDraw);
                     setOpenColor(false);
                     setOpenThickness(false);
@@ -820,9 +822,10 @@ const Whiteboard = ({
                 className={openColor ? styles.speeddialColorDivOpen : styles.speeddialColorDivClose}
               >
                 <SpeedDial
-                  disabled={disableButtons}
                   open={openColor}
                   onClick={() => {
+                    if (disableButtons)
+                      return;
                     setOpenColor(!openColor);
                     setOpenDraw(false);
                     setOpenThickness(false);
@@ -859,9 +862,12 @@ const Whiteboard = ({
                 </SpeedDial>
               </Box>
               <SpeedDial
-                disabled={disableButtons}
                 open={false}
-                onClick={() => toolbarCommander(modes.ERASER, canvas)}
+                onClick={() => {
+                  if (disableButtons)
+                    return;
+                  toolbarCommander(modes.ERASER, canvas);
+                }}
                 direction="up"
                 icon={
                   <SpeedDialIcon
@@ -875,9 +881,12 @@ const Whiteboard = ({
                 ariaLabel="SpeedDial openIcon example"
               />
               <SpeedDial
-                disabled={disableButtons}
                 open={false}
-                onClick={() => undoCanvas(canvas)}
+                onClick={() => {
+                  if (disableButtons)
+                    return;
+                  undoCanvas(canvas);
+                }}
                 direction="up"
                 ariaLabel="SpeedDial openIcon example"
                 icon={
@@ -891,9 +900,12 @@ const Whiteboard = ({
                 }
               />
               <SpeedDial
-                disabled={disableButtons}
                 open={false}
-                onClick={() => redoCanvas(canvas)}
+                onClick={() => {
+                  if (disableButtons)
+                    return;
+                  redoCanvas(canvas);
+                }}
                 direction="up"
                 icon={
                   <SpeedDialIcon
