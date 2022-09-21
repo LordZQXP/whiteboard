@@ -483,7 +483,7 @@ const Whiteboard = ({
 
   useEffect(() => {
     options.currentColor = currColor;
-    if (canvas) draw(canvas);
+    if (canvas && buttonFlag) draw(canvas);
   }, [canvas, color]);
 
   function changeCurrentWidth(value) {
@@ -720,7 +720,7 @@ const Whiteboard = ({
         <div className={styles.toolbar}>
           {!pdfViewer && (
             <>
-              <Box className={openThickness ? styles.speeddialDivOpen : styles.speeddialDivClose}>
+              <Box className={openThickness ? styles.speeddialDivOpen : styles.speeddialDivClose} style={{ display: !buttonFlag ? "none" : "flex" }}>
                 <Button
                   className={styles.buttonThick}
                   onClick={() => setOpenThickness(!openThickness)}
@@ -734,7 +734,7 @@ const Whiteboard = ({
                   value={options.currentWidth}
                 />
               </Box>
-              <Box className={openDraw ? styles.speeddialDivOpen : styles.speeddialDivClose}>
+              <Box className={openDraw ? styles.speeddialDivOpen : styles.speeddialDivClose} style={{ display: !buttonFlag ? "none" : "flex" }}>
                 <SpeedDial
                   open={openDraw}
                   onClick={() => {
@@ -819,6 +819,7 @@ const Whiteboard = ({
                 </SpeedDial>
               </Box>
               <Box
+                style={{ display: !buttonFlag ? "none" : "flex" }}
                 className={openColor ? styles.speeddialColorDivOpen : styles.speeddialColorDivClose}
               >
                 <SpeedDial
@@ -863,6 +864,7 @@ const Whiteboard = ({
               </Box>
               <SpeedDial
                 open={false}
+                style={{ display: !buttonFlag ? "none" : "flex" }}
                 onClick={() => {
                   if (disableButtons)
                     return;
@@ -882,6 +884,7 @@ const Whiteboard = ({
               />
               <SpeedDial
                 open={false}
+                style={{ display: !buttonFlag ? "none" : "flex" }}
                 onClick={() => {
                   if (disableButtons)
                     return;
@@ -901,6 +904,7 @@ const Whiteboard = ({
               />
               <SpeedDial
                 open={false}
+                style={{ display: !buttonFlag ? "none" : "flex" }}
                 onClick={() => {
                   if (disableButtons)
                     return;

@@ -630,7 +630,7 @@ var Whiteboard = function Whiteboard(_ref9) {
   }, [json, canvas]);
   (0, _react.useEffect)(function () {
     options.currentColor = currColor;
-    if (canvas) draw(canvas);
+    if (canvas && buttonFlag) draw(canvas);
   }, [canvas, color]);
 
   function changeCurrentWidth(value) {
@@ -958,7 +958,10 @@ var Whiteboard = function Whiteboard(_ref9) {
   }, /*#__PURE__*/_react.default.createElement("div", {
     className: _indexModule.default.toolbar
   }, !pdfViewer && /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, /*#__PURE__*/_react.default.createElement(_Box.default, {
-    className: openThickness ? _indexModule.default.speeddialDivOpen : _indexModule.default.speeddialDivClose
+    className: openThickness ? _indexModule.default.speeddialDivOpen : _indexModule.default.speeddialDivClose,
+    style: {
+      display: !buttonFlag ? "none" : "flex"
+    }
   }, /*#__PURE__*/_react.default.createElement(_Button.default, {
     className: _indexModule.default.buttonThick,
     onClick: function onClick() {
@@ -972,7 +975,10 @@ var Whiteboard = function Whiteboard(_ref9) {
     open: openThickness && !openDraw && !openColor,
     value: options.currentWidth
   })), /*#__PURE__*/_react.default.createElement(_Box.default, {
-    className: openDraw ? _indexModule.default.speeddialDivOpen : _indexModule.default.speeddialDivClose
+    className: openDraw ? _indexModule.default.speeddialDivOpen : _indexModule.default.speeddialDivClose,
+    style: {
+      display: !buttonFlag ? "none" : "flex"
+    }
   }, /*#__PURE__*/_react.default.createElement(_SpeedDial.default, {
     open: openDraw,
     onClick: function onClick() {
@@ -1069,6 +1075,9 @@ var Whiteboard = function Whiteboard(_ref9) {
       return toolbarCommander('TEXT', canvas);
     }
   }))), /*#__PURE__*/_react.default.createElement(_Box.default, {
+    style: {
+      display: !buttonFlag ? "none" : "flex"
+    },
     className: openColor ? _indexModule.default.speeddialColorDivOpen : _indexModule.default.speeddialColorDivClose
   }, /*#__PURE__*/_react.default.createElement(_SpeedDial.default, {
     open: openColor,
@@ -1105,6 +1114,9 @@ var Whiteboard = function Whiteboard(_ref9) {
     });
   }))), /*#__PURE__*/_react.default.createElement(_SpeedDial.default, {
     open: false,
+    style: {
+      display: !buttonFlag ? "none" : "flex"
+    },
     onClick: function onClick() {
       if (disableButtons) return;
       toolbarCommander(modes.ERASER, canvas);
@@ -1120,6 +1132,9 @@ var Whiteboard = function Whiteboard(_ref9) {
     ariaLabel: "SpeedDial openIcon example"
   }), /*#__PURE__*/_react.default.createElement(_SpeedDial.default, {
     open: false,
+    style: {
+      display: !buttonFlag ? "none" : "flex"
+    },
     onClick: function onClick() {
       if (disableButtons) return;
       undoCanvas(canvas);
@@ -1135,6 +1150,9 @@ var Whiteboard = function Whiteboard(_ref9) {
     })
   }), /*#__PURE__*/_react.default.createElement(_SpeedDial.default, {
     open: false,
+    style: {
+      display: !buttonFlag ? "none" : "flex"
+    },
     onClick: function onClick() {
       if (disableButtons) return;
       redoCanvas(canvas);
