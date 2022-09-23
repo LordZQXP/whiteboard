@@ -525,7 +525,7 @@ const Whiteboard = ({
         }
       });
     } else if (!submitPdf && pdf) {
-      swal('Info', 'Please check the entire assignment', 'info');
+      swal('Info', 'Pease review the entire assignment before submitting it.', 'info');
     } else {
       swal({
         title: 'Are you sure?',
