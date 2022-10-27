@@ -467,6 +467,7 @@ const Whiteboard = ({
 
   useEffect(() => {
     if (!canvas && canvasRef.current) {
+      console.log("Resize canvas \nCanvas Width : ", whiteboardRef.current.clientWidth, " Canvas Height : ", whiteboardRef.current.clientWidth / aspectRatio  )
       const canvas = initCanvas(
         whiteboardRef.current.clientWidth,
         whiteboardRef.current.clientWidth / aspectRatio,
@@ -483,9 +484,7 @@ const Whiteboard = ({
         canvas.loadFromJSON(json, canvas.renderAll.bind(canvas), function (o, object) {
           object.set('selectable', false);
           object.set('evented', false);
-          // canvas.setZoom(0.27);
-          console.log(canvas.width);
-          console.log(canvas.height);
+          canvas.setZoom(canvas.width/1424);
         });
       } catch (err) {
         console.log(err);
@@ -567,8 +566,6 @@ const Whiteboard = ({
 
   function nextPage(canvas) {
     backUpCanvas = [];
-    console.log(JSON.stringify(canvas.getObjects()));
-    console.log(JSON.stringify(canvas.toJSON()));
     setCanvasPage({ ...canvasPage, [index]: canvas.toJSON() });
     canvasRef.current.toBlob(function (blob) {
       setPages({ ...pages, [index]: blob });
