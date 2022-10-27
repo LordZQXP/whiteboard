@@ -18,7 +18,6 @@ import disabledSubmit from './images/disalbedSubmit.png';
 import disabledRevise from './images/disabledRevise.png';
 import sendTostudent from './images/Group 6948.png';
 import preview from './images/Group 6946.png';
-import canvasIcon from './images/Group 6947.png';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import LineWeightIcon from '@mui/icons-material/LineWeight';
@@ -31,7 +30,6 @@ import SpeedDialAction from '@mui/material/SpeedDialAction';
 import SpeedDialIcon from '@mui/material/SpeedDialIcon';
 import InputSlider from './components/Slider';
 import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap';
-import PdfReader from '../PdfReader';
 import PDFCanvas from '../PdfCanvas';
 import SearchOffIcon from '@mui/icons-material/SearchOff';
 import swal from 'sweetalert';
@@ -395,6 +393,14 @@ function draw(canvas) {
   canvas.isDrawingMode = true;
 }
 
+function remove(canvas) {
+  options.currentMode = '';
+  canvas.isDrawingMode = false;
+  removeCanvasListener(canvas);
+  canvas.getObjects().map((item) => item.set({ selectable: false }));
+  canvas.hoverCursor = 'all-scroll';
+}
+
 
 function createText(canvas) {
   canvas.hoverCursor = `default`;
@@ -472,19 +478,21 @@ const Whiteboard = ({
 
   useEffect(() => {
     const fetchImg = async () => {
-      clearCanvas(canvas);
-      canvas.loadFromJSON(json, canvas.renderAll.bind(canvas), function (o, object) {
-        object.set('selectable', false);
-        object.set('evented', false);
-      });
+      try {
+        clearCanvas(canvas);
+        canvas.loadFromJSON(json, canvas.renderAll.bind(canvas), function (o, object) {
+          object.set('selectable', false);
+          object.set('evented', false);
+          // canvas.setZoom(0.27);
+          console.log(canvas.width);
+          console.log(canvas.height);
+        });
+      } catch (err) {
+        console.log(err);
+      }
     };
     if (json && canvas) fetchImg();
   }, [json, canvas]);
-
-  useEffect(() => {
-    options.currentColor = currColor;
-    if (canvas && buttonFlag) draw(canvas);
-  }, [canvas, color]);
 
   function changeCurrentWidth(value) {
     const intValue = parseInt(value);
@@ -513,10 +521,10 @@ const Whiteboard = ({
           canvasRef.current.toBlob(function (blob) {
             setPages({ ...pages, [index]: blob });
             setFiles({ ...pages, [index]: blob });
+            setJSON({ ...canvasPage, [index]: canvas.toJSON() });
           });
           setDisableButtons(true);
-          options.currentMode='';
-          setJSON({ ...canvasPage, [index]: canvas.toJSON() });
+          options.currentMode = '';
           setPages({});
           clearCanvas(canvas);
           updateFileCanvasInfo({ file: '', currentPageNumber: 1 });
@@ -539,8 +547,9 @@ const Whiteboard = ({
           canvasRef.current.toBlob(function (blob) {
             setPages({ ...pages, [index]: blob });
             setFiles({ ...pages, [index]: blob });
+            setJSON({ ...canvasPage, [index]: canvas.toJSON() });
           });
-          setJSON({ ...canvasPage, [index]: canvas.toJSON() });
+          // setJSON({ ...canvasPage, [index]: canvas.toJSON() });
           setPages({});
           clearCanvas(canvas);
           updateFileCanvasInfo({ file: '', currentPageNumber: 1 });
@@ -558,6 +567,8 @@ const Whiteboard = ({
 
   function nextPage(canvas) {
     backUpCanvas = [];
+    console.log(JSON.stringify(canvas.getObjects()));
+    console.log(JSON.stringify(canvas.toJSON()));
     setCanvasPage({ ...canvasPage, [index]: canvas.toJSON() });
     canvasRef.current.toBlob(function (blob) {
       setPages({ ...pages, [index]: blob });
@@ -655,10 +666,10 @@ const Whiteboard = ({
         img.scaleToHeight(whiteboardRef.current.clientWidth);
         img.scaleToWidth(whiteboardRef.current.clientWidth);
         canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
-          top: window.innerWidth > 500 ? center.top + 225 : center.top + 25,
+          top: center.top,
           left: center.left,
           originX: 'center',
-          originY: 'center',
+          originY: 'center'
         });
         canvas.renderAll();
       });
@@ -668,6 +679,19 @@ const Whiteboard = ({
   function updateFileCanvasInfo(data) {
     setFileCanvasInfo({ ...fileCanvasInfo, ...data });
   }
+
+  useEffect(() => {
+    options.currentColor = currColor;
+    if (canvas && buttonFlag && !pdfViewer) draw(canvas);
+  }, [canvas, color]);
+
+  useEffect(() => {
+    options.currentColor = currColor;
+    if (canvas && buttonFlag && !pdfViewer) draw(canvas);
+    else if (canvas && buttonFlag && pdfViewer) {
+      remove(canvas);
+    }
+  }, [pdfViewer]);
 
   return (
     <div ref={whiteboardRef} className={styles.whiteboard}>
@@ -701,20 +725,15 @@ const Whiteboard = ({
             </div>
           )}
         </div>
-        {pdfViewer && (
-          <PdfReader savePage={() => nextPage(canvas)} fileReaderInfo={pdfUrl} open={pdfViewer} />
-        )}
-        {pdf && !pdfViewer && (
-          <PDFCanvas
-            setSubmitPdf={setSubmitPdf}
-            next={() => nextPage(canvas)}
-            back={() => previousPage(canvas)}
-            fileCanvasInfo={fileCanvasInfo}
-            updateFileCanvasInfo={updateFileCanvasInfo}
-            extend={() => extendPage(canvas)}
-            revision={revision}
-          />
-        )}
+        <PDFCanvas
+          setSubmitPdf={setSubmitPdf}
+          next={() => nextPage(canvas)}
+          back={() => previousPage(canvas)}
+          fileCanvasInfo={fileCanvasInfo}
+          updateFileCanvasInfo={updateFileCanvasInfo}
+          extend={() => extendPage(canvas)}
+          revision={revision}
+        />
       </div>
       <div className={styles.toolbarWithColor} style={{ backgroundColor: 'transparent' }}>
         <div className={styles.toolbar}>
@@ -738,8 +757,8 @@ const Whiteboard = ({
                 <SpeedDial
                   open={openDraw}
                   onClick={() => {
-                    if(disableButtons)
-                    return;
+                    if (disableButtons)
+                      return;
                     setOpenDraw(!openDraw);
                     setOpenColor(false);
                     setOpenThickness(false);
@@ -935,7 +954,7 @@ const Whiteboard = ({
               ) : (
                 <Button>
                   <Box className={styles.flexDiv} onClick={() => setPdfViewer(false)}>
-                    <img src={canvasIcon} />
+                    <img src={Pencil} />
                   </Box>
                 </Button>
               )}
