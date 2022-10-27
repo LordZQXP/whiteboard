@@ -452,8 +452,9 @@ const Whiteboard = ({
   const [pages, setPages] = useState({});
   const [canvasPage, setCanvasPage] = useState([]);
   const [index, setIndex] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
+  const [totalPages, setTotalPages] = useState(json?.length || 0);
   const [disableButtons, setDisableButtons] = useState(false);
+  const pageCounter = 0;
 
   const [fileCanvasInfo, setFileCanvasInfo] = useState({
     file: pdf,
@@ -467,7 +468,6 @@ const Whiteboard = ({
 
   useEffect(() => {
     if (!canvas && canvasRef.current) {
-      console.log("Resize canvas \nCanvas Width : ", whiteboardRef.current.clientWidth, " Canvas Height : ", whiteboardRef.current.clientWidth / aspectRatio  )
       const canvas = initCanvas(
         whiteboardRef.current.clientWidth,
         whiteboardRef.current.clientWidth / aspectRatio,
@@ -481,7 +481,7 @@ const Whiteboard = ({
     const fetchImg = async () => {
       try {
         clearCanvas(canvas);
-        canvas.loadFromJSON(json, canvas.renderAll.bind(canvas), function (o, object) {
+        canvas.loadFromJSON(json[index], canvas.renderAll.bind(canvas), function (o, object) {
           object.set('selectable', false);
           object.set('evented', false);
           canvas.setZoom(canvas.width/1424);
@@ -490,7 +490,10 @@ const Whiteboard = ({
         console.log(err);
       }
     };
-    if (json && canvas) fetchImg();
+    if (json && canvas) {
+      console.log(json.length);
+      fetchImg()
+    };
   }, [json, canvas]);
 
   function changeCurrentWidth(value) {
@@ -506,7 +509,7 @@ const Whiteboard = ({
   }
 
   function onSaveCanvasAsImage(resendText) {
-    if (submitPdf && pdf) {
+    if (index == totalPages) {
       let textSwal = resendText ? "You cannot undo the action once the assignment has been sent for revision." : "Once submitted, you can't reverse the changes.";
       swal({
         title: 'Are you sure?',
@@ -531,7 +534,7 @@ const Whiteboard = ({
           return;
         }
       });
-    } else if (!submitPdf && pdf) {
+    } else if (index != totalPages) {
       swal('Info', 'Pease review the entire assignment before submitting it.', 'info');
     } else {
       swal({
@@ -548,7 +551,6 @@ const Whiteboard = ({
             setFiles({ ...pages, [index]: blob });
             setJSON({ ...canvasPage, [index]: canvas.toJSON() });
           });
-          // setJSON({ ...canvasPage, [index]: canvas.toJSON() });
           setPages({});
           clearCanvas(canvas);
           updateFileCanvasInfo({ file: '', currentPageNumber: 1 });
@@ -565,7 +567,10 @@ const Whiteboard = ({
   }
 
   function nextPage(canvas) {
+    if(index+1>= totalPages)
+      return;
     backUpCanvas = [];
+  if(json.length === 0){  
     setCanvasPage({ ...canvasPage, [index]: canvas.toJSON() });
     canvasRef.current.toBlob(function (blob) {
       setPages({ ...pages, [index]: blob });
@@ -577,6 +582,27 @@ const Whiteboard = ({
       setTotalPages(totalPages + 1);
     }
     setIndex(index + 1);
+  }
+    else{
+    setCanvasPage({ ...canvasPage, [index]: canvas.toJSON() });
+    canvasRef.current.toBlob(function (blob) {
+      setPages({ ...pages, [index]: blob });
+    });
+    if (canvasPage[index + 1] !== undefined) {
+      canvas.loadFromJSON(canvasPage[index + 1]);
+    } else {
+      clearCanvasNextPage(canvas);
+      clearCanvas(canvas);
+      canvas.loadFromJSON(json[index+1], canvas.renderAll.bind(canvas), function (o, object) {
+        object.set('selectable', false);
+        object.set('evented', false);
+        canvas.setZoom(canvas.width / 1424);
+      });
+    }
+    setIndex(index + 1);
+    }
+    setSubmitPdf((index+1) === totalPages);
+
   }
 
   function previousPage(canvas) {
@@ -695,14 +721,14 @@ const Whiteboard = ({
       <canvas ref={canvasRef} id="canvas" />
       <div>
         <div>
-          {!pdfViewer && !pdf && (
+          {json && (
             <div className={styles.nextFixedButton}>
               {' '}
               <Button className={styles.floatingButtonsZoom} onClick={() => previousPage(canvas)}>
                 <ArrowBackIosNewIcon className={styles.blackIcon} />
               </Button>
               <p>
-                Page {index + 1} to {totalPages + 1}
+                Page {index + 1} to {totalPages}
               </p>
               <Button className={styles.floatingButtonsZoom} onClick={() => nextPage(canvas)}>
                 <ArrowForwardIosIcon className={styles.blackIcon} />
@@ -722,7 +748,7 @@ const Whiteboard = ({
             </div>
           )}
         </div>
-        <PDFCanvas
+       { json.length === 0 && <PDFCanvas
           setSubmitPdf={setSubmitPdf}
           next={() => nextPage(canvas)}
           back={() => previousPage(canvas)}
@@ -730,7 +756,7 @@ const Whiteboard = ({
           updateFileCanvasInfo={updateFileCanvasInfo}
           extend={() => extendPage(canvas)}
           revision={revision}
-        />
+        />}
       </div>
       <div className={styles.toolbarWithColor} style={{ backgroundColor: 'transparent' }}>
         <div className={styles.toolbar}>
