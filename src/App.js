@@ -1,12 +1,15 @@
 import React from 'react';
 import { Whiteboard } from './lib';
-import { saveAs } from 'file-saver';
+// import { saveAs } from 'file-saver';
 import styles from './app.module.scss';
 import { object } from './object';
 
 const App = () => {
   const [files, setFiles] = React.useState({});
   const [resendFiles, setResendFiles] = React.useState(false);
+
+  const [screenWidth, setScreenWidth] = React.useState(1424);
+
 
   const [canvasJSON, setCanvasJSON] = React.useState(object);
   // React.useEffect(() => {
@@ -24,8 +27,13 @@ const App = () => {
   // }, [files, resendFiles]);
 
   React.useEffect(() => {
-   console.log(JSON.stringify(canvasJSON));
+    console.log(JSON.stringify(canvasJSON));
   }, [canvasJSON]);
+
+
+  React.useEffect(() => {
+    console.log(screenWidth);
+  }, [screenWidth]);
 
   const color = [
     {
@@ -67,7 +75,7 @@ const App = () => {
   return (
     <div className={styles.app}>
       <main>
-        <Whiteboard aspectRatio={4 / 6} pdf={"https://stemboard-stagging.s3.amazonaws.com/549621296791/1665415370579.pdf"} setFiles={setFiles} setResendFiles={setResendFiles} color={color} json={canvasJSON} setJSON={setCanvasJSON} pdfUrl={pdfUrl} resend={true} revision={false} buttonFlag={true} />
+        <Whiteboard aspectRatio={4 / 6} pdf={"https://stemboard-stagging.s3.amazonaws.com/549621296791/1665415370579.pdf"} setFiles={setFiles} setResendFiles={setResendFiles} color={color} json={canvasJSON} setJSON={setCanvasJSON} pdfUrl={pdfUrl} resend={true} revision={false} buttonFlag={true} jsonScreenWidth={898} setJSONScreenWidth={setScreenWidth} />
       </main>
     </div>
   );

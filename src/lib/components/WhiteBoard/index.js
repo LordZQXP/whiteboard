@@ -441,7 +441,9 @@ const Whiteboard = ({
   json,
   pdfUrl,
   revision,
+  setJSONScreenWidth,
   resend,
+  jsonScreenWidth,
   pdf = undefined,
   setResendFiles,
   buttonFlag
@@ -454,7 +456,6 @@ const Whiteboard = ({
   const [index, setIndex] = useState(0);
   const [totalPages, setTotalPages] = useState(json?.length || 0);
   const [disableButtons, setDisableButtons] = useState(false);
-  const pageCounter = 0;
 
   const [fileCanvasInfo, setFileCanvasInfo] = useState({
     file: pdf,
@@ -484,14 +485,13 @@ const Whiteboard = ({
         canvas.loadFromJSON(json[index], canvas.renderAll.bind(canvas), function (o, object) {
           object.set('selectable', false);
           object.set('evented', false);
-          canvas.setZoom(canvas.width/1424);
+          canvas.setZoom(canvas.width/jsonScreenWidth);
         });
       } catch (err) {
         console.log(err);
       }
     };
     if (json && canvas) {
-      console.log(json.length);
       fetchImg()
     };
   }, [json, canvas]);
@@ -509,7 +509,7 @@ const Whiteboard = ({
   }
 
   function onSaveCanvasAsImage(resendText) {
-    if (index == totalPages) {
+    if (index+1 == totalPages) {
       let textSwal = resendText ? "You cannot undo the action once the assignment has been sent for revision." : "Once submitted, you can't reverse the changes.";
       swal({
         title: 'Are you sure?',
@@ -523,7 +523,8 @@ const Whiteboard = ({
           canvasRef.current.toBlob(function (blob) {
             setPages({ ...pages, [index]: blob });
             setFiles({ ...pages, [index]: blob });
-            setJSON({ ...canvasPage, [index]: canvas.toJSON() });
+            setJSON({ ...canvasPage, [index+1]: canvas.toJSON() });
+            setJSONScreenWidth(canvas.width);
           });
           setDisableButtons(true);
           options.currentMode = '';
@@ -534,7 +535,7 @@ const Whiteboard = ({
           return;
         }
       });
-    } else if (index != totalPages) {
+    } else if (index+1 != totalPages) {
       swal('Info', 'Pease review the entire assignment before submitting it.', 'info');
     } else {
       swal({
@@ -549,6 +550,7 @@ const Whiteboard = ({
           canvasRef.current.toBlob(function (blob) {
             setPages({ ...pages, [index]: blob });
             setFiles({ ...pages, [index]: blob });
+            setCanvasPage({ ...canvasPage, [index]: canvas.toJSON() });
             setJSON({ ...canvasPage, [index]: canvas.toJSON() });
           });
           setPages({});
@@ -567,8 +569,6 @@ const Whiteboard = ({
   }
 
   function nextPage(canvas) {
-    if(index+1>= totalPages)
-      return;
     backUpCanvas = [];
   if(json.length === 0){  
     setCanvasPage({ ...canvasPage, [index]: canvas.toJSON() });
@@ -584,6 +584,8 @@ const Whiteboard = ({
     setIndex(index + 1);
   }
     else{
+    if (index + 1 >= totalPages)
+      return;
     setCanvasPage({ ...canvasPage, [index]: canvas.toJSON() });
     canvasRef.current.toBlob(function (blob) {
       setPages({ ...pages, [index]: blob });
@@ -596,7 +598,7 @@ const Whiteboard = ({
       canvas.loadFromJSON(json[index+1], canvas.renderAll.bind(canvas), function (o, object) {
         object.set('selectable', false);
         object.set('evented', false);
-        canvas.setZoom(canvas.width / 1424);
+        canvas.setZoom(canvas.width / jsonScreenWidth);
       });
     }
     setIndex(index + 1);
@@ -735,7 +737,7 @@ const Whiteboard = ({
               </Button>{' '}
             </div>
           )}
-          {!pdfViewer && (
+          {/* {!pdfViewer && (
             <div className={styles.zoomFixedButton}>
               <Button
                 onClick={() => {
@@ -746,7 +748,7 @@ const Whiteboard = ({
                 {zoomToggle ? <SearchOffIcon /> : <ZoomOutMapIcon />}
               </Button>
             </div>
-          )}
+          )} */}
         </div>
        { json.length === 0 && <PDFCanvas
           setSubmitPdf={setSubmitPdf}
@@ -1027,7 +1029,9 @@ Whiteboard.propTypes = {
   revision: PropTypes.any,
   resend: PropTypes.any,
   pdf: PropTypes.any,
-  buttonFlag: PropTypes.any
+  buttonFlag: PropTypes.any,
+  jsonScreenWidth : PropTypes.any,
+  setJSONScreenWidth : PropTypes.any
 };
 
 export default Whiteboard;
