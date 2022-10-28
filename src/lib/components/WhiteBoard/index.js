@@ -456,6 +456,7 @@ const Whiteboard = ({
   const [index, setIndex] = useState(0);
   const [totalPages, setTotalPages] = useState(json?.length || 0);
   const [disableButtons, setDisableButtons] = useState(false);
+  const [historyIndex, setHistoryIndex] = useState(0);
 
   const [fileCanvasInfo, setFileCanvasInfo] = useState({
     file: pdf,
@@ -482,10 +483,10 @@ const Whiteboard = ({
     const fetchImg = async () => {
       try {
         clearCanvas(canvas);
-        canvas.loadFromJSON(json[index], canvas.renderAll.bind(canvas), function (o, object) {
+        canvas.loadFromJSON(json[historyIndex].object[index], canvas.renderAll.bind(canvas), function (o, object) {
           object.set('selectable', false);
           object.set('evented', false);
-          canvas.setZoom(canvas.width/jsonScreenWidth);
+          canvas.setZoom(canvas.width / json[historyIndex].screen);
         });
       } catch (err) {
         console.log(err);
@@ -508,8 +509,9 @@ const Whiteboard = ({
     setCurrColor(e);
   }
 
-  function onSaveCanvasAsImage(resendText) {
-    if (index+1 == totalPages) {
+  function onSaveCanvasAsImage(resendText, canvas) {
+    console.log(index, totalPages);
+    if (index == totalPages) {
       let textSwal = resendText ? "You cannot undo the action once the assignment has been sent for revision." : "Once submitted, you can't reverse the changes.";
       swal({
         title: 'Are you sure?',
@@ -523,7 +525,7 @@ const Whiteboard = ({
           canvasRef.current.toBlob(function (blob) {
             setPages({ ...pages, [index]: blob });
             setFiles({ ...pages, [index]: blob });
-            setJSON({ ...canvasPage, [index+1]: canvas.toJSON() });
+            setJSON({ ...canvasPage, [index]: canvas.toJSON() });
             setJSONScreenWidth(canvas.width);
           });
           setDisableButtons(true);
@@ -535,8 +537,8 @@ const Whiteboard = ({
           return;
         }
       });
-    } else if (index+1 != totalPages) {
-      swal('Info', 'Pease review the entire assignment before submitting it.', 'info');
+    } else if (index != totalPages) {
+      swal('Info', 'Please review the entire assignment before submitting it.', 'info');
     } else {
       swal({
         title: 'Are you sure?',
@@ -570,40 +572,40 @@ const Whiteboard = ({
 
   function nextPage(canvas) {
     backUpCanvas = [];
-  if(json.length === 0){  
-    setCanvasPage({ ...canvasPage, [index]: canvas.toJSON() });
-    canvasRef.current.toBlob(function (blob) {
-      setPages({ ...pages, [index]: blob });
-    });
-    if (canvasPage[index + 1] !== undefined) {
-      canvas.loadFromJSON(canvasPage[index + 1]);
-    } else {
-      clearCanvasNextPage(canvas);
-      setTotalPages(totalPages + 1);
-    }
-    setIndex(index + 1);
-  }
-    else{
-    if (index + 1 >= totalPages)
-      return;
-    setCanvasPage({ ...canvasPage, [index]: canvas.toJSON() });
-    canvasRef.current.toBlob(function (blob) {
-      setPages({ ...pages, [index]: blob });
-    });
-    if (canvasPage[index + 1] !== undefined) {
-      canvas.loadFromJSON(canvasPage[index + 1]);
-    } else {
-      clearCanvasNextPage(canvas);
-      clearCanvas(canvas);
-      canvas.loadFromJSON(json[index+1], canvas.renderAll.bind(canvas), function (o, object) {
-        object.set('selectable', false);
-        object.set('evented', false);
-        canvas.setZoom(canvas.width / jsonScreenWidth);
+    if (json.length === 0) {
+      setCanvasPage({ ...canvasPage, [index]: canvas.toJSON() });
+      canvasRef.current.toBlob(function (blob) {
+        setPages({ ...pages, [index]: blob });
       });
+      if (canvasPage[index + 1] !== undefined) {
+        canvas.loadFromJSON(canvasPage[index + 1]);
+      } else {
+        clearCanvasNextPage(canvas);
+        setTotalPages(totalPages + 1);
+      }
+      setIndex(index + 1);
     }
-    setIndex(index + 1);
+    else {
+      if (index + 1 > totalPages)
+        return;
+      setCanvasPage({ ...canvasPage, [index]: canvas.toJSON() });
+      canvasRef.current.toBlob(function (blob) {
+        setPages({ ...pages, [index]: blob });
+      });
+      if (canvasPage[index + 1] !== undefined) {
+        canvas.loadFromJSON(canvasPage[index + 1]);
+      } else {
+        clearCanvasNextPage(canvas);
+        clearCanvas(canvas);
+        canvas.loadFromJSON(json[historyIndex].object[index + 1], canvas.renderAll.bind(canvas), function (o, object) {
+          object.set('selectable', false);
+          object.set('evented', false);
+          canvas.setZoom(canvas.width / json[historyIndex].screen);
+        });
+      }
+      setIndex(index + 1);
     }
-    setSubmitPdf((index+1) === totalPages);
+    setSubmitPdf((index + 1) === totalPages);
 
   }
 
@@ -618,6 +620,38 @@ const Whiteboard = ({
     });
     canvas.loadFromJSON(canvasPage[index - 1]);
     setIndex(index - 1);
+  }
+
+
+
+  function nextHistoryPage(canvas) {
+    setIndex(0);
+    setCanvasPage([]);
+    if (historyIndex + 1 > json.length)
+      return;
+    clearCanvasNextPage(canvas);
+    clearCanvas(canvas);
+    canvas.loadFromJSON(json[historyIndex + 1].object[0], canvas.renderAll.bind(canvas), function (o, object) {
+      object.set('selectable', false);
+      object.set('evented', false);
+      canvas.setZoom(canvas.width / json[historyIndex + 1].screen);
+    });
+    setHistoryIndex(historyIndex + 1);
+  }
+
+  function previousHistoryPage(canvas) {
+    setIndex(0);
+    setCanvasPage([]);
+    if (historyIndex - 1 < 0)
+      return;
+    clearCanvasNextPage(canvas);
+    clearCanvas(canvas);
+    canvas.loadFromJSON(json[historyIndex - 1].object[0], canvas.renderAll.bind(canvas), function (o, object) {
+      object.set('selectable', false);
+      object.set('evented', false);
+      canvas.setZoom(canvas.width / json[historyIndex - 1].screen);
+    });
+    setHistoryIndex(historyIndex - 1);
   }
 
   function redoCanvas() {
@@ -682,7 +716,6 @@ const Whiteboard = ({
   const [openDraw, setOpenDraw] = useState(false);
   const [openThickness, setOpenThickness] = useState(false);
   const [openColor, setOpenColor] = useState(false);
-  const [zoomToggle, setZoomToggle] = useState(false);
 
   useEffect(() => {
     if (canvas) {
@@ -750,7 +783,7 @@ const Whiteboard = ({
             </div>
           )} */}
         </div>
-       { json.length === 0 && <PDFCanvas
+        {json.length === 0 && <PDFCanvas
           setSubmitPdf={setSubmitPdf}
           next={() => nextPage(canvas)}
           back={() => previousPage(canvas)}
@@ -970,6 +1003,15 @@ const Whiteboard = ({
           )}
           <div className={styles.upperToolBar}>
             <div className={styles.upperToolBarFlex}>
+              <Button
+                className={''}
+                onClick={() => {
+                  previousHistoryPage(canvas);
+                }}>
+                <Box className={styles.flexDiv}>
+                  <img src={disabledSubmit} />
+                </Box>
+              </Button>
               {!pdfViewer ? (
                 <Button>
                   <Box className={styles.flexDiv} onClick={() => setPdfViewer(true)}>
@@ -990,7 +1032,7 @@ const Whiteboard = ({
                     if (!buttonFlag)
                       return;
                     setResendFiles(true);
-                    onSaveCanvasAsImage(true);
+                    onSaveCanvasAsImage(true, canvas);
                   }}
                 >
                   <Box className={styles.flexDiv}>
@@ -1004,10 +1046,19 @@ const Whiteboard = ({
                   if (!buttonFlag)
                     return;
                   setResendFiles(false);
-                  onSaveCanvasAsImage(false);
+                  onSaveCanvasAsImage(false, canvas);
                 }}>
                 <Box className={styles.flexDiv}>
                   {buttonFlag ? <img src={submit} /> : <img src={disabledSubmit} />}
+                </Box>
+              </Button>
+              <Button
+                className={''}
+                onClick={() => {
+                  nextHistoryPage(canvas);
+                }}>
+                <Box className={styles.flexDiv}>
+                  <img src={disabledSubmit} />
                 </Box>
               </Button>
             </div>
@@ -1030,8 +1081,8 @@ Whiteboard.propTypes = {
   resend: PropTypes.any,
   pdf: PropTypes.any,
   buttonFlag: PropTypes.any,
-  jsonScreenWidth : PropTypes.any,
-  setJSONScreenWidth : PropTypes.any
+  jsonScreenWidth: PropTypes.any,
+  setJSONScreenWidth: PropTypes.any
 };
 
 export default Whiteboard;
