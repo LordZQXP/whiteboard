@@ -17,6 +17,8 @@ import submit from './images/Group 6949.png';
 import disabledSubmit from './images/disalbedSubmit.png';
 import disabledRevise from './images/disabledRevise.png';
 import sendTostudent from './images/Group 6948.png';
+import previousHistory from './images/back.png';
+import nextHistory from './images/arrow-right.png';
 import preview from './images/Group 6946.png';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
@@ -33,6 +35,7 @@ import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap';
 import PDFCanvas from '../PdfCanvas';
 import SearchOffIcon from '@mui/icons-material/SearchOff';
 import swal from 'sweetalert';
+import StyledSnackbar from './components/StyledSnackbar';
 
 let drawInstance = null;
 let origX;
@@ -457,6 +460,28 @@ const Whiteboard = ({
   const [totalPages, setTotalPages] = useState(json?.length || 0);
   const [disableButtons, setDisableButtons] = useState(false);
   const [historyIndex, setHistoryIndex] = useState(0);
+
+  const [snackbarData, setSnackBarData] = useState({
+    xPos: 'center',
+    yPos: 'bottom',
+    title: '',
+    status: 'success'
+  });
+
+
+  const [openSnack, setOpenSnack] = useState(false);
+  const handleClick = () => {
+    setOpenSnack(true);
+  };
+
+  const handleCloseSnack = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenSnack(false);
+  };
+
 
   const [fileCanvasInfo, setFileCanvasInfo] = useState({
     file: pdf,
@@ -1006,10 +1031,20 @@ const Whiteboard = ({
               <Button
                 className={''}
                 onClick={() => {
+                  if(historyIndex === 0){
+                    setSnackBarData({
+                      xPos: 'center',
+                      yPos: 'bottom',
+                      title: 'No previous submissions found.',
+                      status: 'info'
+                    });
+                    handleClick();
+                    return;
+                  }
                   previousHistoryPage(canvas);
                 }}>
                 <Box className={styles.flexDiv}>
-                  <img src={disabledSubmit} />
+                  <img src={previousHistory} />
                 </Box>
               </Button>
               {!pdfViewer ? (
@@ -1055,14 +1090,32 @@ const Whiteboard = ({
               <Button
                 className={''}
                 onClick={() => {
+                  if(historyIndex +2> json.length){
+                      setSnackBarData({
+                        xPos: 'center',
+                        yPos: 'bottom',
+                        title: 'You are viewing the latest submission.',
+                        status: 'info'
+                      });
+                      handleClick();
+                    return;
+                  }
                   nextHistoryPage(canvas);
                 }}>
                 <Box className={styles.flexDiv}>
-                  <img src={disabledSubmit} />
+                  <img src={nextHistory} />
                 </Box>
               </Button>
             </div>
           </div>
+          <StyledSnackbar 
+            xPos={snackbarData.xPos}
+            yPos={snackbarData.yPos}
+            title={snackbarData.title}
+            status={snackbarData.status}
+            open={openSnack}
+            onClose={handleCloseSnack}
+          />
         </div>
       </div>
     </div>
