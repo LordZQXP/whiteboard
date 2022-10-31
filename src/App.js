@@ -1,10 +1,17 @@
 import React from 'react';
 import { Whiteboard } from './lib';
-// import { saveAs } from 'file-saver';
+import { saveAs } from 'file-saver';
 import styles from './app.module.scss';
 import { object } from './object';
 import { object2 } from './obejct2';
 import { object3 } from './object3';
+import { object4 } from './object4';
+import { object5 } from './object5';
+import { object1_1 } from './object1_1';
+import { object1_2 } from './object1_2';
+import { object1_4 } from './object3_2';
+import { object7 } from './object7';
+import { object77 } from './object77';
 
 const App = () => {
   const [files, setFiles] = React.useState({});
@@ -13,20 +20,23 @@ const App = () => {
   const [screenWidth, setScreenWidth] = React.useState(898);
 
 
-  const [canvasJSON, setCanvasJSON] = React.useState([{screen : 898, object : object}, {screen : 1424, object : object2}, {screen : 1424, object: object3}]);
-  // React.useEffect(() => {
-  //   if (Object.values(files).length > 0) {
-  //     if (resendFiles) {
+  // const [canvasJSON, setCanvasJSON] = React.useState([{ screen: 898, object: object }, { screen: 1424, object: object2 }, { screen: 1424, object: object3 }, { screen: 1424, object: object4 }, {screen: 1424, object : object5}]);
 
-  //     }
-  //     // for (let i = 0; i < Object.values(files).length; i++) {
-  //     //   saveAs(Object.values(files)[i], `page${i + 1}.png`);
-  //     // }
-  //   }
+  const [canvasJSON, setCanvasJSON] = React.useState([
+    {
+      screen : 1424,
+      object : object1_4
+    },
+    {
+      screen: 1424,
+      object: object7
+    },
+    {
+      screen: 1314,
+      object: object77
+    }
+  ]);
 
-  //   // if (Object.values(files).length > 0)
-  //   //   window.location.reload();
-  // }, [files, resendFiles]);
 
   React.useEffect(() => {
     console.log(JSON.stringify(canvasJSON));

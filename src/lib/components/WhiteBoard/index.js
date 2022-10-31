@@ -31,9 +31,7 @@ import SpeedDial from '@mui/material/SpeedDial';
 import SpeedDialAction from '@mui/material/SpeedDialAction';
 import SpeedDialIcon from '@mui/material/SpeedDialIcon';
 import InputSlider from './components/Slider';
-import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap';
 import PDFCanvas from '../PdfCanvas';
-import SearchOffIcon from '@mui/icons-material/SearchOff';
 import swal from 'sweetalert';
 import StyledSnackbar from './components/StyledSnackbar';
 
@@ -457,10 +455,10 @@ const Whiteboard = ({
   const [pages, setPages] = useState({});
   const [canvasPage, setCanvasPage] = useState([]);
   const [index, setIndex] = useState(0);
-  const [totalPages, setTotalPages] = useState(json?.length || 0);
   const [disableButtons, setDisableButtons] = useState(false);
   const [historyIndex, setHistoryIndex] = useState(0);
-
+  const [totalPages, setTotalPages] = useState(json[historyIndex]?.object?.length || 0);
+  
   const [snackbarData, setSnackBarData] = useState({
     xPos: 'center',
     yPos: 'bottom',
@@ -535,8 +533,7 @@ const Whiteboard = ({
   }
 
   function onSaveCanvasAsImage(resendText, canvas) {
-    console.log(index, totalPages);
-    if (index == totalPages) {
+    if (index + 1 === totalPages) {
       let textSwal = resendText ? "You cannot undo the action once the assignment has been sent for revision." : "Once submitted, you can't reverse the changes.";
       swal({
         title: 'Are you sure?',
@@ -553,11 +550,6 @@ const Whiteboard = ({
             setJSON({ ...canvasPage, [index]: canvas.toJSON() });
             setJSONScreenWidth(canvas.width);
           });
-          setDisableButtons(true);
-          options.currentMode = '';
-          setPages({});
-          clearCanvas(canvas);
-          updateFileCanvasInfo({ file: '', currentPageNumber: 1 });
         } else {
           return;
         }
@@ -577,12 +569,9 @@ const Whiteboard = ({
           canvasRef.current.toBlob(function (blob) {
             setPages({ ...pages, [index]: blob });
             setFiles({ ...pages, [index]: blob });
-            setCanvasPage({ ...canvasPage, [index]: canvas.toJSON() });
             setJSON({ ...canvasPage, [index]: canvas.toJSON() });
+            setJSONScreenWidth(canvas.width);
           });
-          setPages({});
-          clearCanvas(canvas);
-          updateFileCanvasInfo({ file: '', currentPageNumber: 1 });
         } else {
           return;
         }
@@ -611,7 +600,7 @@ const Whiteboard = ({
       setIndex(index + 1);
     }
     else {
-      if (index + 1 > totalPages)
+      if (index + 1 >= totalPages)
         return;
       setCanvasPage({ ...canvasPage, [index]: canvas.toJSON() });
       canvasRef.current.toBlob(function (blob) {
@@ -676,6 +665,7 @@ const Whiteboard = ({
       object.set('evented', false);
       canvas.setZoom(canvas.width / json[historyIndex - 1].screen);
     });
+    
     setHistoryIndex(historyIndex - 1);
   }
 
@@ -784,29 +774,21 @@ const Whiteboard = ({
           {json && (
             <div className={styles.nextFixedButton}>
               {' '}
-              <Button className={styles.floatingButtonsZoom} onClick={() => previousPage(canvas)}>
+              <Button className={styles.floatingButtonsZoom} 
+                disabled={index  === 0}
+              onClick={() => previousPage(canvas)}>
                 <ArrowBackIosNewIcon className={styles.blackIcon} />
               </Button>
               <p>
                 Page {index + 1} to {totalPages}
               </p>
-              <Button className={styles.floatingButtonsZoom} onClick={() => nextPage(canvas)}>
+              <Button className={styles.floatingButtonsZoom}
+                disabled={index+1 === totalPages}
+              onClick={() => nextPage(canvas)}>
                 <ArrowForwardIosIcon className={styles.blackIcon} />
               </Button>{' '}
             </div>
           )}
-          {/* {!pdfViewer && (
-            <div className={styles.zoomFixedButton}>
-              <Button
-                onClick={() => {
-                  panningZoom(canvas, !zoomToggle);
-                  setZoomToggle(!zoomToggle);
-                }}
-              >
-                {zoomToggle ? <SearchOffIcon /> : <ZoomOutMapIcon />}
-              </Button>
-            </div>
-          )} */}
         </div>
         {json.length === 0 && <PDFCanvas
           setSubmitPdf={setSubmitPdf}
