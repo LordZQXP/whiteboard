@@ -1252,17 +1252,22 @@ var Whiteboard = function Whiteboard(_ref9) {
     className: _indexModule.default.upperToolBar
   }, /*#__PURE__*/_react.default.createElement("div", {
     className: _indexModule.default.upperToolBarFlex
-  }, !pdfViewer ? /*#__PURE__*/_react.default.createElement(_Button.default, null, /*#__PURE__*/_react.default.createElement(_Box.default, {
+  }, !pdfViewer ? /*#__PURE__*/_react.default.createElement(_Button.default, {
+    className: !buttonFlag ? _indexModule.default.disabledButton : '',
+    disabled: !buttonFlag
+  }, /*#__PURE__*/_react.default.createElement(_Box.default, {
     className: _indexModule.default.flexDiv,
     onClick: function onClick() {
-      return setPdfViewer(true);
+      if (!buttonFlag) return;
+      setPdfViewer(true);
     }
   }, /*#__PURE__*/_react.default.createElement("img", {
     src: _Group3.default
   }))) : /*#__PURE__*/_react.default.createElement(_Button.default, null, /*#__PURE__*/_react.default.createElement(_Box.default, {
     className: _indexModule.default.flexDiv,
     onClick: function onClick() {
-      return setPdfViewer(false);
+      if (!buttonFlag) return;
+      setPdfViewer(false);
     }
   }, /*#__PURE__*/_react.default.createElement("img", {
     src: _pencilCreate3x.default

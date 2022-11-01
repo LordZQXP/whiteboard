@@ -87,7 +87,7 @@ const App = () => {
   return (
     <div className={styles.app}>
       <main>
-        <Whiteboard aspectRatio={4 / 6} pdf={"https://stemboard-stagging.s3.amazonaws.com/549621296791/1665415370579.pdf"} setFiles={setFiles} setResendFiles={setResendFiles} color={color} json={canvasJSON} setJSON={setCanvasJSON} jsonScreenWidth={screenWidth} setJSONScreenWidth={setScreenWidth} pdfUrl={pdfUrl} resend={true} revision={false} buttonFlag={true}  />
+        <Whiteboard aspectRatio={4 / 6} pdf={"https://stemboard-stagging.s3.amazonaws.com/549621296791/1665415370579.pdf"} setFiles={setFiles} setResendFiles={setResendFiles} color={color} json={canvasJSON} setJSON={setCanvasJSON} jsonScreenWidth={screenWidth} setJSONScreenWidth={setScreenWidth} pdfUrl={pdfUrl} resend={true} revision={false} buttonFlag={false}  />
       </main>
     </div>
   );

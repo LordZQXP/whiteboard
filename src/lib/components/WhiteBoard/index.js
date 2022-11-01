@@ -1010,14 +1010,22 @@ const Whiteboard = ({
           <div className={styles.upperToolBar}>
             <div className={styles.upperToolBarFlex}>
               {!pdfViewer ? (
-                <Button>
-                  <Box className={styles.flexDiv} onClick={() => setPdfViewer(true)}>
+                <Button
+                  className={!buttonFlag ? styles.disabledButton : ''}
+                  disabled={!buttonFlag}
+                >
+                  <Box className={styles.flexDiv} onClick={() => {
+                    if(!buttonFlag)
+                    return;
+                    setPdfViewer(true)}}>
                     <img src={preview} />
                   </Box>
                 </Button>
               ) : (
                 <Button>
-                  <Box className={styles.flexDiv} onClick={() => setPdfViewer(false)}>
+                    <Box className={styles.flexDiv} onClick={() => {
+                      if (!buttonFlag)
+                        return; setPdfViewer(false)}}>
                     <img src={Pencil} />
                   </Box>
                 </Button>
