@@ -665,7 +665,6 @@ const Whiteboard = ({
       object.set('evented', false);
       canvas.setZoom(canvas.width / json[historyIndex - 1].screen);
     });
-    
     setHistoryIndex(historyIndex - 1);
   }
 
@@ -1010,25 +1009,6 @@ const Whiteboard = ({
           )}
           <div className={styles.upperToolBar}>
             <div className={styles.upperToolBarFlex}>
-              <Button
-                className={''}
-                onClick={() => {
-                  if(historyIndex === 0){
-                    setSnackBarData({
-                      xPos: 'center',
-                      yPos: 'bottom',
-                      title: 'No previous submissions found.',
-                      status: 'info'
-                    });
-                    handleClick();
-                    return;
-                  }
-                  previousHistoryPage(canvas);
-                }}>
-                <Box className={styles.flexDiv}>
-                  <img src={previousHistory} />
-                </Box>
-              </Button>
               {!pdfViewer ? (
                 <Button>
                   <Box className={styles.flexDiv} onClick={() => setPdfViewer(true)}>
@@ -1067,25 +1047,6 @@ const Whiteboard = ({
                 }}>
                 <Box className={styles.flexDiv}>
                   {buttonFlag ? <img src={submit} /> : <img src={disabledSubmit} />}
-                </Box>
-              </Button>
-              <Button
-                className={''}
-                onClick={() => {
-                  if(historyIndex +2> json.length){
-                      setSnackBarData({
-                        xPos: 'center',
-                        yPos: 'bottom',
-                        title: 'You are viewing the latest submission.',
-                        status: 'info'
-                      });
-                      handleClick();
-                    return;
-                  }
-                  nextHistoryPage(canvas);
-                }}>
-                <Box className={styles.flexDiv}>
-                  <img src={nextHistory} />
                 </Box>
               </Button>
             </div>

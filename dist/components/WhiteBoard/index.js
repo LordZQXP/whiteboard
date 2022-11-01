@@ -1252,27 +1252,7 @@ var Whiteboard = function Whiteboard(_ref9) {
     className: _indexModule.default.upperToolBar
   }, /*#__PURE__*/_react.default.createElement("div", {
     className: _indexModule.default.upperToolBarFlex
-  }, /*#__PURE__*/_react.default.createElement(_Button.default, {
-    className: '',
-    onClick: function onClick() {
-      if (historyIndex === 0) {
-        setSnackBarData({
-          xPos: 'center',
-          yPos: 'bottom',
-          title: 'No previous submissions found.',
-          status: 'info'
-        });
-        handleClick();
-        return;
-      }
-
-      previousHistoryPage(canvas);
-    }
-  }, /*#__PURE__*/_react.default.createElement(_Box.default, {
-    className: _indexModule.default.flexDiv
-  }, /*#__PURE__*/_react.default.createElement("img", {
-    src: _back.default
-  }))), !pdfViewer ? /*#__PURE__*/_react.default.createElement(_Button.default, null, /*#__PURE__*/_react.default.createElement(_Box.default, {
+  }, !pdfViewer ? /*#__PURE__*/_react.default.createElement(_Button.default, null, /*#__PURE__*/_react.default.createElement(_Box.default, {
     className: _indexModule.default.flexDiv,
     onClick: function onClick() {
       return setPdfViewer(true);
@@ -1312,26 +1292,6 @@ var Whiteboard = function Whiteboard(_ref9) {
     src: _Group.default
   }) : /*#__PURE__*/_react.default.createElement("img", {
     src: _disalbedSubmit.default
-  }))), /*#__PURE__*/_react.default.createElement(_Button.default, {
-    className: '',
-    onClick: function onClick() {
-      if (historyIndex + 2 > json.length) {
-        setSnackBarData({
-          xPos: 'center',
-          yPos: 'bottom',
-          title: 'You are viewing the latest submission.',
-          status: 'info'
-        });
-        handleClick();
-        return;
-      }
-
-      nextHistoryPage(canvas);
-    }
-  }, /*#__PURE__*/_react.default.createElement(_Box.default, {
-    className: _indexModule.default.flexDiv
-  }, /*#__PURE__*/_react.default.createElement("img", {
-    src: _arrowRight.default
   }))))), /*#__PURE__*/_react.default.createElement(_StyledSnackbar.default, {
     xPos: snackbarData.xPos,
     yPos: snackbarData.yPos,
