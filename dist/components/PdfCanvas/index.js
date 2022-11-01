@@ -75,7 +75,6 @@ var PDFCanvas = function PDFCanvas(_ref) {
       changePage(1);
       next();
     } else if (fileCanvasInfo.currentPageNumber + 1 > fileCanvasInfo.totalPages) {
-      console.log("NIceeee");
       updateFileCanvasInfo({
         totalPages: fileCanvasInfo.currentPageNumber + 1
       });
