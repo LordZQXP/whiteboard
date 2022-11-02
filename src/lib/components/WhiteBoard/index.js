@@ -823,7 +823,10 @@ const Whiteboard = ({
               <Box className={openThickness ? styles.speeddialDivOpen : styles.speeddialDivClose} style={{ display: "flex" }}>
                 <Button
                   className={styles.buttonThick}
-                  onClick={() => setOpenThickness(!openThickness)}
+                  onClick={() =>{
+                    if (!buttonFlag)
+                      return;
+                    setOpenThickness(!openThickness)}}
                   disabled={disableButtons}
                 >
                   <LineWeightIcon />
@@ -839,6 +842,8 @@ const Whiteboard = ({
                   open={openDraw}
                   onClick={() => {
                     if (disableButtons)
+                      return;
+                    if(!buttonFlag)
                       return;
                     setOpenDraw(!openDraw);
                     setOpenColor(false);
@@ -927,6 +932,8 @@ const Whiteboard = ({
                   onClick={() => {
                     if (disableButtons)
                       return;
+                    if (!buttonFlag)
+                      return;
                     setOpenColor(!openColor);
                     setOpenDraw(false);
                     setOpenThickness(false);
@@ -967,6 +974,8 @@ const Whiteboard = ({
                 style={{ display: "flex" }}
                 onClick={() => {
                   if (disableButtons)
+                    return;
+                  if (!buttonFlag)
                     return;
                   toolbarCommander(modes.ERASER, canvas);
                 }}

@@ -1072,7 +1072,8 @@ var Whiteboard = function Whiteboard(_ref9) {
   }, /*#__PURE__*/_react.default.createElement(_Button.default, {
     className: _indexModule.default.buttonThick,
     onClick: function onClick() {
-      return setOpenThickness(!openThickness);
+      if (!buttonFlag) return;
+      setOpenThickness(!openThickness);
     },
     disabled: disableButtons
   }, /*#__PURE__*/_react.default.createElement(_LineWeight.default, null)), /*#__PURE__*/_react.default.createElement(_Slider.default, {
@@ -1090,6 +1091,7 @@ var Whiteboard = function Whiteboard(_ref9) {
     open: openDraw,
     onClick: function onClick() {
       if (disableButtons) return;
+      if (!buttonFlag) return;
       setOpenDraw(!openDraw);
       setOpenColor(false);
       setOpenThickness(false);
@@ -1190,6 +1192,7 @@ var Whiteboard = function Whiteboard(_ref9) {
     open: openColor,
     onClick: function onClick() {
       if (disableButtons) return;
+      if (!buttonFlag) return;
       setOpenColor(!openColor);
       setOpenDraw(false);
       setOpenThickness(false);
@@ -1226,6 +1229,7 @@ var Whiteboard = function Whiteboard(_ref9) {
     },
     onClick: function onClick() {
       if (disableButtons) return;
+      if (!buttonFlag) return;
       toolbarCommander(modes.ERASER, canvas);
     },
     direction: "up",
