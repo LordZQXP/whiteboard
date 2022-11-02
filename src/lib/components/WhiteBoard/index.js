@@ -503,7 +503,6 @@ const Whiteboard = ({
       );
       setCanvas(() => canvas);
       handleResize(resizeCanvas(canvas, whiteboardRef.current)).observe(whiteboardRef.current);
-      console.log("canvas width --> ", canvas.width);
       setCanvasOriginalWidth(canvas.width);
     }
   }, [canvasRef]);
@@ -511,7 +510,6 @@ const Whiteboard = ({
   useEffect(() => {
     const fetchImg = async () => {
       try {
-        console.log(canvasOriginalWidth, canvas.width);
         clearCanvas(canvas);
         if (canvasPage[index] !== undefined) {
           canvas.loadFromJSON(canvasPage[index]);
@@ -522,8 +520,6 @@ const Whiteboard = ({
             object.set('selectable', false);
             object.set('evented', false);
             canvas.setZoom(canvasOriginalWidth / json[historyIndex].screen);
-            console.log(canvasOriginalWidth, canvas.width);
-            console.log("zoom ", canvasOriginalWidth / json[historyIndex].screen, "zoom two", 1);
           });
         }
       } catch (err) {
@@ -753,9 +749,7 @@ const Whiteboard = ({
   useEffect(() => {
     if (canvas) {
       if(!pdfViewer && json.length !== 0) return;
-      console.log(canvasOriginalWidth, canvas.width);
       canvas.setZoom(1);
-      console.log(canvasOriginalWidth, canvas.width);
       const center = canvas.getCenter();
       fabric.Image.fromURL(fileCanvasInfo.currentPage, (img) => {
         img.scaleToHeight(whiteboardRef.current.clientWidth);
@@ -826,7 +820,7 @@ const Whiteboard = ({
         <div className={styles.toolbar}>
           {!pdfViewer && (
             <>
-              <Box className={openThickness ? styles.speeddialDivOpen : styles.speeddialDivClose} style={{ display: !buttonFlag ? "none" : "flex" }}>
+              <Box className={openThickness ? styles.speeddialDivOpen : styles.speeddialDivClose} style={{ display: "flex" }}>
                 <Button
                   className={styles.buttonThick}
                   onClick={() => setOpenThickness(!openThickness)}
@@ -840,7 +834,7 @@ const Whiteboard = ({
                   value={options.currentWidth}
                 />
               </Box>
-              <Box className={openDraw ? styles.speeddialDivOpen : styles.speeddialDivClose} style={{ display: !buttonFlag ? "none" : "flex" }}>
+              <Box className={openDraw ? styles.speeddialDivOpen : styles.speeddialDivClose} style={{ display: "flex" }}>
                 <SpeedDial
                   open={openDraw}
                   onClick={() => {
@@ -925,7 +919,7 @@ const Whiteboard = ({
                 </SpeedDial>
               </Box>
               <Box
-                style={{ display: !buttonFlag ? "none" : "flex" }}
+                style={{ display: "flex" }}
                 className={openColor ? styles.speeddialColorDivOpen : styles.speeddialColorDivClose}
               >
                 <SpeedDial
@@ -970,7 +964,7 @@ const Whiteboard = ({
               </Box>
               <SpeedDial
                 open={false}
-                style={{ display: !buttonFlag ? "none" : "flex" }}
+                style={{ display: "flex" }}
                 onClick={() => {
                   if (disableButtons)
                     return;
@@ -990,7 +984,7 @@ const Whiteboard = ({
               />
               <SpeedDial
                 open={false}
-                style={{ display: !buttonFlag ? "none" : "flex" }}
+                style={{ display: "flex" }}
                 onClick={() => {
                   if (disableButtons)
                     return;
@@ -1010,7 +1004,7 @@ const Whiteboard = ({
               />
               <SpeedDial
                 open={false}
-                style={{ display: !buttonFlag ? "none" : "flex" }}
+                style={{ display: "flex" }}
                 onClick={() => {
                   if (disableButtons)
                     return;
@@ -1033,13 +1027,8 @@ const Whiteboard = ({
           <div className={styles.upperToolBar}>
             <div className={styles.upperToolBarFlex}>
               {!pdfViewer ? (
-                <Button
-                  className={!buttonFlag ? styles.disabledButton : ''}
-                  disabled={!buttonFlag}
-                >
+                <Button>
                   <Box className={styles.flexDiv} onClick={() => {
-                    if (!buttonFlag)
-                      return;
                     setIndex(0);
                     updateFileCanvasInfo({ currentPageNumber: 1 });
                     setCanvasPage({ ...canvasPage, [index]: canvas.toJSON() });
@@ -1052,8 +1041,6 @@ const Whiteboard = ({
               ) : (
                 <Button>
                   <Box className={styles.flexDiv} onClick={() => {
-                    if (!buttonFlag)
-                      return;
                     setIndex(0);
                     updateFileCanvasInfo({ currentPageNumber: 1 });
                     setPdfViewer(false);

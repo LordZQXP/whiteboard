@@ -649,7 +649,6 @@ var Whiteboard = function Whiteboard(_ref9) {
         return _canvas;
       });
       handleResize(resizeCanvas(_canvas, whiteboardRef.current)).observe(whiteboardRef.current);
-      console.log("canvas width --> ", _canvas.width);
       setCanvasOriginalWidth(_canvas.width);
     }
   }, [canvasRef]);
@@ -661,7 +660,6 @@ var Whiteboard = function Whiteboard(_ref9) {
             switch (_context.prev = _context.next) {
               case 0:
                 try {
-                  console.log(canvasOriginalWidth, canvas.width);
                   clearCanvas(canvas);
 
                   if (canvasPage[index] !== undefined) {
@@ -672,8 +670,6 @@ var Whiteboard = function Whiteboard(_ref9) {
                       object.set('selectable', false);
                       object.set('evented', false);
                       canvas.setZoom(canvasOriginalWidth / json[historyIndex].screen);
-                      console.log(canvasOriginalWidth, canvas.width);
-                      console.log("zoom ", canvasOriginalWidth / json[historyIndex].screen, "zoom two", 1);
                     });
                   }
                 } catch (err) {
@@ -992,9 +988,7 @@ var Whiteboard = function Whiteboard(_ref9) {
   (0, _react.useEffect)(function () {
     if (canvas) {
       if (!pdfViewer && json.length !== 0) return;
-      console.log(canvasOriginalWidth, canvas.width);
       canvas.setZoom(1);
-      console.log(canvasOriginalWidth, canvas.width);
       var center = canvas.getCenter();
 
       _fabric.fabric.Image.fromURL(fileCanvasInfo.currentPage, function (img) {
@@ -1073,7 +1067,7 @@ var Whiteboard = function Whiteboard(_ref9) {
   }, !pdfViewer && /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, /*#__PURE__*/_react.default.createElement(_Box.default, {
     className: openThickness ? _indexModule.default.speeddialDivOpen : _indexModule.default.speeddialDivClose,
     style: {
-      display: !buttonFlag ? "none" : "flex"
+      display: "flex"
     }
   }, /*#__PURE__*/_react.default.createElement(_Button.default, {
     className: _indexModule.default.buttonThick,
@@ -1090,7 +1084,7 @@ var Whiteboard = function Whiteboard(_ref9) {
   })), /*#__PURE__*/_react.default.createElement(_Box.default, {
     className: openDraw ? _indexModule.default.speeddialDivOpen : _indexModule.default.speeddialDivClose,
     style: {
-      display: !buttonFlag ? "none" : "flex"
+      display: "flex"
     }
   }, /*#__PURE__*/_react.default.createElement(_SpeedDial.default, {
     open: openDraw,
@@ -1189,7 +1183,7 @@ var Whiteboard = function Whiteboard(_ref9) {
     }
   }))), /*#__PURE__*/_react.default.createElement(_Box.default, {
     style: {
-      display: !buttonFlag ? "none" : "flex"
+      display: "flex"
     },
     className: openColor ? _indexModule.default.speeddialColorDivOpen : _indexModule.default.speeddialColorDivClose
   }, /*#__PURE__*/_react.default.createElement(_SpeedDial.default, {
@@ -1228,7 +1222,7 @@ var Whiteboard = function Whiteboard(_ref9) {
   }))), /*#__PURE__*/_react.default.createElement(_SpeedDial.default, {
     open: false,
     style: {
-      display: !buttonFlag ? "none" : "flex"
+      display: "flex"
     },
     onClick: function onClick() {
       if (disableButtons) return;
@@ -1246,7 +1240,7 @@ var Whiteboard = function Whiteboard(_ref9) {
   }), /*#__PURE__*/_react.default.createElement(_SpeedDial.default, {
     open: false,
     style: {
-      display: !buttonFlag ? "none" : "flex"
+      display: "flex"
     },
     onClick: function onClick() {
       if (disableButtons) return;
@@ -1264,7 +1258,7 @@ var Whiteboard = function Whiteboard(_ref9) {
   }), /*#__PURE__*/_react.default.createElement(_SpeedDial.default, {
     open: false,
     style: {
-      display: !buttonFlag ? "none" : "flex"
+      display: "flex"
     },
     onClick: function onClick() {
       if (disableButtons) return;
@@ -1283,15 +1277,11 @@ var Whiteboard = function Whiteboard(_ref9) {
     className: _indexModule.default.upperToolBar
   }, /*#__PURE__*/_react.default.createElement("div", {
     className: _indexModule.default.upperToolBarFlex
-  }, !pdfViewer ? /*#__PURE__*/_react.default.createElement(_Button.default, {
-    className: !buttonFlag ? _indexModule.default.disabledButton : '',
-    disabled: !buttonFlag
-  }, /*#__PURE__*/_react.default.createElement(_Box.default, {
+  }, !pdfViewer ? /*#__PURE__*/_react.default.createElement(_Button.default, null, /*#__PURE__*/_react.default.createElement(_Box.default, {
     className: _indexModule.default.flexDiv,
     onClick: function onClick() {
       var _extends14;
 
-      if (!buttonFlag) return;
       setIndex(0);
       updateFileCanvasInfo({
         currentPageNumber: 1
@@ -1305,7 +1295,6 @@ var Whiteboard = function Whiteboard(_ref9) {
   }))) : /*#__PURE__*/_react.default.createElement(_Button.default, null, /*#__PURE__*/_react.default.createElement(_Box.default, {
     className: _indexModule.default.flexDiv,
     onClick: function onClick() {
-      if (!buttonFlag) return;
       setIndex(0);
       updateFileCanvasInfo({
         currentPageNumber: 1
