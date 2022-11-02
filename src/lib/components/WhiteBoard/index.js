@@ -34,6 +34,7 @@ import InputSlider from './components/Slider';
 import PDFCanvas from '../PdfCanvas';
 import swal from 'sweetalert';
 import StyledSnackbar from './components/StyledSnackbar';
+import PDFReader from '../PdfReader';
 
 let drawInstance = null;
 let origX;
@@ -458,7 +459,10 @@ const Whiteboard = ({
   const [disableButtons, setDisableButtons] = useState(false);
   const [historyIndex, setHistoryIndex] = useState(0);
   const [totalPages, setTotalPages] = useState(json[historyIndex]?.object?.length || 0);
-  
+  const [pdfViewer, setPdfViewer] = React.useState(true);
+  const [canvasOriginalWidth, setCanvasOriginalWidth] = React.useState(878); 
+
+
   const [snackbarData, setSnackBarData] = useState({
     xPos: 'center',
     yPos: 'bottom',
@@ -499,26 +503,39 @@ const Whiteboard = ({
       );
       setCanvas(() => canvas);
       handleResize(resizeCanvas(canvas, whiteboardRef.current)).observe(whiteboardRef.current);
+      console.log("canvas width --> ", canvas.width);
+      setCanvasOriginalWidth(canvas.width);
     }
   }, [canvasRef]);
 
   useEffect(() => {
     const fetchImg = async () => {
       try {
+        console.log(canvasOriginalWidth, canvas.width);
         clearCanvas(canvas);
-        canvas.loadFromJSON(json[historyIndex].object[index], canvas.renderAll.bind(canvas), function (o, object) {
-          object.set('selectable', false);
-          object.set('evented', false);
-          canvas.setZoom(canvas.width / json[historyIndex].screen);
-        });
+        if (canvasPage[index] !== undefined) {
+          canvas.loadFromJSON(canvasPage[index]);
+          canvas.setZoom(canvasOriginalWidth / json[historyIndex].screen);
+        }
+        else{
+          canvas.loadFromJSON(json[historyIndex].object[index], canvas.renderAll.bind(canvas), function (o, object) {
+            object.set('selectable', false);
+            object.set('evented', false);
+            canvas.setZoom(canvasOriginalWidth / json[historyIndex].screen);
+            console.log(canvasOriginalWidth, canvas.width);
+            console.log("zoom ", canvasOriginalWidth / json[historyIndex].screen, "zoom two", 1);
+          });
+        }
       } catch (err) {
         console.log(err);
       }
     };
-    if (json && canvas) {
-      fetchImg()
+    if (json && canvas && !pdfViewer) {
+      clearCanvas(canvas);
+      setIndex(0);
+      fetchImg();
     };
-  }, [json, canvas]);
+  }, [json, canvas, pdfViewer]);
 
   function changeCurrentWidth(value) {
     const intValue = parseInt(value);
@@ -587,35 +604,39 @@ const Whiteboard = ({
   function nextPage(canvas) {
     backUpCanvas = [];
     if (json.length === 0) {
-      setCanvasPage({ ...canvasPage, [index]: canvas.toJSON() });
-      canvasRef.current.toBlob(function (blob) {
-        setPages({ ...pages, [index]: blob });
-      });
-      if (canvasPage[index + 1] !== undefined) {
-        canvas.loadFromJSON(canvasPage[index + 1]);
-      } else {
-        clearCanvasNextPage(canvas);
-        setTotalPages(totalPages + 1);
+      if (!pdfViewer) {
+        setCanvasPage({ ...canvasPage, [index]: canvas.toJSON() });
+        canvasRef.current.toBlob(function (blob) {
+          setPages({ ...pages, [index]: blob });
+        });
+        if (canvasPage[index + 1] !== undefined) {
+          canvas.loadFromJSON(canvasPage[index + 1]);
+        } else {
+          clearCanvasNextPage(canvas);
+          setTotalPages(totalPages + 1);
+        }
       }
       setIndex(index + 1);
     }
     else {
       if (index + 1 >= totalPages)
         return;
-      setCanvasPage({ ...canvasPage, [index]: canvas.toJSON() });
-      canvasRef.current.toBlob(function (blob) {
-        setPages({ ...pages, [index]: blob });
-      });
-      if (canvasPage[index + 1] !== undefined) {
-        canvas.loadFromJSON(canvasPage[index + 1]);
-      } else {
-        clearCanvasNextPage(canvas);
-        clearCanvas(canvas);
-        canvas.loadFromJSON(json[historyIndex].object[index + 1], canvas.renderAll.bind(canvas), function (o, object) {
-          object.set('selectable', false);
-          object.set('evented', false);
-          canvas.setZoom(canvas.width / json[historyIndex].screen);
+      if (!pdfViewer) {
+        setCanvasPage({ ...canvasPage, [index]: canvas.toJSON() });
+        canvasRef.current.toBlob(function (blob) {
+          setPages({ ...pages, [index]: blob });
         });
+        if (canvasPage[index + 1] !== undefined) {
+          canvas.loadFromJSON(canvasPage[index + 1]);
+        } else {
+          clearCanvasNextPage(canvas);
+          clearCanvas(canvas);
+          canvas.loadFromJSON(json[historyIndex].object[index + 1], canvas.renderAll.bind(canvas), function (o, object) {
+            object.set('selectable', false);
+            object.set('evented', false);
+            canvas.setZoom(canvasOriginalWidth / json[historyIndex].screen);
+          });
+        }
       }
       setIndex(index + 1);
     }
@@ -628,15 +649,15 @@ const Whiteboard = ({
     if (index - 1 < 0) {
       return;
     }
-    setCanvasPage({ ...canvasPage, [index]: canvas.toJSON() });
-    canvasRef.current.toBlob(function (blob) {
-      setPages({ ...pages, [index]: blob });
-    });
-    canvas.loadFromJSON(canvasPage[index - 1]);
+    if (!pdfViewer) {
+      setCanvasPage({ ...canvasPage, [index]: canvas.toJSON() });
+      canvasRef.current.toBlob(function (blob) {
+        setPages({ ...pages, [index]: blob });
+      });
+      canvas.loadFromJSON(canvasPage[index - 1]);
+    }
     setIndex(index - 1);
   }
-
-
 
   function nextHistoryPage(canvas) {
     setIndex(0);
@@ -648,7 +669,7 @@ const Whiteboard = ({
     canvas.loadFromJSON(json[historyIndex + 1].object[0], canvas.renderAll.bind(canvas), function (o, object) {
       object.set('selectable', false);
       object.set('evented', false);
-      canvas.setZoom(canvas.width / json[historyIndex + 1].screen);
+      canvas.setZoom(canvasOriginalWidth / json[historyIndex + 1].screen);
     });
     setHistoryIndex(historyIndex + 1);
   }
@@ -663,7 +684,7 @@ const Whiteboard = ({
     canvas.loadFromJSON(json[historyIndex - 1].object[0], canvas.renderAll.bind(canvas), function (o, object) {
       object.set('selectable', false);
       object.set('evented', false);
-      canvas.setZoom(canvas.width / json[historyIndex - 1].screen);
+      canvas.setZoom(canvasOriginalWidth / json[historyIndex - 1].screen);
     });
     setHistoryIndex(historyIndex - 1);
   }
@@ -683,8 +704,6 @@ const Whiteboard = ({
       canvas.remove(canvas.getObjects()[length]);
     }
   }
-
-  const [pdfViewer, setPdfViewer] = React.useState(true);
 
   const toolbarCommander = (props, canvas, options) => {
     setOpenDraw(false);
@@ -733,6 +752,10 @@ const Whiteboard = ({
 
   useEffect(() => {
     if (canvas) {
+      if(!pdfViewer && json.length !== 0) return;
+      console.log(canvasOriginalWidth, canvas.width);
+      canvas.setZoom(1);
+      console.log(canvasOriginalWidth, canvas.width);
       const center = canvas.getCenter();
       fabric.Image.fromURL(fileCanvasInfo.currentPage, (img) => {
         img.scaleToHeight(whiteboardRef.current.clientWidth);
@@ -746,7 +769,7 @@ const Whiteboard = ({
         canvas.renderAll();
       });
     }
-  }, [fileCanvasInfo.currentPage]);
+  }, [fileCanvasInfo.currentPage, pdfViewer]);
 
   function updateFileCanvasInfo(data) {
     setFileCanvasInfo({ ...fileCanvasInfo, ...data });
@@ -770,26 +793,26 @@ const Whiteboard = ({
       <canvas ref={canvasRef} id="canvas" />
       <div>
         <div>
-          {json && (
+          {(json) && (
             <div className={styles.nextFixedButton}>
               {' '}
-              <Button className={styles.floatingButtonsZoom} 
-                disabled={index  === 0}
-              onClick={() => previousPage(canvas)}>
+              <Button className={styles.floatingButtonsZoom}
+                disabled={index === 0}
+                onClick={() => previousPage(canvas)}>
                 <ArrowBackIosNewIcon className={styles.blackIcon} />
               </Button>
               <p>
                 Page {index + 1} to {totalPages}
               </p>
               <Button className={styles.floatingButtonsZoom}
-                disabled={index+1 === totalPages}
-              onClick={() => nextPage(canvas)}>
+                disabled={index + 1 === totalPages}
+                onClick={() => nextPage(canvas)}>
                 <ArrowForwardIosIcon className={styles.blackIcon} />
               </Button>{' '}
             </div>
           )}
         </div>
-        {json.length === 0 && <PDFCanvas
+        {(json.length === 0 || pdfViewer) && <PDFCanvas
           setSubmitPdf={setSubmitPdf}
           next={() => nextPage(canvas)}
           back={() => previousPage(canvas)}
@@ -1015,17 +1038,26 @@ const Whiteboard = ({
                   disabled={!buttonFlag}
                 >
                   <Box className={styles.flexDiv} onClick={() => {
-                    if(!buttonFlag)
-                    return;
-                    setPdfViewer(true)}}>
+                    if (!buttonFlag)
+                      return;
+                    setIndex(0);
+                    updateFileCanvasInfo({ currentPageNumber: 1 });
+                    setCanvasPage({ ...canvasPage, [index]: canvas.toJSON() });
+                    clearCanvas(canvas);
+                    setPdfViewer(true);
+                  }}>
                     <img src={preview} />
                   </Box>
                 </Button>
               ) : (
                 <Button>
-                    <Box className={styles.flexDiv} onClick={() => {
-                      if (!buttonFlag)
-                        return; setPdfViewer(false)}}>
+                  <Box className={styles.flexDiv} onClick={() => {
+                    if (!buttonFlag)
+                      return;
+                    setIndex(0);
+                    updateFileCanvasInfo({ currentPageNumber: 1 });
+                    setPdfViewer(false);
+                  }}>
                     <img src={Pencil} />
                   </Box>
                 </Button>
@@ -1059,7 +1091,7 @@ const Whiteboard = ({
               </Button>
             </div>
           </div>
-          <StyledSnackbar 
+          <StyledSnackbar
             xPos={snackbarData.xPos}
             yPos={snackbarData.yPos}
             title={snackbarData.title}

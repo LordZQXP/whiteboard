@@ -75,6 +75,8 @@ var _sweetalert = _interopRequireDefault(require("sweetalert"));
 
 var _StyledSnackbar = _interopRequireDefault(require("./components/StyledSnackbar"));
 
+var _PdfReader = _interopRequireDefault(require("../PdfReader"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
@@ -595,6 +597,14 @@ var Whiteboard = function Whiteboard(_ref9) {
       totalPages = _useState9[0],
       setTotalPages = _useState9[1];
 
+  var _React$useState = _react.default.useState(true),
+      pdfViewer = _React$useState[0],
+      setPdfViewer = _React$useState[1];
+
+  var _React$useState2 = _react.default.useState(878),
+      canvasOriginalWidth = _React$useState2[0],
+      setCanvasOriginalWidth = _React$useState2[1];
+
   var _useState10 = (0, _react.useState)({
     xPos: 'center',
     yPos: 'bottom',
@@ -639,6 +649,8 @@ var Whiteboard = function Whiteboard(_ref9) {
         return _canvas;
       });
       handleResize(resizeCanvas(_canvas, whiteboardRef.current)).observe(whiteboardRef.current);
+      console.log("canvas width --> ", _canvas.width);
+      setCanvasOriginalWidth(_canvas.width);
     }
   }, [canvasRef]);
   (0, _react.useEffect)(function () {
@@ -649,12 +661,21 @@ var Whiteboard = function Whiteboard(_ref9) {
             switch (_context.prev = _context.next) {
               case 0:
                 try {
+                  console.log(canvasOriginalWidth, canvas.width);
                   clearCanvas(canvas);
-                  canvas.loadFromJSON(json[historyIndex].object[index], canvas.renderAll.bind(canvas), function (o, object) {
-                    object.set('selectable', false);
-                    object.set('evented', false);
-                    canvas.setZoom(canvas.width / json[historyIndex].screen);
-                  });
+
+                  if (canvasPage[index] !== undefined) {
+                    canvas.loadFromJSON(canvasPage[index]);
+                    canvas.setZoom(canvasOriginalWidth / json[historyIndex].screen);
+                  } else {
+                    canvas.loadFromJSON(json[historyIndex].object[index], canvas.renderAll.bind(canvas), function (o, object) {
+                      object.set('selectable', false);
+                      object.set('evented', false);
+                      canvas.setZoom(canvasOriginalWidth / json[historyIndex].screen);
+                      console.log(canvasOriginalWidth, canvas.width);
+                      console.log("zoom ", canvasOriginalWidth / json[historyIndex].screen, "zoom two", 1);
+                    });
+                  }
                 } catch (err) {
                   console.log(err);
                 }
@@ -672,12 +693,14 @@ var Whiteboard = function Whiteboard(_ref9) {
       };
     }();
 
-    if (json && canvas) {
+    if (json && canvas && !pdfViewer) {
+      clearCanvas(canvas);
+      setIndex(0);
       fetchImg();
     }
 
     ;
-  }, [json, canvas]);
+  }, [json, canvas, pdfViewer]);
 
   function changeCurrentWidth(value) {
     var intValue = parseInt(value);
@@ -797,44 +820,49 @@ var Whiteboard = function Whiteboard(_ref9) {
     backUpCanvas = [];
 
     if (json.length === 0) {
-      var _extends8;
+      if (!pdfViewer) {
+        var _extends8;
 
-      setCanvasPage(_extends({}, canvasPage, (_extends8 = {}, _extends8[index] = canvas.toJSON(), _extends8)));
-      canvasRef.current.toBlob(function (blob) {
-        var _extends9;
+        setCanvasPage(_extends({}, canvasPage, (_extends8 = {}, _extends8[index] = canvas.toJSON(), _extends8)));
+        canvasRef.current.toBlob(function (blob) {
+          var _extends9;
 
-        setPages(_extends({}, pages, (_extends9 = {}, _extends9[index] = blob, _extends9)));
-      });
+          setPages(_extends({}, pages, (_extends9 = {}, _extends9[index] = blob, _extends9)));
+        });
 
-      if (canvasPage[index + 1] !== undefined) {
-        canvas.loadFromJSON(canvasPage[index + 1]);
-      } else {
-        clearCanvasNextPage(canvas);
-        setTotalPages(totalPages + 1);
+        if (canvasPage[index + 1] !== undefined) {
+          canvas.loadFromJSON(canvasPage[index + 1]);
+        } else {
+          clearCanvasNextPage(canvas);
+          setTotalPages(totalPages + 1);
+        }
       }
 
       setIndex(index + 1);
     } else {
-      var _extends10;
-
       if (index + 1 >= totalPages) return;
-      setCanvasPage(_extends({}, canvasPage, (_extends10 = {}, _extends10[index] = canvas.toJSON(), _extends10)));
-      canvasRef.current.toBlob(function (blob) {
-        var _extends11;
 
-        setPages(_extends({}, pages, (_extends11 = {}, _extends11[index] = blob, _extends11)));
-      });
+      if (!pdfViewer) {
+        var _extends10;
 
-      if (canvasPage[index + 1] !== undefined) {
-        canvas.loadFromJSON(canvasPage[index + 1]);
-      } else {
-        clearCanvasNextPage(canvas);
-        clearCanvas(canvas);
-        canvas.loadFromJSON(json[historyIndex].object[index + 1], canvas.renderAll.bind(canvas), function (o, object) {
-          object.set('selectable', false);
-          object.set('evented', false);
-          canvas.setZoom(canvas.width / json[historyIndex].screen);
+        setCanvasPage(_extends({}, canvasPage, (_extends10 = {}, _extends10[index] = canvas.toJSON(), _extends10)));
+        canvasRef.current.toBlob(function (blob) {
+          var _extends11;
+
+          setPages(_extends({}, pages, (_extends11 = {}, _extends11[index] = blob, _extends11)));
         });
+
+        if (canvasPage[index + 1] !== undefined) {
+          canvas.loadFromJSON(canvasPage[index + 1]);
+        } else {
+          clearCanvasNextPage(canvas);
+          clearCanvas(canvas);
+          canvas.loadFromJSON(json[historyIndex].object[index + 1], canvas.renderAll.bind(canvas), function (o, object) {
+            object.set('selectable', false);
+            object.set('evented', false);
+            canvas.setZoom(canvasOriginalWidth / json[historyIndex].screen);
+          });
+        }
       }
 
       setIndex(index + 1);
@@ -844,21 +872,24 @@ var Whiteboard = function Whiteboard(_ref9) {
   }
 
   function previousPage(canvas) {
-    var _extends12;
-
     backUpCanvas = [];
 
     if (index - 1 < 0) {
       return;
     }
 
-    setCanvasPage(_extends({}, canvasPage, (_extends12 = {}, _extends12[index] = canvas.toJSON(), _extends12)));
-    canvasRef.current.toBlob(function (blob) {
-      var _extends13;
+    if (!pdfViewer) {
+      var _extends12;
 
-      setPages(_extends({}, pages, (_extends13 = {}, _extends13[index] = blob, _extends13)));
-    });
-    canvas.loadFromJSON(canvasPage[index - 1]);
+      setCanvasPage(_extends({}, canvasPage, (_extends12 = {}, _extends12[index] = canvas.toJSON(), _extends12)));
+      canvasRef.current.toBlob(function (blob) {
+        var _extends13;
+
+        setPages(_extends({}, pages, (_extends13 = {}, _extends13[index] = blob, _extends13)));
+      });
+      canvas.loadFromJSON(canvasPage[index - 1]);
+    }
+
     setIndex(index - 1);
   }
 
@@ -871,7 +902,7 @@ var Whiteboard = function Whiteboard(_ref9) {
     canvas.loadFromJSON(json[historyIndex + 1].object[0], canvas.renderAll.bind(canvas), function (o, object) {
       object.set('selectable', false);
       object.set('evented', false);
-      canvas.setZoom(canvas.width / json[historyIndex + 1].screen);
+      canvas.setZoom(canvasOriginalWidth / json[historyIndex + 1].screen);
     });
     setHistoryIndex(historyIndex + 1);
   }
@@ -885,7 +916,7 @@ var Whiteboard = function Whiteboard(_ref9) {
     canvas.loadFromJSON(json[historyIndex - 1].object[0], canvas.renderAll.bind(canvas), function (o, object) {
       object.set('selectable', false);
       object.set('evented', false);
-      canvas.setZoom(canvas.width / json[historyIndex - 1].screen);
+      canvas.setZoom(canvasOriginalWidth / json[historyIndex - 1].screen);
     });
     setHistoryIndex(historyIndex - 1);
   }
@@ -903,10 +934,6 @@ var Whiteboard = function Whiteboard(_ref9) {
       canvas.remove(canvas.getObjects()[length]);
     }
   }
-
-  var _React$useState = _react.default.useState(true),
-      pdfViewer = _React$useState[0],
-      setPdfViewer = _React$useState[1];
 
   var toolbarCommander = function toolbarCommander(props, canvas, options) {
     setOpenDraw(false);
@@ -964,6 +991,10 @@ var Whiteboard = function Whiteboard(_ref9) {
 
   (0, _react.useEffect)(function () {
     if (canvas) {
+      if (!pdfViewer && json.length !== 0) return;
+      console.log(canvasOriginalWidth, canvas.width);
+      canvas.setZoom(1);
+      console.log(canvasOriginalWidth, canvas.width);
       var center = canvas.getCenter();
 
       _fabric.fabric.Image.fromURL(fileCanvasInfo.currentPage, function (img) {
@@ -978,7 +1009,7 @@ var Whiteboard = function Whiteboard(_ref9) {
         canvas.renderAll();
       });
     }
-  }, [fileCanvasInfo.currentPage]);
+  }, [fileCanvasInfo.currentPage, pdfViewer]);
 
   function updateFileCanvasInfo(data) {
     setFileCanvasInfo(_extends({}, fileCanvasInfo, data));
@@ -1018,7 +1049,7 @@ var Whiteboard = function Whiteboard(_ref9) {
     }
   }, /*#__PURE__*/_react.default.createElement(_ArrowForwardIos.default, {
     className: _indexModule.default.blackIcon
-  })), ' ')), json.length === 0 && /*#__PURE__*/_react.default.createElement(_PdfCanvas.default, {
+  })), ' ')), (json.length === 0 || pdfViewer) && /*#__PURE__*/_react.default.createElement(_PdfCanvas.default, {
     setSubmitPdf: setSubmitPdf,
     next: function next() {
       return nextPage(canvas);
@@ -1258,7 +1289,15 @@ var Whiteboard = function Whiteboard(_ref9) {
   }, /*#__PURE__*/_react.default.createElement(_Box.default, {
     className: _indexModule.default.flexDiv,
     onClick: function onClick() {
+      var _extends14;
+
       if (!buttonFlag) return;
+      setIndex(0);
+      updateFileCanvasInfo({
+        currentPageNumber: 1
+      });
+      setCanvasPage(_extends({}, canvasPage, (_extends14 = {}, _extends14[index] = canvas.toJSON(), _extends14)));
+      clearCanvas(canvas);
       setPdfViewer(true);
     }
   }, /*#__PURE__*/_react.default.createElement("img", {
@@ -1267,6 +1306,10 @@ var Whiteboard = function Whiteboard(_ref9) {
     className: _indexModule.default.flexDiv,
     onClick: function onClick() {
       if (!buttonFlag) return;
+      setIndex(0);
+      updateFileCanvasInfo({
+        currentPageNumber: 1
+      });
       setPdfViewer(false);
     }
   }, /*#__PURE__*/_react.default.createElement("img", {

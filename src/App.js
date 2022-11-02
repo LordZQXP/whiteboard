@@ -2,46 +2,19 @@ import React from 'react';
 import { Whiteboard } from './lib';
 import { saveAs } from 'file-saver';
 import styles from './app.module.scss';
-import { object } from './object';
-import { object2 } from './obejct2';
-import { object3 } from './object3';
-import { object4 } from './object4';
-import { object5 } from './object5';
-import { object1_1 } from './object1_1';
-import { object1_2 } from './object1_2';
-import { object1_4 } from './object3_2';
-import { object7 } from './object7';
-import { object77 } from './object77';
 
 const App = () => {
   const [files, setFiles] = React.useState({});
   const [resendFiles, setResendFiles] = React.useState(false);
 
-  const [screenWidth, setScreenWidth] = React.useState(898);
+  const [screenWidth, setScreenWidth] = React.useState(1424);
 
-
-  // const [canvasJSON, setCanvasJSON] = React.useState([{ screen: 898, object: object }, { screen: 1424, object: object2 }, { screen: 1424, object: object3 }, { screen: 1424, object: object4 }, {screen: 1424, object : object5}]);
-
-  const [canvasJSON, setCanvasJSON] = React.useState([
-    {
-      screen : 1424,
-      object : object1_4
-    },
-    {
-      screen: 1424,
-      object: object7
-    },
-    {
-      screen: 1314,
-      object: object77
-    }
-  ]);
+  const [canvasJSON, setCanvasJSON] = React.useState([]);
 
 
   React.useEffect(() => {
     console.log(JSON.stringify(canvasJSON));
   }, [canvasJSON]);
-
 
   React.useEffect(() => {
     console.log(screenWidth);
@@ -82,12 +55,12 @@ const App = () => {
     },
   ];
 
-  const pdfUrl = "https://stemboard-stagging.s3.amazonaws.com/545148257444/1662064901130.pdf";
+  const pdfUrl = "https://stemboard-stagging.s3.amazonaws.com/560698803371/1667362810990.pdf";
 
   return (
     <div className={styles.app}>
       <main>
-        <Whiteboard aspectRatio={4 / 6} pdf={"https://stemboard-stagging.s3.amazonaws.com/549621296791/1665415370579.pdf"} setFiles={setFiles} setResendFiles={setResendFiles} color={color} json={canvasJSON} setJSON={setCanvasJSON} jsonScreenWidth={screenWidth} setJSONScreenWidth={setScreenWidth} pdfUrl={pdfUrl} resend={true} revision={false} buttonFlag={false}  />
+        <Whiteboard aspectRatio={4 / 6} pdf={"https://stemboard-stagging.s3.amazonaws.com/560698803371/1667362810990.pdf"} setFiles={setFiles} setResendFiles={setResendFiles} color={color} json={canvasJSON} setJSON={setCanvasJSON} jsonScreenWidth={screenWidth} setJSONScreenWidth={setScreenWidth} pdfUrl={pdfUrl} resend={true} revision={false} buttonFlag={true}  />
       </main>
     </div>
   );
