@@ -3,6 +3,7 @@ import { Whiteboard } from './lib';
 import { saveAs } from 'file-saver';
 import styles from './app.module.scss';
 
+
 const App = () => {
   const [files, setFiles] = React.useState({});
   const [resendFiles, setResendFiles] = React.useState(false);
@@ -55,12 +56,12 @@ const App = () => {
     },
   ];
 
-  const pdfUrl = "https://stemboard-stagging.s3.amazonaws.com/560698803371/1667362810990.pdf";
+  const pdfUrl = "https://stemboard-stagging.s3.amazonaws.com/560698803371/1667381783118.pdf";
 
   return (
     <div className={styles.app}>
       <main>
-        <Whiteboard aspectRatio={4 / 6} pdf={"https://stemboard-stagging.s3.amazonaws.com/560698803371/1667362810990.pdf"} setFiles={setFiles} setResendFiles={setResendFiles} color={color} json={canvasJSON} setJSON={setCanvasJSON} jsonScreenWidth={screenWidth} setJSONScreenWidth={setScreenWidth} pdfUrl={pdfUrl} resend={true} revision={false} buttonFlag={false}  />
+        <Whiteboard aspectRatio={4 / 6} pdf={"https://stemboard-stagging.s3.amazonaws.com/560698803371/1667381783118.pdf"} setFiles={setFiles} setResendFiles={setResendFiles} color={color} json={canvasJSON} setJSON={setCanvasJSON} jsonScreenWidth={screenWidth} setJSONScreenWidth={setScreenWidth} pdfUrl={pdfUrl} resend={true} revision={false} buttonFlag={true}  />
       </main>
     </div>
   );

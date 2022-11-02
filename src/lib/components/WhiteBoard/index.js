@@ -546,7 +546,7 @@ const Whiteboard = ({
   }
 
   function onSaveCanvasAsImage(resendText, canvas) {
-    if (index + 1 === totalPages) {
+    if ((json.length === 0 && index + 1 === fileCanvasInfo.totalPages && !pdfViewer) || (json.length !== 0 && index + 1 === totalPages && !pdfViewer)) {
       let textSwal = resendText ? "You cannot undo the action once the assignment has been sent for revision." : "Once submitted, you can't reverse the changes.";
       swal({
         title: 'Are you sure?',
@@ -567,29 +567,9 @@ const Whiteboard = ({
           return;
         }
       });
-    } else if (index != totalPages) {
-      swal('Info', 'Please review the entire assignment before submitting it.', 'info');
     } else {
-      swal({
-        title: 'Are you sure?',
-        text: "Once submitted, you can't reverse the changes.",
-        icon: 'warning',
-        customClass: 'Custom_Cancel',
-        buttons: true,
-        dangerMode: true,
-      }).then(async (willDelete) => {
-        if (willDelete) {
-          canvasRef.current.toBlob(function (blob) {
-            setPages({ ...pages, [index]: blob });
-            setFiles({ ...pages, [index]: blob });
-            setJSON({ ...canvasPage, [index]: canvas.toJSON() });
-            setJSONScreenWidth(canvas.width);
-          });
-        } else {
-          return;
-        }
-      });
-    }
+      swal('Info', 'Please review the entire assignment before submitting it.', 'info');
+    } 
   }
 
   function extendPage(canvas) {

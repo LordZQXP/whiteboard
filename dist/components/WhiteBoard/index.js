@@ -711,7 +711,7 @@ var Whiteboard = function Whiteboard(_ref9) {
   }
 
   function onSaveCanvasAsImage(resendText, canvas) {
-    if (index + 1 === totalPages) {
+    if (json.length === 0 && index + 1 === fileCanvasInfo.totalPages && !pdfViewer || json.length !== 0 && index + 1 === totalPages && !pdfViewer) {
       var textSwal = resendText ? "You cannot undo the action once the assignment has been sent for revision." : "Once submitted, you can't reverse the changes.";
       (0, _sweetalert.default)({
         title: 'Are you sure?',
@@ -757,53 +757,8 @@ var Whiteboard = function Whiteboard(_ref9) {
           return _ref11.apply(this, arguments);
         };
       }());
-    } else if (index != totalPages) {
-      (0, _sweetalert.default)('Info', 'Please review the entire assignment before submitting it.', 'info');
     } else {
-      (0, _sweetalert.default)({
-        title: 'Are you sure?',
-        text: "Once submitted, you can't reverse the changes.",
-        icon: 'warning',
-        customClass: 'Custom_Cancel',
-        buttons: true,
-        dangerMode: true
-      }).then( /*#__PURE__*/function () {
-        var _ref12 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(willDelete) {
-          return _regeneratorRuntime().wrap(function _callee3$(_context3) {
-            while (1) {
-              switch (_context3.prev = _context3.next) {
-                case 0:
-                  if (!willDelete) {
-                    _context3.next = 4;
-                    break;
-                  }
-
-                  canvasRef.current.toBlob(function (blob) {
-                    var _extends5, _extends6, _extends7;
-
-                    setPages(_extends({}, pages, (_extends5 = {}, _extends5[index] = blob, _extends5)));
-                    setFiles(_extends({}, pages, (_extends6 = {}, _extends6[index] = blob, _extends6)));
-                    setJSON(_extends({}, canvasPage, (_extends7 = {}, _extends7[index] = canvas.toJSON(), _extends7)));
-                    setJSONScreenWidth(canvas.width);
-                  });
-                  _context3.next = 5;
-                  break;
-
-                case 4:
-                  return _context3.abrupt("return");
-
-                case 5:
-                case "end":
-                  return _context3.stop();
-              }
-            }
-          }, _callee3);
-        }));
-
-        return function (_x2) {
-          return _ref12.apply(this, arguments);
-        };
-      }());
+      (0, _sweetalert.default)('Info', 'Please review the entire assignment before submitting it.', 'info');
     }
   }
 
@@ -817,13 +772,13 @@ var Whiteboard = function Whiteboard(_ref9) {
 
     if (json.length === 0) {
       if (!pdfViewer) {
-        var _extends8;
+        var _extends5;
 
-        setCanvasPage(_extends({}, canvasPage, (_extends8 = {}, _extends8[index] = canvas.toJSON(), _extends8)));
+        setCanvasPage(_extends({}, canvasPage, (_extends5 = {}, _extends5[index] = canvas.toJSON(), _extends5)));
         canvasRef.current.toBlob(function (blob) {
-          var _extends9;
+          var _extends6;
 
-          setPages(_extends({}, pages, (_extends9 = {}, _extends9[index] = blob, _extends9)));
+          setPages(_extends({}, pages, (_extends6 = {}, _extends6[index] = blob, _extends6)));
         });
 
         if (canvasPage[index + 1] !== undefined) {
@@ -839,13 +794,13 @@ var Whiteboard = function Whiteboard(_ref9) {
       if (index + 1 >= totalPages) return;
 
       if (!pdfViewer) {
-        var _extends10;
+        var _extends7;
 
-        setCanvasPage(_extends({}, canvasPage, (_extends10 = {}, _extends10[index] = canvas.toJSON(), _extends10)));
+        setCanvasPage(_extends({}, canvasPage, (_extends7 = {}, _extends7[index] = canvas.toJSON(), _extends7)));
         canvasRef.current.toBlob(function (blob) {
-          var _extends11;
+          var _extends8;
 
-          setPages(_extends({}, pages, (_extends11 = {}, _extends11[index] = blob, _extends11)));
+          setPages(_extends({}, pages, (_extends8 = {}, _extends8[index] = blob, _extends8)));
         });
 
         if (canvasPage[index + 1] !== undefined) {
@@ -875,13 +830,13 @@ var Whiteboard = function Whiteboard(_ref9) {
     }
 
     if (!pdfViewer) {
-      var _extends12;
+      var _extends9;
 
-      setCanvasPage(_extends({}, canvasPage, (_extends12 = {}, _extends12[index] = canvas.toJSON(), _extends12)));
+      setCanvasPage(_extends({}, canvasPage, (_extends9 = {}, _extends9[index] = canvas.toJSON(), _extends9)));
       canvasRef.current.toBlob(function (blob) {
-        var _extends13;
+        var _extends10;
 
-        setPages(_extends({}, pages, (_extends13 = {}, _extends13[index] = blob, _extends13)));
+        setPages(_extends({}, pages, (_extends10 = {}, _extends10[index] = blob, _extends10)));
       });
       canvas.loadFromJSON(canvasPage[index - 1]);
     }
@@ -1284,13 +1239,13 @@ var Whiteboard = function Whiteboard(_ref9) {
   }, !pdfViewer ? /*#__PURE__*/_react.default.createElement(_Button.default, null, /*#__PURE__*/_react.default.createElement(_Box.default, {
     className: _indexModule.default.flexDiv,
     onClick: function onClick() {
-      var _extends14;
+      var _extends11;
 
       setIndex(0);
       updateFileCanvasInfo({
         currentPageNumber: 1
       });
-      setCanvasPage(_extends({}, canvasPage, (_extends14 = {}, _extends14[index] = canvas.toJSON(), _extends14)));
+      setCanvasPage(_extends({}, canvasPage, (_extends11 = {}, _extends11[index] = canvas.toJSON(), _extends11)));
       clearCanvas(canvas);
       setPdfViewer(true);
     }
