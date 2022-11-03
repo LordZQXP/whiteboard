@@ -459,7 +459,7 @@ const Whiteboard = ({
   const [disableButtons, setDisableButtons] = useState(false);
   const [historyIndex, setHistoryIndex] = useState(0);
   const [totalPages, setTotalPages] = useState(json[historyIndex]?.object?.length || 0);
-  const [pdfViewer, setPdfViewer] = React.useState(true);
+  const [pdfViewer, setPdfViewer] = React.useState(buttonFlag);
   const [canvasOriginalWidth, setCanvasOriginalWidth] = React.useState(878); 
 
 

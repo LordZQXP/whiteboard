@@ -597,7 +597,7 @@ var Whiteboard = function Whiteboard(_ref9) {
       totalPages = _useState9[0],
       setTotalPages = _useState9[1];
 
-  var _React$useState = _react.default.useState(true),
+  var _React$useState = _react.default.useState(buttonFlag),
       pdfViewer = _React$useState[0],
       setPdfViewer = _React$useState[1];
 
