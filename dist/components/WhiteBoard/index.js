@@ -661,6 +661,7 @@ var Whiteboard = function Whiteboard(_ref9) {
               case 0:
                 try {
                   clearCanvas(canvas);
+                  backUpCanvas = [];
 
                   if (canvasPage[index] !== undefined) {
                     canvas.loadFromJSON(canvasPage[index]);

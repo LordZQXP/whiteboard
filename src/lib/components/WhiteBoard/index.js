@@ -513,6 +513,7 @@ const Whiteboard = ({
     const fetchImg = async () => {
       try {
         clearCanvas(canvas);
+        backUpCanvas=[];
         if (canvasPage[index] !== undefined) {
           canvas.loadFromJSON(canvasPage[index]);
           canvas.setZoom(canvasOriginalWidth / json[historyIndex].screen);
