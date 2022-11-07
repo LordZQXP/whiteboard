@@ -41,10 +41,6 @@ var _disabledRevise = _interopRequireDefault(require("./images/disabledRevise.pn
 
 var _Group2 = _interopRequireDefault(require("./images/Group 6948.png"));
 
-var _back = _interopRequireDefault(require("./images/back.png"));
-
-var _arrowRight = _interopRequireDefault(require("./images/arrow-right.png"));
-
 var _Group3 = _interopRequireDefault(require("./images/Group 6946.png"));
 
 var _ArrowForwardIos = _interopRequireDefault(require("@mui/icons-material/ArrowForwardIos"));
@@ -74,8 +70,6 @@ var _PdfCanvas = _interopRequireDefault(require("../PdfCanvas"));
 var _sweetalert = _interopRequireDefault(require("sweetalert"));
 
 var _StyledSnackbar = _interopRequireDefault(require("./components/StyledSnackbar"));
-
-var _PdfReader = _interopRequireDefault(require("../PdfReader"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -130,6 +124,7 @@ var initCanvas = function initCanvas(width, height) {
     e.target.on('mousedown', removeObject(canvas));
   });
   canvas.on('path:created', function (e) {
+    backUpCanvas = [];
     e.path.on('mousedown', removeObject(canvas));
   });
   return canvas;
@@ -187,6 +182,7 @@ function startAddLine(canvas) {
       selectable: false
     });
     canvas.add(drawInstance);
+    backUpCanvas = [];
     canvas.requestRenderAll();
   };
 }
@@ -246,6 +242,7 @@ function startAddRect(canvas) {
       selectable: false
     });
     canvas.add(drawInstance);
+    backUpCanvas = [];
     drawInstance.on('mousedown', function (e) {
       if (options.currentMode === modes.ERASER) {
         canvas.remove(e.target);
@@ -343,6 +340,7 @@ function startAddEllipse(canvas) {
       selectable: false
     });
     canvas.add(drawInstance);
+    backUpCanvas = [];
   };
 }
 
@@ -408,6 +406,7 @@ function startAddTriangle(canvas) {
       selectable: false
     });
     canvas.add(drawInstance);
+    backUpCanvas = [];
   };
 }
 
@@ -520,6 +519,7 @@ function createText(canvas) {
     editable: true
   });
   canvas.add(text);
+  backUpCanvas = [];
   canvas.renderAll();
 }
 
@@ -844,34 +844,6 @@ var Whiteboard = function Whiteboard(_ref9) {
     setIndex(index - 1);
   }
 
-  function nextHistoryPage(canvas) {
-    setIndex(0);
-    setCanvasPage([]);
-    if (historyIndex + 1 > json.length) return;
-    clearCanvasNextPage(canvas);
-    clearCanvas(canvas);
-    canvas.loadFromJSON(json[historyIndex + 1].object[0], canvas.renderAll.bind(canvas), function (o, object) {
-      object.set('selectable', false);
-      object.set('evented', false);
-      canvas.setZoom(canvasOriginalWidth / json[historyIndex + 1].screen);
-    });
-    setHistoryIndex(historyIndex + 1);
-  }
-
-  function previousHistoryPage(canvas) {
-    setIndex(0);
-    setCanvasPage([]);
-    if (historyIndex - 1 < 0) return;
-    clearCanvasNextPage(canvas);
-    clearCanvas(canvas);
-    canvas.loadFromJSON(json[historyIndex - 1].object[0], canvas.renderAll.bind(canvas), function (o, object) {
-      object.set('selectable', false);
-      object.set('evented', false);
-      canvas.setZoom(canvasOriginalWidth / json[historyIndex - 1].screen);
-    });
-    setHistoryIndex(historyIndex - 1);
-  }
-
   function redoCanvas() {
     if (backupIndex - 1 < 0) return;
     canvas.loadFromJSON(popFromBackUp(canvas));
@@ -980,9 +952,9 @@ var Whiteboard = function Whiteboard(_ref9) {
   }, /*#__PURE__*/_react.default.createElement("canvas", {
     ref: canvasRef,
     id: "canvas"
-  }), /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("div", null, json && /*#__PURE__*/_react.default.createElement("div", {
+  }), /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("div", null, json && !pdfViewer && /*#__PURE__*/_react.default.createElement("div", {
     className: _indexModule.default.nextFixedButton
-  }, ' ', /*#__PURE__*/_react.default.createElement(_Button.default, {
+  }, /*#__PURE__*/_react.default.createElement(_Button.default, {
     className: _indexModule.default.floatingButtonsZoom,
     disabled: index === 0,
     onClick: function onClick() {
@@ -998,7 +970,7 @@ var Whiteboard = function Whiteboard(_ref9) {
     }
   }, /*#__PURE__*/_react.default.createElement(_ArrowForwardIos.default, {
     className: _indexModule.default.blackIcon
-  })), ' ')), (json.length === 0 || pdfViewer) && /*#__PURE__*/_react.default.createElement(_PdfCanvas.default, {
+  })))), (json.length === 0 || pdfViewer) && /*#__PURE__*/_react.default.createElement(_PdfCanvas.default, {
     setSubmitPdf: setSubmitPdf,
     next: function next() {
       return nextPage(canvas);

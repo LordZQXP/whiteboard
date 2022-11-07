@@ -5,7 +5,7 @@ import styles from '../PdfReader/index.module.scss';
 import styles2 from '../WhiteBoard/index.module.scss';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import { Button } from '@mui/material';
+import { Button, CircularProgress } from '@mui/material';
 import SimpleBackdrop from '../CircularProgress';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
@@ -70,7 +70,7 @@ const PDFCanvas = ({ fileCanvasInfo, updateFileCanvasInfo, back, next, setSubmit
                     />
                 </Document>
             </div>
-            <div className={styles2.nextFixedButton}>
+            { !spinnerValue && <div className={styles2.nextFixedButton}>
                 <Button
                     className={styles2.floatingButtonsZoom}
                     disabled={fileCanvasInfo.currentPageNumber <= 1}
@@ -88,7 +88,7 @@ const PDFCanvas = ({ fileCanvasInfo, updateFileCanvasInfo, back, next, setSubmit
                 >
                     <ArrowForwardIosIcon />
                 </Button>
-            </div>
+            </div>}
         </div>
     );
 };

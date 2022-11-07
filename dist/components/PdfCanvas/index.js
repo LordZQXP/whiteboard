@@ -103,7 +103,7 @@ var PDFCanvas = function PDFCanvas(_ref) {
     className: "import-pdf-page",
     onRenderSuccess: onRenderSuccess,
     pageNumber: fileCanvasInfo.currentPageNumber
-  }))), /*#__PURE__*/_react.default.createElement("div", {
+  }))), !spinnerValue && /*#__PURE__*/_react.default.createElement("div", {
     className: _indexModule2.default.nextFixedButton
   }, /*#__PURE__*/_react.default.createElement(_material.Button, {
     className: _indexModule2.default.floatingButtonsZoom,

@@ -17,8 +17,6 @@ import submit from './images/Group 6949.png';
 import disabledSubmit from './images/disalbedSubmit.png';
 import disabledRevise from './images/disabledRevise.png';
 import sendTostudent from './images/Group 6948.png';
-import previousHistory from './images/back.png';
-import nextHistory from './images/arrow-right.png';
 import preview from './images/Group 6946.png';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
@@ -34,7 +32,6 @@ import InputSlider from './components/Slider';
 import PDFCanvas from '../PdfCanvas';
 import swal from 'sweetalert';
 import StyledSnackbar from './components/StyledSnackbar';
-import PDFReader from '../PdfReader';
 
 let drawInstance = null;
 let origX;
@@ -75,6 +72,7 @@ const initCanvas = (width, height) => {
     e.target.on('mousedown', removeObject(canvas));
   });
   canvas.on('path:created', (e) => {
+    backUpCanvas = [];
     e.path.on('mousedown', removeObject(canvas));
   });
   return canvas;
@@ -126,6 +124,7 @@ function startAddLine(canvas) {
       selectable: false,
     });
     canvas.add(drawInstance);
+    backUpCanvas = [];
     canvas.requestRenderAll();
   };
 }
@@ -177,6 +176,7 @@ function startAddRect(canvas) {
       selectable: false,
     });
     canvas.add(drawInstance);
+    backUpCanvas = [];
     drawInstance.on('mousedown', (e) => {
       if (options.currentMode === modes.ERASER) {
         canvas.remove(e.target);
@@ -263,6 +263,7 @@ function startAddEllipse(canvas) {
       selectable: false,
     });
     canvas.add(drawInstance);
+    backUpCanvas = [];
   };
 }
 
@@ -317,6 +318,7 @@ function startAddTriangle(canvas) {
       selectable: false,
     });
     canvas.add(drawInstance);
+    backUpCanvas = [];
   };
 }
 
@@ -403,7 +405,6 @@ function remove(canvas) {
   canvas.hoverCursor = 'all-scroll';
 }
 
-
 function createText(canvas) {
   canvas.hoverCursor = `default`;
   draw(canvas);
@@ -416,6 +417,7 @@ function createText(canvas) {
     editable: true,
   });
   canvas.add(text);
+  backUpCanvas = [];
   canvas.renderAll();
 }
 
@@ -635,36 +637,6 @@ const Whiteboard = ({
     setIndex(index - 1);
   }
 
-  function nextHistoryPage(canvas) {
-    setIndex(0);
-    setCanvasPage([]);
-    if (historyIndex + 1 > json.length)
-      return;
-    clearCanvasNextPage(canvas);
-    clearCanvas(canvas);
-    canvas.loadFromJSON(json[historyIndex + 1].object[0], canvas.renderAll.bind(canvas), function (o, object) {
-      object.set('selectable', false);
-      object.set('evented', false);
-      canvas.setZoom(canvasOriginalWidth / json[historyIndex + 1].screen);
-    });
-    setHistoryIndex(historyIndex + 1);
-  }
-
-  function previousHistoryPage(canvas) {
-    setIndex(0);
-    setCanvasPage([]);
-    if (historyIndex - 1 < 0)
-      return;
-    clearCanvasNextPage(canvas);
-    clearCanvas(canvas);
-    canvas.loadFromJSON(json[historyIndex - 1].object[0], canvas.renderAll.bind(canvas), function (o, object) {
-      object.set('selectable', false);
-      object.set('evented', false);
-      canvas.setZoom(canvasOriginalWidth / json[historyIndex - 1].screen);
-    });
-    setHistoryIndex(historyIndex - 1);
-  }
-
   function redoCanvas() {
     if (backupIndex - 1 < 0) return;
     canvas.loadFromJSON(popFromBackUp(canvas));
@@ -767,9 +739,8 @@ const Whiteboard = ({
       <canvas ref={canvasRef} id="canvas" />
       <div>
         <div>
-          {(json) && (
+          {(json && !pdfViewer) && (
             <div className={styles.nextFixedButton}>
-              {' '}
               <Button className={styles.floatingButtonsZoom}
                 disabled={index === 0}
                 onClick={() => previousPage(canvas)}>
@@ -782,7 +753,7 @@ const Whiteboard = ({
                 disabled={index + 1 === totalPages}
                 onClick={() => nextPage(canvas)}>
                 <ArrowForwardIosIcon className={styles.blackIcon} />
-              </Button>{' '}
+              </Button>
             </div>
           )}
         </div>
