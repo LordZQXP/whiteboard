@@ -32,11 +32,17 @@ import InputSlider from './components/Slider';
 import PDFCanvas from '../PdfCanvas';
 import swal from 'sweetalert';
 import StyledSnackbar from './components/StyledSnackbar';
+import ZoomIn from './images/zoom-in@3x.png';
+import ZoomOut from './images/zoom-out@3x.png';
+import PanningHand from './images/hand@3x.png';
 
 let drawInstance = null;
 let origX;
 let origY;
 let mouseDown = false;
+
+let isPanning = false;
+let lastPosX, lastPosY;
 
 const options = {
   currentMode: '',
@@ -96,6 +102,26 @@ function removeCanvasListener(canvas) {
   canvas.off('mouse:move');
   canvas.off('mouse:up');
   canvas.off('mouse:wheel');
+
+  const touch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  //const mouse = window.matchMedia('(pointer:fine)').matches;
+
+  if (touch) {
+    if (startHandler) {
+      canvas.upperCanvasEl.removeEventListener('touchstart', startHandler);
+      startHandler = null;
+    }
+
+    if (moveHandler) {
+      canvas.upperCanvasEl.removeEventListener('touchmove', startHandler);
+      moveHandler = null;
+    }
+
+    if (endHandler) {
+      canvas.upperCanvasEl.removeEventListener('touchend', endHandler);
+      endHandler = null;
+    }
+  }
 }
 
 /*  ==== line  ==== */
@@ -222,29 +248,91 @@ function createEllipse(canvas) {
   }
 }
 
-function panningZoom(canvas) {
+function togglePanning(canvas) {
   if (options.currentMode !== modes.PANNING) {
     options.currentMode = modes.PANNING;
     removeCanvasListener(canvas);
-    canvas.on('mouse:wheel', (opt) => {
-      if (!canvas.viewportTransform) {
-        return;
-      }
-      var evt = opt.e;
-      var deltaY = evt.deltaY;
-      var zoom = canvas.getZoom();
-      zoom = zoom - deltaY / 100;
-      if (zoom > 20) zoom = 20;
-      if (zoom < 0.1) zoom = 0.1;
-      canvas.zoomToPoint(new fabric.Point(evt.offsetX, evt.offsetY), zoom);
-      opt.e.preventDefault();
-      opt.e.stopPropagation();
-    });
+
+    canvas.selection = false;
+    canvas.hoverCursor = 'auto';
+    canvas.isDrawingMode = false;
+
+    const touch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    //const mouse = window.matchMedia('(pointer:fine)').matches;
+
+    if (!touch) {
+      canvas.on('mouse:down', (opt) => {
+        const evt = opt.e;
+        if (evt.button === 0) {
+          // Left mouse button
+          isPanning = true;
+          canvas.selection = false;
+          lastPosX = evt.clientX;
+          lastPosY = evt.clientY;
+        }
+      });
+
+      canvas.on('mouse:move', (opt) => {
+        if (isPanning) {
+          const e = opt.e;
+          const vpt = canvas.viewportTransform;
+          vpt[4] += e.clientX - lastPosX;
+          vpt[5] += e.clientY - lastPosY;
+          canvas.requestRenderAll();
+          lastPosX = e.clientX;
+          lastPosY = e.clientY;
+        }
+      });
+
+      canvas.on('mouse:up', () => {
+        isPanning = false;
+        canvas.selection = true;
+      });
+    } else {
+      startHandler = createTouchStartHandler(canvas);
+      canvas.upperCanvasEl.addEventListener('touchstart', startHandler);
+
+      moveHandler = createTouchMoveHandler(canvas);
+      canvas.upperCanvasEl.addEventListener('touchmove', moveHandler, { passive: false });
+
+      endHandler = createTouchEndHandler(canvas);
+      canvas.upperCanvasEl.addEventListener('touchend', endHandler);
+    }
   } else {
     removeCanvasListener(canvas);
     draw(canvas);
   }
 }
+
+let startHandler = null;
+let moveHandler = null;
+let endHandler = null;
+
+const createTouchStartHandler = (canvas) => (e) => {
+  if (e.touches.length === 1) {
+    const touch = e.touches[0];
+    isPanning = true;
+    canvas.selection = false;
+    lastPosX = touch.clientX;
+    lastPosY = touch.clientY;
+  }
+};
+
+const createTouchMoveHandler = (canvas) => (e) => {
+  if (!isPanning || e.touches.length !== 1) return;
+  const touch = e.touches[0];
+  const vpt = canvas.viewportTransform;
+  vpt[4] += touch.clientX - lastPosX;
+  vpt[5] += touch.clientY - lastPosY;
+  canvas.requestRenderAll();
+  lastPosX = touch.clientX;
+  lastPosY = touch.clientY;
+};
+
+const createTouchEndHandler = (canvas) => (e) => {
+  isPanning = false;
+  canvas.selection = true;
+};
 
 function startAddEllipse(canvas) {
   return ({ e }) => {
@@ -450,7 +538,7 @@ const Whiteboard = ({
   jsonScreenWidth,
   pdf = undefined,
   setResendFiles,
-  buttonFlag
+  buttonFlag,
 }) => {
   const [currColor, setCurrColor] = useState(color[0]?.color);
   const [canvas, setCanvas] = useState(null);
@@ -462,16 +550,14 @@ const Whiteboard = ({
   const [historyIndex, setHistoryIndex] = useState(0);
   const [totalPages, setTotalPages] = useState(json[historyIndex]?.object?.length || 0);
   const [pdfViewer, setPdfViewer] = React.useState(buttonFlag);
-  const [canvasOriginalWidth, setCanvasOriginalWidth] = React.useState(878); 
-
+  const [canvasOriginalWidth, setCanvasOriginalWidth] = React.useState(878);
 
   const [snackbarData, setSnackBarData] = useState({
     xPos: 'center',
     yPos: 'bottom',
     title: '',
-    status: 'success'
+    status: 'success',
   });
-
 
   const [openSnack, setOpenSnack] = useState(false);
   const handleClick = () => {
@@ -485,7 +571,6 @@ const Whiteboard = ({
 
     setOpenSnack(false);
   };
-
 
   const [fileCanvasInfo, setFileCanvasInfo] = useState({
     file: pdf,
@@ -513,17 +598,20 @@ const Whiteboard = ({
     const fetchImg = async () => {
       try {
         clearCanvas(canvas);
-        backUpCanvas=[];
+        backUpCanvas = [];
         if (canvasPage[index] !== undefined) {
           canvas.loadFromJSON(canvasPage[index]);
           canvas.setZoom(canvasOriginalWidth / json[historyIndex].screen);
-        }
-        else{
-          canvas.loadFromJSON(json[historyIndex].object[index], canvas.renderAll.bind(canvas), function (o, object) {
-            object.set('selectable', false);
-            object.set('evented', false);
-            canvas.setZoom(canvasOriginalWidth / json[historyIndex].screen);
-          });
+        } else {
+          canvas.loadFromJSON(
+            json[historyIndex].object[index],
+            canvas.renderAll.bind(canvas),
+            function (o, object) {
+              object.set('selectable', false);
+              object.set('evented', false);
+              canvas.setZoom(canvasOriginalWidth / json[historyIndex].screen);
+            },
+          );
         }
       } catch (err) {
         console.log(err);
@@ -533,7 +621,7 @@ const Whiteboard = ({
       clearCanvas(canvas);
       setIndex(0);
       fetchImg();
-    };
+    }
   }, [json, canvas, pdfViewer]);
 
   function changeCurrentWidth(value) {
@@ -549,8 +637,13 @@ const Whiteboard = ({
   }
 
   function onSaveCanvasAsImage(resendText, canvas) {
-    if ((json.length === 0 && index + 1 === fileCanvasInfo.totalPages && !pdfViewer) || (json.length !== 0 && index + 1 === totalPages && !pdfViewer)) {
-      let textSwal = resendText ? "You cannot undo the action once the assignment has been sent for revision." : "Once submitted, you can't reverse the changes.";
+    if (
+      (json.length === 0 && index + 1 === fileCanvasInfo.totalPages && !pdfViewer) ||
+      (json.length !== 0 && index + 1 === totalPages && !pdfViewer)
+    ) {
+      let textSwal = resendText
+        ? 'You cannot undo the action once the assignment has been sent for revision.'
+        : "Once submitted, you can't reverse the changes.";
       swal({
         title: 'Are you sure?',
         text: textSwal,
@@ -572,7 +665,7 @@ const Whiteboard = ({
       });
     } else {
       swal('Info', 'Please review the entire assignment before submitting it.', 'info');
-    } 
+    }
   }
 
   function extendPage(canvas) {
@@ -596,10 +689,8 @@ const Whiteboard = ({
         }
       }
       setIndex(index + 1);
-    }
-    else {
-      if (index + 1 >= totalPages)
-        return;
+    } else {
+      if (index + 1 >= totalPages) return;
       if (!pdfViewer) {
         setCanvasPage({ ...canvasPage, [index]: canvas.toJSON() });
         canvasRef.current.toBlob(function (blob) {
@@ -610,17 +701,20 @@ const Whiteboard = ({
         } else {
           clearCanvasNextPage(canvas);
           clearCanvas(canvas);
-          canvas.loadFromJSON(json[historyIndex].object[index + 1], canvas.renderAll.bind(canvas), function (o, object) {
-            object.set('selectable', false);
-            object.set('evented', false);
-            canvas.setZoom(canvasOriginalWidth / json[historyIndex].screen);
-          });
+          canvas.loadFromJSON(
+            json[historyIndex].object[index + 1],
+            canvas.renderAll.bind(canvas),
+            function (o, object) {
+              object.set('selectable', false);
+              object.set('evented', false);
+              canvas.setZoom(canvasOriginalWidth / json[historyIndex].screen);
+            },
+          );
         }
       }
       setIndex(index + 1);
     }
-    setSubmitPdf((index + 1) === totalPages);
-
+    setSubmitPdf(index + 1 === totalPages);
   }
 
   function previousPage(canvas) {
@@ -652,6 +746,16 @@ const Whiteboard = ({
     ) {
       canvas.remove(canvas.getObjects()[length]);
     }
+  }
+
+  function zoomInCanvas(canvas) {
+    const center = new fabric.Point(canvas.getWidth() / 2, canvas.getHeight() / 4);
+    canvas.zoomToPoint(center, canvas.getZoom() * 1.1);
+  }
+
+  function zoomOutCanvas(canvas) {
+    const center = new fabric.Point(canvas.getWidth() / 2, canvas.getHeight() / 4);
+    canvas.zoomToPoint(center, canvas.getZoom() / 1.1);
   }
 
   const toolbarCommander = (props, canvas, options) => {
@@ -701,7 +805,7 @@ const Whiteboard = ({
 
   useEffect(() => {
     if (canvas) {
-      if(!pdfViewer && json.length !== 0) return;
+      if (!pdfViewer && json.length !== 0) return;
       canvas.setZoom(1);
       const center = canvas.getCenter();
       fabric.Image.fromURL(fileCanvasInfo.currentPage, (img) => {
@@ -711,7 +815,7 @@ const Whiteboard = ({
           top: center.top,
           left: center.left,
           originX: 'center',
-          originY: 'center'
+          originY: 'center',
         });
         canvas.renderAll();
       });
@@ -740,45 +844,54 @@ const Whiteboard = ({
       <canvas ref={canvasRef} id="canvas" />
       <div>
         <div>
-          {(json && !pdfViewer) && (
+          {json && !pdfViewer && (
             <div className={styles.nextFixedButton}>
-              <Button className={styles.floatingButtonsZoom}
+              <Button
+                className={styles.floatingButtonsZoom}
                 disabled={index === 0}
-                onClick={() => previousPage(canvas)}>
+                onClick={() => previousPage(canvas)}
+              >
                 <ArrowBackIosNewIcon className={styles.blackIcon} />
               </Button>
               <p>
                 Page {index + 1} to {totalPages}
               </p>
-              <Button className={styles.floatingButtonsZoom}
+              <Button
+                className={styles.floatingButtonsZoom}
                 disabled={index + 1 === totalPages}
-                onClick={() => nextPage(canvas)}>
+                onClick={() => nextPage(canvas)}
+              >
                 <ArrowForwardIosIcon className={styles.blackIcon} />
               </Button>
             </div>
           )}
         </div>
-        {(json.length === 0 || pdfViewer) && <PDFCanvas
-          setSubmitPdf={setSubmitPdf}
-          next={() => nextPage(canvas)}
-          back={() => previousPage(canvas)}
-          fileCanvasInfo={fileCanvasInfo}
-          updateFileCanvasInfo={updateFileCanvasInfo}
-          extend={() => extendPage(canvas)}
-          revision={revision}
-        />}
+        {(json.length === 0 || pdfViewer) && (
+          <PDFCanvas
+            setSubmitPdf={setSubmitPdf}
+            next={() => nextPage(canvas)}
+            back={() => previousPage(canvas)}
+            fileCanvasInfo={fileCanvasInfo}
+            updateFileCanvasInfo={updateFileCanvasInfo}
+            extend={() => extendPage(canvas)}
+            revision={revision}
+          />
+        )}
       </div>
       <div className={styles.toolbarWithColor} style={{ backgroundColor: 'transparent' }}>
         <div className={styles.toolbar}>
           {!pdfViewer && (
             <>
-              <Box className={openThickness ? styles.speeddialDivOpen : styles.speeddialDivClose} style={{ display: "flex" }}>
+              <Box
+                className={openThickness ? styles.speeddialDivOpen : styles.speeddialDivClose}
+                style={{ display: 'flex' }}
+              >
                 <Button
                   className={styles.buttonThick}
-                  onClick={() =>{
-                    if (!buttonFlag)
-                      return;
-                    setOpenThickness(!openThickness)}}
+                  onClick={() => {
+                    if (!buttonFlag) return;
+                    setOpenThickness(!openThickness);
+                  }}
                   disabled={disableButtons}
                 >
                   <LineWeightIcon />
@@ -789,14 +902,15 @@ const Whiteboard = ({
                   value={options.currentWidth}
                 />
               </Box>
-              <Box className={openDraw ? styles.speeddialDivOpen : styles.speeddialDivClose} style={{ display: "flex" }}>
+              <Box
+                className={openDraw ? styles.speeddialDivOpen : styles.speeddialDivClose}
+                style={{ display: 'flex' }}
+              >
                 <SpeedDial
                   open={openDraw}
                   onClick={() => {
-                    if (disableButtons)
-                      return;
-                    if(!buttonFlag)
-                      return;
+                    if (disableButtons) return;
+                    if (!buttonFlag) return;
                     setOpenDraw(!openDraw);
                     setOpenColor(false);
                     setOpenThickness(false);
@@ -876,16 +990,14 @@ const Whiteboard = ({
                 </SpeedDial>
               </Box>
               <Box
-                style={{ display: "flex" }}
+                style={{ display: 'flex' }}
                 className={openColor ? styles.speeddialColorDivOpen : styles.speeddialColorDivClose}
               >
                 <SpeedDial
                   open={openColor}
                   onClick={() => {
-                    if (disableButtons)
-                      return;
-                    if (!buttonFlag)
-                      return;
+                    if (disableButtons) return;
+                    if (!buttonFlag) return;
                     setOpenColor(!openColor);
                     setOpenDraw(false);
                     setOpenThickness(false);
@@ -923,12 +1035,10 @@ const Whiteboard = ({
               </Box>
               <SpeedDial
                 open={false}
-                style={{ display: "flex" }}
+                style={{ display: 'flex' }}
                 onClick={() => {
-                  if (disableButtons)
-                    return;
-                  if (!buttonFlag)
-                    return;
+                  if (disableButtons) return;
+                  if (!buttonFlag) return;
                   toolbarCommander(modes.ERASER, canvas);
                 }}
                 direction="up"
@@ -945,10 +1055,9 @@ const Whiteboard = ({
               />
               <SpeedDial
                 open={false}
-                style={{ display: "flex" }}
+                style={{ display: 'flex' }}
                 onClick={() => {
-                  if (disableButtons)
-                    return;
+                  if (disableButtons) return;
                   undoCanvas(canvas);
                 }}
                 direction="up"
@@ -965,10 +1074,9 @@ const Whiteboard = ({
               />
               <SpeedDial
                 open={false}
-                style={{ display: "flex" }}
+                style={{ display: 'flex' }}
                 onClick={() => {
-                  if (disableButtons)
-                    return;
+                  if (disableButtons) return;
                   redoCanvas(canvas);
                 }}
                 direction="up"
@@ -983,29 +1091,89 @@ const Whiteboard = ({
                 }
                 ariaLabel="SpeedDial openIcon example"
               />
+              <SpeedDial
+                open={false}
+                style={{ display: 'flex' }}
+                onClick={() => {
+                  zoomInCanvas(canvas);
+                }}
+                direction="up"
+                icon={
+                  <SpeedDialIcon
+                    icon={
+                      <Box className={styles.flexDiv}>
+                        <img src={ZoomIn} />
+                      </Box>
+                    }
+                  />
+                }
+                ariaLabel="SpeedDial openIcon example"
+              />
+              <SpeedDial
+                open={false}
+                style={{ display: 'flex' }}
+                onClick={() => {
+                  zoomOutCanvas(canvas);
+                }}
+                direction="up"
+                icon={
+                  <SpeedDialIcon
+                    icon={
+                      <Box className={styles.flexDiv}>
+                        <img src={ZoomOut} />
+                      </Box>
+                    }
+                  />
+                }
+                ariaLabel="SpeedDial openIcon example"
+              />
+              <SpeedDial
+                open={false}
+                style={{ display: 'flex' }}
+                onClick={() => {
+                  togglePanning(canvas);
+                }}
+                direction="up"
+                icon={
+                  <SpeedDialIcon
+                    icon={
+                      <Box className={styles.flexDiv}>
+                        <img src={PanningHand} />
+                      </Box>
+                    }
+                  />
+                }
+                ariaLabel="SpeedDial openIcon example"
+              />
             </>
           )}
           <div className={styles.upperToolBar}>
             <div className={styles.upperToolBarFlex}>
               {!pdfViewer ? (
                 <Button>
-                  <Box className={styles.flexDiv} onClick={() => {
-                    setIndex(0);
-                    updateFileCanvasInfo({ currentPageNumber: 1 });
-                    setCanvasPage({ ...canvasPage, [index]: canvas.toJSON() });
-                    clearCanvas(canvas);
-                    setPdfViewer(true);
-                  }}>
+                  <Box
+                    className={styles.flexDiv}
+                    onClick={() => {
+                      setIndex(0);
+                      updateFileCanvasInfo({ currentPageNumber: 1 });
+                      setCanvasPage({ ...canvasPage, [index]: canvas.toJSON() });
+                      clearCanvas(canvas);
+                      setPdfViewer(true);
+                    }}
+                  >
                     <img src={preview} />
                   </Box>
                 </Button>
               ) : (
                 <Button>
-                  <Box className={styles.flexDiv} onClick={() => {
-                    setIndex(0);
-                    updateFileCanvasInfo({ currentPageNumber: 1 });
-                    setPdfViewer(false);
-                  }}>
+                  <Box
+                    className={styles.flexDiv}
+                    onClick={() => {
+                      setIndex(0);
+                      updateFileCanvasInfo({ currentPageNumber: 1 });
+                      setPdfViewer(false);
+                    }}
+                  >
                     <img src={Pencil} />
                   </Box>
                 </Button>
@@ -1014,8 +1182,7 @@ const Whiteboard = ({
                 <Button
                   className={!buttonFlag ? styles.disabledButton : ''}
                   onClick={() => {
-                    if (!buttonFlag)
-                      return;
+                    if (!buttonFlag) return;
                     setResendFiles(true);
                     onSaveCanvasAsImage(true, canvas);
                   }}
@@ -1028,11 +1195,11 @@ const Whiteboard = ({
               <Button
                 className={!buttonFlag ? styles.disabledButton : ''}
                 onClick={() => {
-                  if (!buttonFlag)
-                    return;
+                  if (!buttonFlag) return;
                   setResendFiles(false);
                   onSaveCanvasAsImage(false, canvas);
-                }}>
+                }}
+              >
                 <Box className={styles.flexDiv}>
                   {buttonFlag ? <img src={submit} /> : <img src={disabledSubmit} />}
                 </Box>
@@ -1066,7 +1233,7 @@ Whiteboard.propTypes = {
   pdf: PropTypes.any,
   buttonFlag: PropTypes.any,
   jsonScreenWidth: PropTypes.any,
-  setJSONScreenWidth: PropTypes.any
+  setJSONScreenWidth: PropTypes.any,
 };
 
 export default Whiteboard;
