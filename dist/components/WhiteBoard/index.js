@@ -71,6 +71,12 @@ var _sweetalert = _interopRequireDefault(require("sweetalert"));
 
 var _StyledSnackbar = _interopRequireDefault(require("./components/StyledSnackbar"));
 
+var _zoomIn3x = _interopRequireDefault(require("./images/zoom-in@3x.png"));
+
+var _zoomOut3x = _interopRequireDefault(require("./images/zoom-out@3x.png"));
+
+var _hand3x = _interopRequireDefault(require("./images/hand@3x.png"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
@@ -89,6 +95,8 @@ var drawInstance = null;
 var origX;
 var origY;
 var mouseDown = false;
+var isPanning = false;
+var lastPosX, lastPosY;
 var options = {
   currentMode: '',
   currentColor: '#000000',
@@ -148,6 +156,24 @@ function removeCanvasListener(canvas) {
   canvas.off('mouse:move');
   canvas.off('mouse:up');
   canvas.off('mouse:wheel');
+  var touch = 'ontouchstart' in window || navigator.maxTouchPoints > 0; //const mouse = window.matchMedia('(pointer:fine)').matches;
+
+  if (touch) {
+    if (startHandler) {
+      canvas.upperCanvasEl.removeEventListener('touchstart', startHandler);
+      startHandler = null;
+    }
+
+    if (moveHandler) {
+      canvas.upperCanvasEl.removeEventListener('touchmove', startHandler);
+      moveHandler = null;
+    }
+
+    if (endHandler) {
+      canvas.upperCanvasEl.removeEventListener('touchend', endHandler);
+      endHandler = null;
+    }
+  }
 }
 /*  ==== line  ==== */
 
@@ -297,30 +323,93 @@ function createEllipse(canvas) {
   }
 }
 
-function panningZoom(canvas) {
+function togglePanning(canvas) {
   if (options.currentMode !== modes.PANNING) {
     options.currentMode = modes.PANNING;
     removeCanvasListener(canvas);
-    canvas.on('mouse:wheel', function (opt) {
-      if (!canvas.viewportTransform) {
-        return;
-      }
+    canvas.selection = false;
+    canvas.hoverCursor = 'auto';
+    canvas.isDrawingMode = false;
+    var touch = 'ontouchstart' in window || navigator.maxTouchPoints > 0; //const mouse = window.matchMedia('(pointer:fine)').matches;
 
-      var evt = opt.e;
-      var deltaY = evt.deltaY;
-      var zoom = canvas.getZoom();
-      zoom = zoom - deltaY / 100;
-      if (zoom > 20) zoom = 20;
-      if (zoom < 0.1) zoom = 0.1;
-      canvas.zoomToPoint(new _fabric.fabric.Point(evt.offsetX, evt.offsetY), zoom);
-      opt.e.preventDefault();
-      opt.e.stopPropagation();
-    });
+    if (!touch) {
+      canvas.on('mouse:down', function (opt) {
+        var evt = opt.e;
+
+        if (evt.button === 0) {
+          // Left mouse button
+          isPanning = true;
+          canvas.selection = false;
+          lastPosX = evt.clientX;
+          lastPosY = evt.clientY;
+        }
+      });
+      canvas.on('mouse:move', function (opt) {
+        if (isPanning) {
+          var e = opt.e;
+          var vpt = canvas.viewportTransform;
+          vpt[4] += e.clientX - lastPosX;
+          vpt[5] += e.clientY - lastPosY;
+          canvas.requestRenderAll();
+          lastPosX = e.clientX;
+          lastPosY = e.clientY;
+        }
+      });
+      canvas.on('mouse:up', function () {
+        isPanning = false;
+        canvas.selection = true;
+      });
+    } else {
+      startHandler = createTouchStartHandler(canvas);
+      canvas.upperCanvasEl.addEventListener('touchstart', startHandler);
+      moveHandler = createTouchMoveHandler(canvas);
+      canvas.upperCanvasEl.addEventListener('touchmove', moveHandler, {
+        passive: false
+      });
+      endHandler = createTouchEndHandler(canvas);
+      canvas.upperCanvasEl.addEventListener('touchend', endHandler);
+    }
   } else {
     removeCanvasListener(canvas);
     draw(canvas);
   }
 }
+
+var startHandler = null;
+var moveHandler = null;
+var endHandler = null;
+
+var createTouchStartHandler = function createTouchStartHandler(canvas) {
+  return function (e) {
+    if (e.touches.length === 1) {
+      var touch = e.touches[0];
+      isPanning = true;
+      canvas.selection = false;
+      lastPosX = touch.clientX;
+      lastPosY = touch.clientY;
+    }
+  };
+};
+
+var createTouchMoveHandler = function createTouchMoveHandler(canvas) {
+  return function (e) {
+    if (!isPanning || e.touches.length !== 1) return;
+    var touch = e.touches[0];
+    var vpt = canvas.viewportTransform;
+    vpt[4] += touch.clientX - lastPosX;
+    vpt[5] += touch.clientY - lastPosY;
+    canvas.requestRenderAll();
+    lastPosX = touch.clientX;
+    lastPosY = touch.clientY;
+  };
+};
+
+var createTouchEndHandler = function createTouchEndHandler(canvas) {
+  return function (e) {
+    isPanning = false;
+    canvas.selection = true;
+  };
+};
 
 function startAddEllipse(canvas) {
   return function (_ref5) {
@@ -695,8 +784,6 @@ var Whiteboard = function Whiteboard(_ref9) {
       setIndex(0);
       fetchImg();
     }
-
-    ;
   }, [json, canvas, pdfViewer]);
 
   function changeCurrentWidth(value) {
@@ -713,7 +800,7 @@ var Whiteboard = function Whiteboard(_ref9) {
 
   function onSaveCanvasAsImage(resendText, canvas) {
     if (json.length === 0 && index + 1 === fileCanvasInfo.totalPages && !pdfViewer || json.length !== 0 && index + 1 === totalPages && !pdfViewer) {
-      var textSwal = resendText ? "You cannot undo the action once the assignment has been sent for revision." : "Once submitted, you can't reverse the changes.";
+      var textSwal = resendText ? 'You cannot undo the action once the assignment has been sent for revision.' : "Once submitted, you can't reverse the changes.";
       (0, _sweetalert.default)({
         title: 'Are you sure?',
         text: textSwal,
@@ -859,6 +946,16 @@ var Whiteboard = function Whiteboard(_ref9) {
     }
   }
 
+  function zoomInCanvas(canvas) {
+    var center = new _fabric.fabric.Point(canvas.getWidth() / 2, canvas.getHeight() / 4);
+    canvas.zoomToPoint(center, canvas.getZoom() * 1.1);
+  }
+
+  function zoomOutCanvas(canvas) {
+    var center = new _fabric.fabric.Point(canvas.getWidth() / 2, canvas.getHeight() / 4);
+    canvas.zoomToPoint(center, canvas.getZoom() / 1.1);
+  }
+
   var toolbarCommander = function toolbarCommander(props, canvas, options) {
     setOpenDraw(false);
 
@@ -995,7 +1092,7 @@ var Whiteboard = function Whiteboard(_ref9) {
   }, !pdfViewer && /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, /*#__PURE__*/_react.default.createElement(_Box.default, {
     className: openThickness ? _indexModule.default.speeddialDivOpen : _indexModule.default.speeddialDivClose,
     style: {
-      display: "flex"
+      display: 'flex'
     }
   }, /*#__PURE__*/_react.default.createElement(_Button.default, {
     className: _indexModule.default.buttonThick,
@@ -1013,7 +1110,7 @@ var Whiteboard = function Whiteboard(_ref9) {
   })), /*#__PURE__*/_react.default.createElement(_Box.default, {
     className: openDraw ? _indexModule.default.speeddialDivOpen : _indexModule.default.speeddialDivClose,
     style: {
-      display: "flex"
+      display: 'flex'
     }
   }, /*#__PURE__*/_react.default.createElement(_SpeedDial.default, {
     open: openDraw,
@@ -1113,7 +1210,7 @@ var Whiteboard = function Whiteboard(_ref9) {
     }
   }))), /*#__PURE__*/_react.default.createElement(_Box.default, {
     style: {
-      display: "flex"
+      display: 'flex'
     },
     className: openColor ? _indexModule.default.speeddialColorDivOpen : _indexModule.default.speeddialColorDivClose
   }, /*#__PURE__*/_react.default.createElement(_SpeedDial.default, {
@@ -1153,7 +1250,7 @@ var Whiteboard = function Whiteboard(_ref9) {
   }))), /*#__PURE__*/_react.default.createElement(_SpeedDial.default, {
     open: false,
     style: {
-      display: "flex"
+      display: 'flex'
     },
     onClick: function onClick() {
       if (disableButtons) return;
@@ -1172,7 +1269,7 @@ var Whiteboard = function Whiteboard(_ref9) {
   }), /*#__PURE__*/_react.default.createElement(_SpeedDial.default, {
     open: false,
     style: {
-      display: "flex"
+      display: 'flex'
     },
     onClick: function onClick() {
       if (disableButtons) return;
@@ -1190,7 +1287,7 @@ var Whiteboard = function Whiteboard(_ref9) {
   }), /*#__PURE__*/_react.default.createElement(_SpeedDial.default, {
     open: false,
     style: {
-      display: "flex"
+      display: 'flex'
     },
     onClick: function onClick() {
       if (disableButtons) return;
@@ -1202,6 +1299,57 @@ var Whiteboard = function Whiteboard(_ref9) {
         className: _indexModule.default.flexDiv
       }, /*#__PURE__*/_react.default.createElement("img", {
         src: _rotateCw3x.default
+      }))
+    }),
+    ariaLabel: "SpeedDial openIcon example"
+  }), /*#__PURE__*/_react.default.createElement(_SpeedDial.default, {
+    open: false,
+    style: {
+      display: 'flex'
+    },
+    onClick: function onClick() {
+      zoomInCanvas(canvas);
+    },
+    direction: "up",
+    icon: /*#__PURE__*/_react.default.createElement(_SpeedDialIcon.default, {
+      icon: /*#__PURE__*/_react.default.createElement(_Box.default, {
+        className: _indexModule.default.flexDiv
+      }, /*#__PURE__*/_react.default.createElement("img", {
+        src: _zoomIn3x.default
+      }))
+    }),
+    ariaLabel: "SpeedDial openIcon example"
+  }), /*#__PURE__*/_react.default.createElement(_SpeedDial.default, {
+    open: false,
+    style: {
+      display: 'flex'
+    },
+    onClick: function onClick() {
+      zoomOutCanvas(canvas);
+    },
+    direction: "up",
+    icon: /*#__PURE__*/_react.default.createElement(_SpeedDialIcon.default, {
+      icon: /*#__PURE__*/_react.default.createElement(_Box.default, {
+        className: _indexModule.default.flexDiv
+      }, /*#__PURE__*/_react.default.createElement("img", {
+        src: _zoomOut3x.default
+      }))
+    }),
+    ariaLabel: "SpeedDial openIcon example"
+  }), /*#__PURE__*/_react.default.createElement(_SpeedDial.default, {
+    open: false,
+    style: {
+      display: 'flex'
+    },
+    onClick: function onClick() {
+      togglePanning(canvas);
+    },
+    direction: "up",
+    icon: /*#__PURE__*/_react.default.createElement(_SpeedDialIcon.default, {
+      icon: /*#__PURE__*/_react.default.createElement(_Box.default, {
+        className: _indexModule.default.flexDiv
+      }, /*#__PURE__*/_react.default.createElement("img", {
+        src: _hand3x.default
       }))
     }),
     ariaLabel: "SpeedDial openIcon example"
