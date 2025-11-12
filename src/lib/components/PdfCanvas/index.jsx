@@ -3,8 +3,8 @@ import { Document, Page } from 'react-pdf/dist/esm/entry.webpack';
 import { pdfjs } from 'react-pdf';
 import styles from '../PdfReader/index.module.scss';
 import styles2 from '../WhiteBoard/index.module.scss';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import ArrowLeft from '../WhiteBoard/images/left.svg';
+import ArrowRight from '../WhiteBoard/images/right.svg';
 import { Button, CircularProgress } from '@mui/material';
 import SimpleBackdrop from '../CircularProgress';
 
@@ -76,7 +76,7 @@ const PDFCanvas = ({ fileCanvasInfo, updateFileCanvasInfo, back, next, setSubmit
                     disabled={fileCanvasInfo.currentPageNumber <= 1}
                     onClick={previousPage}
                     >
-                    <ArrowBackIosNewIcon className={styles2.blackIcon} />
+                    <img src={ArrowLeft} style={{ width: '20px', height: '20px' }} />
                 </Button>
                     <p>
                     Page {fileCanvasInfo.currentPageNumber} of {totalIndex || '--'}
@@ -86,7 +86,7 @@ const PDFCanvas = ({ fileCanvasInfo, updateFileCanvasInfo, back, next, setSubmit
                     disabled={fileCanvasInfo.currentPageNumber >= fileCanvasInfo.totalPages && !revision}
                     onClick={nextPage}
                 >
-                    <ArrowForwardIosIcon />
+                    <img src={ArrowRight} style={{ width: '20px', height: '20px' }} />
                 </Button>
             </div>}
         </div>

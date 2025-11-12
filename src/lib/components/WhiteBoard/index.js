@@ -3,24 +3,17 @@ import PropTypes from 'prop-types';
 import { fabric } from 'fabric';
 import getCursor from './cursors';
 import EraserIcon from './images/eraser.svg';
-import HorizontalRuleIcon from '@mui/icons-material/HorizontalRule';
-import Crop169Icon from '@mui/icons-material/Crop169';
-import ChangeHistoryIcon from '@mui/icons-material/ChangeHistory';
-import CreateIcon from '@mui/icons-material/Create';
-import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
-import TitleRoundedIcon from '@mui/icons-material/TitleRounded';
-import Brush from './images/brush@3x.png';
-import Pencil from './images/pencil-create@3x.png';
-import RotateLeft from './images/rotate-ccw@3x.png';
-import RotateRight from './images/rotate-cw@3x.png';
-import submit from './images/Group 6949.png';
-import disabledSubmit from './images/disalbedSubmit.png';
-import disabledRevise from './images/disabledRevise.png';
-import sendTostudent from './images/Group 6948.png';
-import preview from './images/Group 6946.png';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import LineWeightIcon from '@mui/icons-material/LineWeight';
+import Brush from './images/paint-bucket.svg';
+import Pencil from './images/pencil.svg';
+import RotateLeft from './images/undo.svg';
+import RotateRight from './images/redo.svg';
+import submit from './images/check.svg';
+import disabledSubmit from './images/check-disabled.svg';
+import disabledRevise from './images/revise-disabled.svg';
+import sendTostudent from './images/revise.svg';
+import preview from './images/assignment.svg';
+import ArrowLeft from './images/left.svg';
+import ArrowRight from './images/right.svg';
 import './eraserBrush';
 import styles from './index.module.scss';
 import Box from '@mui/material/Box';
@@ -28,13 +21,19 @@ import Button from '@mui/material/Button';
 import SpeedDial from '@mui/material/SpeedDial';
 import SpeedDialAction from '@mui/material/SpeedDialAction';
 import SpeedDialIcon from '@mui/material/SpeedDialIcon';
+import Stroke from './images/stroke.svg';
 import InputSlider from './components/Slider';
 import PDFCanvas from '../PdfCanvas';
 import swal from 'sweetalert';
 import StyledSnackbar from './components/StyledSnackbar';
-import ZoomIn from './images/zoom-in@3x.png';
-import ZoomOut from './images/zoom-out@3x.png';
-import PanningHand from './images/hand@3x.png';
+import ZoomIn from './images/zoom-in.svg';
+import ZoomOut from './images/zoom-out.svg';
+import PanningHand from './images/pan.svg';
+import Line from './images/line.svg';
+import Rectangle from './images/rectangle.svg';
+import Circle from './images/circle.svg';
+import Triangle from './images/triangle.svg';
+import Font from './images/font.svg';
 
 let drawInstance = null;
 let origX;
@@ -851,7 +850,7 @@ const Whiteboard = ({
                 disabled={index === 0}
                 onClick={() => previousPage(canvas)}
               >
-                <ArrowBackIosNewIcon className={styles.blackIcon} />
+                <img src={ArrowLeft} style={{ width: '20px', height: '20px' }} />
               </Button>
               <p>
                 Page {index + 1} to {totalPages}
@@ -861,7 +860,7 @@ const Whiteboard = ({
                 disabled={index + 1 === totalPages}
                 onClick={() => nextPage(canvas)}
               >
-                <ArrowForwardIosIcon className={styles.blackIcon} />
+                <img src={ArrowRight} style={{ width: '20px', height: '20px' }} />
               </Button>
             </div>
           )}
@@ -886,16 +885,26 @@ const Whiteboard = ({
                 className={openThickness ? styles.speeddialDivOpen : styles.speeddialDivClose}
                 style={{ display: 'flex' }}
               >
-                <Button
-                  className={styles.buttonThick}
+                <SpeedDial
+                  open={false}
+                  style={{ display: 'flex' }}
                   onClick={() => {
                     if (!buttonFlag) return;
                     setOpenThickness(!openThickness);
                   }}
                   disabled={disableButtons}
-                >
-                  <LineWeightIcon />
-                </Button>
+                  direction="up"
+                  icon={
+                    <SpeedDialIcon
+                      icon={
+                        <Box className={styles.flexDiv}>
+                          <img src={Stroke} />
+                        </Box>
+                      }
+                    />
+                  }
+                  ariaLabel="SpeedDial openIcon example"
+                />
                 <InputSlider
                   changeHandler={(v) => changeCurrentWidth(v)}
                   open={openThickness && !openDraw && !openColor}
@@ -933,7 +942,13 @@ const Whiteboard = ({
                         boxShadow: 'none',
                       },
                     }}
-                    icon={<HorizontalRuleIcon className={styles.blackSlantedIcon} />}
+                    icon={<SpeedDialIcon
+                      icon={
+                        <Box className={styles.flexDiv}>
+                          <img src={Line} />
+                        </Box>
+                      }
+                    />}
                     tooltipTitle="Line"
                     onClick={() => toolbarCommander(modes.LINE, canvas)}
                   />
@@ -943,7 +958,13 @@ const Whiteboard = ({
                         boxShadow: 'none',
                       },
                     }}
-                    icon={<Crop169Icon className={styles.blackIcon} />}
+                    icon={<SpeedDialIcon
+                      icon={
+                        <Box className={styles.flexDiv}>
+                          <img src={Rectangle} />
+                        </Box>
+                      }
+                    />}
                     tooltipTitle="Rectangle"
                     onClick={() => toolbarCommander(modes.RECTANGLE, canvas)}
                   />
@@ -953,7 +974,13 @@ const Whiteboard = ({
                         boxShadow: 'none',
                       },
                     }}
-                    icon={<RadioButtonUncheckedIcon className={styles.blackIcon} />}
+                    icon={<SpeedDialIcon
+                      icon={
+                        <Box className={styles.flexDiv}>
+                          <img src={Circle} />
+                        </Box>
+                      }
+                    />}
                     tooltipTitle="Ellipse"
                     onClick={() => toolbarCommander(modes.ELLIPSE, canvas)}
                   />
@@ -963,7 +990,13 @@ const Whiteboard = ({
                         boxShadow: 'none',
                       },
                     }}
-                    icon={<ChangeHistoryIcon className={styles.blackIcon} />}
+                    icon={<SpeedDialIcon
+                      icon={
+                        <Box className={styles.flexDiv}>
+                          <img src={Triangle} />
+                        </Box>
+                      }
+                    />}
                     tooltipTitle="Triangle"
                     onClick={() => toolbarCommander(modes.TRIANGLE, canvas, options)}
                   />
@@ -973,7 +1006,13 @@ const Whiteboard = ({
                         boxShadow: 'none',
                       },
                     }}
-                    icon={<CreateIcon className={styles.blackIcon} />}
+                    icon={<SpeedDialIcon
+                      icon={
+                        <Box className={styles.flexDiv}>
+                          <img src={Pencil} />
+                        </Box>
+                      }
+                    />}
                     tooltipTitle="Pencil"
                     onClick={() => toolbarCommander(modes.PENCIL, canvas)}
                   />
@@ -983,7 +1022,13 @@ const Whiteboard = ({
                         boxShadow: 'none',
                       },
                     }}
-                    icon={<TitleRoundedIcon className={styles.blackIcon} />}
+                    icon={<SpeedDialIcon
+                      icon={
+                        <Box className={styles.flexDiv}>
+                          <img src={Font} />
+                        </Box>
+                      }
+                    />}
                     tooltipTitle="Text"
                     onClick={() => toolbarCommander('TEXT', canvas)}
                   />
