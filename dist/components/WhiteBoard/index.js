@@ -13,41 +13,27 @@ var _cursors = _interopRequireDefault(require("./cursors"));
 
 var _eraser = _interopRequireDefault(require("./images/eraser.svg"));
 
-var _HorizontalRule = _interopRequireDefault(require("@mui/icons-material/HorizontalRule"));
+var _paintBucket = _interopRequireDefault(require("./images/paint-bucket.svg"));
 
-var _Crop = _interopRequireDefault(require("@mui/icons-material/Crop169"));
+var _pencil = _interopRequireDefault(require("./images/pencil.svg"));
 
-var _ChangeHistory = _interopRequireDefault(require("@mui/icons-material/ChangeHistory"));
+var _undo = _interopRequireDefault(require("./images/undo.svg"));
 
-var _Create = _interopRequireDefault(require("@mui/icons-material/Create"));
+var _redo = _interopRequireDefault(require("./images/redo.svg"));
 
-var _RadioButtonUnchecked = _interopRequireDefault(require("@mui/icons-material/RadioButtonUnchecked"));
+var _check = _interopRequireDefault(require("./images/check.svg"));
 
-var _TitleRounded = _interopRequireDefault(require("@mui/icons-material/TitleRounded"));
+var _checkDisabled = _interopRequireDefault(require("./images/check-disabled.svg"));
 
-var _brush3x = _interopRequireDefault(require("./images/brush@3x.png"));
+var _reviseDisabled = _interopRequireDefault(require("./images/revise-disabled.svg"));
 
-var _pencilCreate3x = _interopRequireDefault(require("./images/pencil-create@3x.png"));
+var _revise = _interopRequireDefault(require("./images/revise.svg"));
 
-var _rotateCcw3x = _interopRequireDefault(require("./images/rotate-ccw@3x.png"));
+var _assignment = _interopRequireDefault(require("./images/assignment.svg"));
 
-var _rotateCw3x = _interopRequireDefault(require("./images/rotate-cw@3x.png"));
+var _left = _interopRequireDefault(require("./images/left.svg"));
 
-var _Group = _interopRequireDefault(require("./images/Group 6949.png"));
-
-var _disalbedSubmit = _interopRequireDefault(require("./images/disalbedSubmit.png"));
-
-var _disabledRevise = _interopRequireDefault(require("./images/disabledRevise.png"));
-
-var _Group2 = _interopRequireDefault(require("./images/Group 6948.png"));
-
-var _Group3 = _interopRequireDefault(require("./images/Group 6946.png"));
-
-var _ArrowForwardIos = _interopRequireDefault(require("@mui/icons-material/ArrowForwardIos"));
-
-var _ArrowBackIosNew = _interopRequireDefault(require("@mui/icons-material/ArrowBackIosNew"));
-
-var _LineWeight = _interopRequireDefault(require("@mui/icons-material/LineWeight"));
+var _right = _interopRequireDefault(require("./images/right.svg"));
 
 require("./eraserBrush");
 
@@ -63,6 +49,8 @@ var _SpeedDialAction = _interopRequireDefault(require("@mui/material/SpeedDialAc
 
 var _SpeedDialIcon = _interopRequireDefault(require("@mui/material/SpeedDialIcon"));
 
+var _stroke = _interopRequireDefault(require("./images/stroke.svg"));
+
 var _Slider = _interopRequireDefault(require("./components/Slider"));
 
 var _PdfCanvas = _interopRequireDefault(require("../PdfCanvas"));
@@ -71,11 +59,21 @@ var _sweetalert = _interopRequireDefault(require("sweetalert"));
 
 var _StyledSnackbar = _interopRequireDefault(require("./components/StyledSnackbar"));
 
-var _zoomIn3x = _interopRequireDefault(require("./images/zoom-in@3x.png"));
+var _zoomIn = _interopRequireDefault(require("./images/zoom-in.svg"));
 
-var _zoomOut3x = _interopRequireDefault(require("./images/zoom-out@3x.png"));
+var _zoomOut = _interopRequireDefault(require("./images/zoom-out.svg"));
 
-var _hand3x = _interopRequireDefault(require("./images/hand@3x.png"));
+var _pan = _interopRequireDefault(require("./images/pan.svg"));
+
+var _line = _interopRequireDefault(require("./images/line.svg"));
+
+var _rectangle = _interopRequireDefault(require("./images/rectangle.svg"));
+
+var _circle = _interopRequireDefault(require("./images/circle.svg"));
+
+var _triangle = _interopRequireDefault(require("./images/triangle.svg"));
+
+var _font = _interopRequireDefault(require("./images/font.svg"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1058,16 +1056,24 @@ var Whiteboard = function Whiteboard(_ref9) {
     onClick: function onClick() {
       return previousPage(canvas);
     }
-  }, /*#__PURE__*/_react.default.createElement(_ArrowBackIosNew.default, {
-    className: _indexModule.default.blackIcon
+  }, /*#__PURE__*/_react.default.createElement("img", {
+    src: _left.default,
+    style: {
+      width: '20px',
+      height: '20px'
+    }
   })), /*#__PURE__*/_react.default.createElement("p", null, "Page ", index + 1, " to ", totalPages), /*#__PURE__*/_react.default.createElement(_Button.default, {
     className: _indexModule.default.floatingButtonsZoom,
     disabled: index + 1 === totalPages,
     onClick: function onClick() {
       return nextPage(canvas);
     }
-  }, /*#__PURE__*/_react.default.createElement(_ArrowForwardIos.default, {
-    className: _indexModule.default.blackIcon
+  }, /*#__PURE__*/_react.default.createElement("img", {
+    src: _right.default,
+    style: {
+      width: '20px',
+      height: '20px'
+    }
   })))), (json.length === 0 || pdfViewer) && /*#__PURE__*/_react.default.createElement(_PdfCanvas.default, {
     setSubmitPdf: setSubmitPdf,
     next: function next() {
@@ -1094,14 +1100,26 @@ var Whiteboard = function Whiteboard(_ref9) {
     style: {
       display: 'flex'
     }
-  }, /*#__PURE__*/_react.default.createElement(_Button.default, {
-    className: _indexModule.default.buttonThick,
+  }, /*#__PURE__*/_react.default.createElement(_SpeedDial.default, {
+    open: false,
+    style: {
+      display: 'flex'
+    },
     onClick: function onClick() {
       if (!buttonFlag) return;
       setOpenThickness(!openThickness);
     },
-    disabled: disableButtons
-  }, /*#__PURE__*/_react.default.createElement(_LineWeight.default, null)), /*#__PURE__*/_react.default.createElement(_Slider.default, {
+    disabled: disableButtons,
+    direction: "up",
+    icon: /*#__PURE__*/_react.default.createElement(_SpeedDialIcon.default, {
+      icon: /*#__PURE__*/_react.default.createElement(_Box.default, {
+        className: _indexModule.default.flexDiv
+      }, /*#__PURE__*/_react.default.createElement("img", {
+        src: _stroke.default
+      }))
+    }),
+    ariaLabel: "SpeedDial openIcon example"
+  }), /*#__PURE__*/_react.default.createElement(_Slider.default, {
     changeHandler: function changeHandler(v) {
       return changeCurrentWidth(v);
     },
@@ -1127,7 +1145,7 @@ var Whiteboard = function Whiteboard(_ref9) {
       icon: /*#__PURE__*/_react.default.createElement(_Box.default, {
         className: _indexModule.default.flexDiv
       }, /*#__PURE__*/_react.default.createElement("img", {
-        src: _pencilCreate3x.default
+        src: _pencil.default
       }))
     })
   }, /*#__PURE__*/_react.default.createElement(_SpeedDialAction.default, {
@@ -1136,8 +1154,12 @@ var Whiteboard = function Whiteboard(_ref9) {
         boxShadow: 'none'
       }
     },
-    icon: /*#__PURE__*/_react.default.createElement(_HorizontalRule.default, {
-      className: _indexModule.default.blackSlantedIcon
+    icon: /*#__PURE__*/_react.default.createElement(_SpeedDialIcon.default, {
+      icon: /*#__PURE__*/_react.default.createElement(_Box.default, {
+        className: _indexModule.default.flexDiv
+      }, /*#__PURE__*/_react.default.createElement("img", {
+        src: _line.default
+      }))
     }),
     tooltipTitle: "Line",
     onClick: function onClick() {
@@ -1149,8 +1171,12 @@ var Whiteboard = function Whiteboard(_ref9) {
         boxShadow: 'none'
       }
     },
-    icon: /*#__PURE__*/_react.default.createElement(_Crop.default, {
-      className: _indexModule.default.blackIcon
+    icon: /*#__PURE__*/_react.default.createElement(_SpeedDialIcon.default, {
+      icon: /*#__PURE__*/_react.default.createElement(_Box.default, {
+        className: _indexModule.default.flexDiv
+      }, /*#__PURE__*/_react.default.createElement("img", {
+        src: _rectangle.default
+      }))
     }),
     tooltipTitle: "Rectangle",
     onClick: function onClick() {
@@ -1162,8 +1188,12 @@ var Whiteboard = function Whiteboard(_ref9) {
         boxShadow: 'none'
       }
     },
-    icon: /*#__PURE__*/_react.default.createElement(_RadioButtonUnchecked.default, {
-      className: _indexModule.default.blackIcon
+    icon: /*#__PURE__*/_react.default.createElement(_SpeedDialIcon.default, {
+      icon: /*#__PURE__*/_react.default.createElement(_Box.default, {
+        className: _indexModule.default.flexDiv
+      }, /*#__PURE__*/_react.default.createElement("img", {
+        src: _circle.default
+      }))
     }),
     tooltipTitle: "Ellipse",
     onClick: function onClick() {
@@ -1175,8 +1205,12 @@ var Whiteboard = function Whiteboard(_ref9) {
         boxShadow: 'none'
       }
     },
-    icon: /*#__PURE__*/_react.default.createElement(_ChangeHistory.default, {
-      className: _indexModule.default.blackIcon
+    icon: /*#__PURE__*/_react.default.createElement(_SpeedDialIcon.default, {
+      icon: /*#__PURE__*/_react.default.createElement(_Box.default, {
+        className: _indexModule.default.flexDiv
+      }, /*#__PURE__*/_react.default.createElement("img", {
+        src: _triangle.default
+      }))
     }),
     tooltipTitle: "Triangle",
     onClick: function onClick() {
@@ -1188,8 +1222,12 @@ var Whiteboard = function Whiteboard(_ref9) {
         boxShadow: 'none'
       }
     },
-    icon: /*#__PURE__*/_react.default.createElement(_Create.default, {
-      className: _indexModule.default.blackIcon
+    icon: /*#__PURE__*/_react.default.createElement(_SpeedDialIcon.default, {
+      icon: /*#__PURE__*/_react.default.createElement(_Box.default, {
+        className: _indexModule.default.flexDiv
+      }, /*#__PURE__*/_react.default.createElement("img", {
+        src: _pencil.default
+      }))
     }),
     tooltipTitle: "Pencil",
     onClick: function onClick() {
@@ -1201,8 +1239,12 @@ var Whiteboard = function Whiteboard(_ref9) {
         boxShadow: 'none'
       }
     },
-    icon: /*#__PURE__*/_react.default.createElement(_TitleRounded.default, {
-      className: _indexModule.default.blackIcon
+    icon: /*#__PURE__*/_react.default.createElement(_SpeedDialIcon.default, {
+      icon: /*#__PURE__*/_react.default.createElement(_Box.default, {
+        className: _indexModule.default.flexDiv
+      }, /*#__PURE__*/_react.default.createElement("img", {
+        src: _font.default
+      }))
     }),
     tooltipTitle: "Text",
     onClick: function onClick() {
@@ -1228,7 +1270,7 @@ var Whiteboard = function Whiteboard(_ref9) {
       icon: /*#__PURE__*/_react.default.createElement(_Box.default, {
         className: _indexModule.default.flexDiv
       }, /*#__PURE__*/_react.default.createElement("img", {
-        src: _brush3x.default
+        src: _paintBucket.default
       }))
     })
   }, color.map(function (col) {
@@ -1281,7 +1323,7 @@ var Whiteboard = function Whiteboard(_ref9) {
       icon: /*#__PURE__*/_react.default.createElement(_Box.default, {
         className: _indexModule.default.flexDiv
       }, /*#__PURE__*/_react.default.createElement("img", {
-        src: _rotateCcw3x.default
+        src: _undo.default
       }))
     })
   }), /*#__PURE__*/_react.default.createElement(_SpeedDial.default, {
@@ -1298,7 +1340,7 @@ var Whiteboard = function Whiteboard(_ref9) {
       icon: /*#__PURE__*/_react.default.createElement(_Box.default, {
         className: _indexModule.default.flexDiv
       }, /*#__PURE__*/_react.default.createElement("img", {
-        src: _rotateCw3x.default
+        src: _redo.default
       }))
     }),
     ariaLabel: "SpeedDial openIcon example"
@@ -1315,7 +1357,7 @@ var Whiteboard = function Whiteboard(_ref9) {
       icon: /*#__PURE__*/_react.default.createElement(_Box.default, {
         className: _indexModule.default.flexDiv
       }, /*#__PURE__*/_react.default.createElement("img", {
-        src: _zoomIn3x.default
+        src: _zoomIn.default
       }))
     }),
     ariaLabel: "SpeedDial openIcon example"
@@ -1332,7 +1374,7 @@ var Whiteboard = function Whiteboard(_ref9) {
       icon: /*#__PURE__*/_react.default.createElement(_Box.default, {
         className: _indexModule.default.flexDiv
       }, /*#__PURE__*/_react.default.createElement("img", {
-        src: _zoomOut3x.default
+        src: _zoomOut.default
       }))
     }),
     ariaLabel: "SpeedDial openIcon example"
@@ -1349,7 +1391,7 @@ var Whiteboard = function Whiteboard(_ref9) {
       icon: /*#__PURE__*/_react.default.createElement(_Box.default, {
         className: _indexModule.default.flexDiv
       }, /*#__PURE__*/_react.default.createElement("img", {
-        src: _hand3x.default
+        src: _pan.default
       }))
     }),
     ariaLabel: "SpeedDial openIcon example"
@@ -1371,7 +1413,7 @@ var Whiteboard = function Whiteboard(_ref9) {
       setPdfViewer(true);
     }
   }, /*#__PURE__*/_react.default.createElement("img", {
-    src: _Group3.default
+    src: _assignment.default
   }))) : /*#__PURE__*/_react.default.createElement(_Button.default, null, /*#__PURE__*/_react.default.createElement(_Box.default, {
     className: _indexModule.default.flexDiv,
     onClick: function onClick() {
@@ -1382,7 +1424,7 @@ var Whiteboard = function Whiteboard(_ref9) {
       setPdfViewer(false);
     }
   }, /*#__PURE__*/_react.default.createElement("img", {
-    src: _pencilCreate3x.default
+    src: _pencil.default
   }))), resend && /*#__PURE__*/_react.default.createElement(_Button.default, {
     className: !buttonFlag ? _indexModule.default.disabledButton : '',
     onClick: function onClick() {
@@ -1393,9 +1435,9 @@ var Whiteboard = function Whiteboard(_ref9) {
   }, /*#__PURE__*/_react.default.createElement(_Box.default, {
     className: _indexModule.default.flexDiv
   }, buttonFlag ? /*#__PURE__*/_react.default.createElement("img", {
-    src: _Group2.default
+    src: _revise.default
   }) : /*#__PURE__*/_react.default.createElement("img", {
-    src: _disabledRevise.default
+    src: _reviseDisabled.default
   }))), /*#__PURE__*/_react.default.createElement(_Button.default, {
     className: !buttonFlag ? _indexModule.default.disabledButton : '',
     onClick: function onClick() {
@@ -1406,9 +1448,9 @@ var Whiteboard = function Whiteboard(_ref9) {
   }, /*#__PURE__*/_react.default.createElement(_Box.default, {
     className: _indexModule.default.flexDiv
   }, buttonFlag ? /*#__PURE__*/_react.default.createElement("img", {
-    src: _Group.default
+    src: _check.default
   }) : /*#__PURE__*/_react.default.createElement("img", {
-    src: _disalbedSubmit.default
+    src: _checkDisabled.default
   }))))), /*#__PURE__*/_react.default.createElement(_StyledSnackbar.default, {
     xPos: snackbarData.xPos,
     yPos: snackbarData.yPos,

@@ -13,9 +13,9 @@ var _indexModule = _interopRequireDefault(require("../PdfReader/index.module.scs
 
 var _indexModule2 = _interopRequireDefault(require("../WhiteBoard/index.module.scss"));
 
-var _ArrowForwardIos = _interopRequireDefault(require("@mui/icons-material/ArrowForwardIos"));
+var _left = _interopRequireDefault(require("../WhiteBoard/images/left.svg"));
 
-var _ArrowBackIosNew = _interopRequireDefault(require("@mui/icons-material/ArrowBackIosNew"));
+var _right = _interopRequireDefault(require("../WhiteBoard/images/right.svg"));
 
 var _material = require("@mui/material");
 
@@ -109,13 +109,23 @@ var PDFCanvas = function PDFCanvas(_ref) {
     className: _indexModule2.default.floatingButtonsZoom,
     disabled: fileCanvasInfo.currentPageNumber <= 1,
     onClick: previousPage
-  }, /*#__PURE__*/_react.default.createElement(_ArrowBackIosNew.default, {
-    className: _indexModule2.default.blackIcon
+  }, /*#__PURE__*/_react.default.createElement("img", {
+    src: _left.default,
+    style: {
+      width: '20px',
+      height: '20px'
+    }
   })), /*#__PURE__*/_react.default.createElement("p", null, "Page ", fileCanvasInfo.currentPageNumber, " of ", totalIndex || '--'), /*#__PURE__*/_react.default.createElement(_material.Button, {
     className: _indexModule2.default.floatingButtonsZoom,
     disabled: fileCanvasInfo.currentPageNumber >= fileCanvasInfo.totalPages && !revision,
     onClick: nextPage
-  }, /*#__PURE__*/_react.default.createElement(_ArrowForwardIos.default, null))));
+  }, /*#__PURE__*/_react.default.createElement("img", {
+    src: _right.default,
+    style: {
+      width: '20px',
+      height: '20px'
+    }
+  }))));
 };
 
 var _default = PDFCanvas;
