@@ -593,37 +593,37 @@ const Whiteboard = ({
     }
   }, [canvasRef]);
 
-  useEffect(() => {
-    const fetchImg = async () => {
-      try {
-        clearCanvas(canvas);
-        backUpCanvas = [];
-        if (canvasPage[index] !== undefined) {
-          canvas.loadFromJSON(canvasPage[index], canvas.renderAll.bind(canvas));
-          if (json[historyIndex]?.screen) {
-            canvas.setZoom(canvasOriginalWidth / json[historyIndex].screen);
-          }
-        } else if (json[historyIndex]?.object?.[index]) {
-          canvas.loadFromJSON(
-            json[historyIndex].object[index],
-            canvas.renderAll.bind(canvas),
-            function (o, object) {
-              object.set('selectable', false);
-              object.set('evented', false);
-              if (json[historyIndex]?.screen) {
-                canvas.setZoom(canvasOriginalWidth / json[historyIndex].screen);
-              }
-            },
-          );
+  const loadCanvasPage = useCallback((canvas, pageIndex) => {
+    clearCanvas(canvas);
+    backUpCanvas = [];
+    try {
+      if (canvasPage[pageIndex] !== undefined) {
+        canvas.loadFromJSON(canvasPage[pageIndex], canvas.renderAll.bind(canvas));
+        if (json[historyIndex]?.screen) {
+          canvas.setZoom(canvasOriginalWidth / json[historyIndex].screen);
         }
-      } catch (err) {
-        console.log(err);
+      } else if (json[historyIndex]?.object?.[pageIndex]) {
+        canvas.loadFromJSON(
+          json[historyIndex].object[pageIndex],
+          canvas.renderAll.bind(canvas),
+          function (o, object) {
+            object.set('selectable', false);
+            object.set('evented', false);
+            if (json[historyIndex]?.screen) {
+              canvas.setZoom(canvasOriginalWidth / json[historyIndex].screen);
+            }
+          },
+        );
       }
-    };
+    } catch (err) {
+      console.log(err);
+    }
+  }, [canvasPage, json, historyIndex, canvasOriginalWidth]);
+
+  useEffect(() => {
     if (canvas && !pdfViewer) {
-      clearCanvas(canvas);
       setIndex(0);
-      fetchImg();
+      loadCanvasPage(canvas, 0);
     }
   }, [json, canvas, pdfViewer]);
 
@@ -679,41 +679,32 @@ const Whiteboard = ({
   function nextPage(canvas) {
     backUpCanvas = [];
     if (json.length === 0) {
+      setCanvasPage({ ...canvasPage, [index]: canvas.toJSON() });
       if (!pdfViewer) {
-        setCanvasPage({ ...canvasPage, [index]: canvas.toJSON() });
         canvasRef.current.toBlob(function (blob) {
           setPages({ ...pages, [index]: blob });
         });
-        if (canvasPage[index + 1] !== undefined) {
-          canvas.loadFromJSON(canvasPage[index + 1]);
-        } else {
-          clearCanvasNextPage(canvas);
-          setTotalPages(totalPages + 1);
-        }
+      }
+      if (canvasPage[index + 1] !== undefined) {
+        canvas.loadFromJSON(canvasPage[index + 1], canvas.renderAll.bind(canvas));
+      } else {
+        clearCanvasNextPage(canvas);
+        setTotalPages(totalPages + 1);
       }
       setIndex(index + 1);
     } else {
       if (index + 1 >= totalPages) return;
+      setCanvasPage({ ...canvasPage, [index]: canvas.toJSON() });
       if (!pdfViewer) {
-        setCanvasPage({ ...canvasPage, [index]: canvas.toJSON() });
         canvasRef.current.toBlob(function (blob) {
           setPages({ ...pages, [index]: blob });
         });
-        if (canvasPage[index + 1] !== undefined) {
-          canvas.loadFromJSON(canvasPage[index + 1]);
-        } else {
-          clearCanvasNextPage(canvas);
-          clearCanvas(canvas);
-          canvas.loadFromJSON(
-            json[historyIndex].object[index + 1],
-            canvas.renderAll.bind(canvas),
-            function (o, object) {
-              object.set('selectable', false);
-              object.set('evented', false);
-              canvas.setZoom(canvasOriginalWidth / json[historyIndex].screen);
-            },
-          );
-        }
+      }
+      if (canvasPage[index + 1] !== undefined) {
+        canvas.loadFromJSON(canvasPage[index + 1], canvas.renderAll.bind(canvas));
+      } else {
+        clearCanvasNextPage(canvas);
+        loadCanvasPage(canvas, index + 1);
       }
       setIndex(index + 1);
     }
@@ -725,12 +716,16 @@ const Whiteboard = ({
     if (index - 1 < 0) {
       return;
     }
+    setCanvasPage({ ...canvasPage, [index]: canvas.toJSON() });
     if (!pdfViewer) {
-      setCanvasPage({ ...canvasPage, [index]: canvas.toJSON() });
       canvasRef.current.toBlob(function (blob) {
         setPages({ ...pages, [index]: blob });
       });
-      canvas.loadFromJSON(canvasPage[index - 1]);
+    }
+    if (canvasPage[index - 1] !== undefined) {
+      canvas.loadFromJSON(canvasPage[index - 1], canvas.renderAll.bind(canvas));
+    } else {
+      loadCanvasPage(canvas, index - 1);
     }
     setIndex(index - 1);
   }
@@ -1212,10 +1207,9 @@ const Whiteboard = ({
                   <Box
                     className={styles.flexDiv}
                     onClick={() => {
+                      setCanvasPage({ ...canvasPage, [index]: canvas.toJSON() });
                       setIndex(0);
                       updateFileCanvasInfo({ currentPageNumber: 1 });
-                      setCanvasPage({ ...canvasPage, [index]: canvas.toJSON() });
-                      clearCanvas(canvas);
                       setPdfViewer(true);
                     }}
                   >
