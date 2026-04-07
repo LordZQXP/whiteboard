@@ -894,6 +894,7 @@ const Whiteboard = ({
                   }}
                   disabled={disableButtons}
                   direction="up"
+                  FabProps={{ title: 'Stroke Thickness' }}
                   icon={
                     <SpeedDialIcon
                       icon={
@@ -903,7 +904,7 @@ const Whiteboard = ({
                       }
                     />
                   }
-                  ariaLabel="SpeedDial openIcon example"
+                  ariaLabel="Stroke Thickness"
                 />
                 <InputSlider
                   changeHandler={(v) => changeCurrentWidth(v)}
@@ -925,7 +926,8 @@ const Whiteboard = ({
                     setOpenThickness(false);
                   }}
                   direction="up"
-                  ariaLabel="SpeedDial openIcon example"
+                  FabProps={{ title: 'Drawing Tools' }}
+                  ariaLabel="Drawing Tools"
                   icon={
                     <SpeedDialIcon
                       icon={
@@ -1048,7 +1050,8 @@ const Whiteboard = ({
                     setOpenThickness(false);
                   }}
                   direction="up"
-                  ariaLabel="SpeedDial openIcon example"
+                  FabProps={{ title: 'Color Picker' }}
+                  ariaLabel="Color Picker"
                   icon={
                     <SpeedDialIcon
                       icon={
@@ -1087,6 +1090,7 @@ const Whiteboard = ({
                   toolbarCommander(modes.ERASER, canvas);
                 }}
                 direction="up"
+                FabProps={{ title: 'Eraser' }}
                 icon={
                   <SpeedDialIcon
                     icon={
@@ -1096,7 +1100,7 @@ const Whiteboard = ({
                     }
                   />
                 }
-                ariaLabel="SpeedDial openIcon example"
+                ariaLabel="Eraser"
               />
               <SpeedDial
                 open={false}
@@ -1106,7 +1110,8 @@ const Whiteboard = ({
                   undoCanvas(canvas);
                 }}
                 direction="up"
-                ariaLabel="SpeedDial openIcon example"
+                FabProps={{ title: 'Undo' }}
+                ariaLabel="Undo"
                 icon={
                   <SpeedDialIcon
                     icon={
@@ -1125,6 +1130,7 @@ const Whiteboard = ({
                   redoCanvas(canvas);
                 }}
                 direction="up"
+                FabProps={{ title: 'Redo' }}
                 icon={
                   <SpeedDialIcon
                     icon={
@@ -1134,7 +1140,7 @@ const Whiteboard = ({
                     }
                   />
                 }
-                ariaLabel="SpeedDial openIcon example"
+                ariaLabel="Redo"
               />
               <SpeedDial
                 open={false}
@@ -1143,6 +1149,7 @@ const Whiteboard = ({
                   zoomInCanvas(canvas);
                 }}
                 direction="up"
+                FabProps={{ title: 'Zoom In' }}
                 icon={
                   <SpeedDialIcon
                     icon={
@@ -1152,7 +1159,7 @@ const Whiteboard = ({
                     }
                   />
                 }
-                ariaLabel="SpeedDial openIcon example"
+                ariaLabel="Zoom In"
               />
               <SpeedDial
                 open={false}
@@ -1161,6 +1168,7 @@ const Whiteboard = ({
                   zoomOutCanvas(canvas);
                 }}
                 direction="up"
+                FabProps={{ title: 'Zoom Out' }}
                 icon={
                   <SpeedDialIcon
                     icon={
@@ -1170,7 +1178,7 @@ const Whiteboard = ({
                     }
                   />
                 }
-                ariaLabel="SpeedDial openIcon example"
+                ariaLabel="Zoom Out"
               />
               <SpeedDial
                 open={false}
@@ -1179,6 +1187,7 @@ const Whiteboard = ({
                   togglePanning(canvas);
                 }}
                 direction="up"
+                FabProps={{ title: 'Pan / Move' }}
                 icon={
                   <SpeedDialIcon
                     icon={
@@ -1188,14 +1197,14 @@ const Whiteboard = ({
                     }
                   />
                 }
-                ariaLabel="SpeedDial openIcon example"
+                ariaLabel="Pan / Move"
               />
             </>
           )}
           <div className={styles.upperToolBar}>
             <div className={styles.upperToolBarFlex}>
               {!pdfViewer ? (
-                <Button>
+                <Button title="Preview PDF">
                   <Box
                     className={styles.flexDiv}
                     onClick={() => {
@@ -1210,13 +1219,16 @@ const Whiteboard = ({
                   </Box>
                 </Button>
               ) : (
-                <Button>
+                <Button title="Back to Drawing">
                   <Box
                     className={styles.flexDiv}
                     onClick={() => {
                       setIndex(0);
                       updateFileCanvasInfo({ currentPageNumber: 1 });
                       setPdfViewer(false);
+                      if (canvasPage[0] !== undefined) {
+                        setTimeout(() => canvas.loadFromJSON(canvasPage[0], canvas.renderAll.bind(canvas)), 100);
+                      }
                     }}
                   >
                     <img src={Pencil} />
@@ -1225,6 +1237,7 @@ const Whiteboard = ({
               )}
               {resend && (
                 <Button
+                  title="Return for Revision"
                   className={!buttonFlag ? styles.disabledButton : ''}
                   onClick={() => {
                     if (!buttonFlag) return;
@@ -1238,6 +1251,7 @@ const Whiteboard = ({
                 </Button>
               )}
               <Button
+                title={resend ? "Grade & Submit" : "Submit Assignment"}
                 className={!buttonFlag ? styles.disabledButton : ''}
                 onClick={() => {
                   if (!buttonFlag) return;

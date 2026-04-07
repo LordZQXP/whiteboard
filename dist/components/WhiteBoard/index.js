@@ -1111,6 +1111,9 @@ var Whiteboard = function Whiteboard(_ref9) {
     },
     disabled: disableButtons,
     direction: "up",
+    FabProps: {
+      title: 'Stroke Thickness'
+    },
     icon: /*#__PURE__*/_react.default.createElement(_SpeedDialIcon.default, {
       icon: /*#__PURE__*/_react.default.createElement(_Box.default, {
         className: _indexModule.default.flexDiv
@@ -1118,7 +1121,7 @@ var Whiteboard = function Whiteboard(_ref9) {
         src: _stroke.default
       }))
     }),
-    ariaLabel: "SpeedDial openIcon example"
+    ariaLabel: "Stroke Thickness"
   }), /*#__PURE__*/_react.default.createElement(_Slider.default, {
     changeHandler: function changeHandler(v) {
       return changeCurrentWidth(v);
@@ -1140,7 +1143,10 @@ var Whiteboard = function Whiteboard(_ref9) {
       setOpenThickness(false);
     },
     direction: "up",
-    ariaLabel: "SpeedDial openIcon example",
+    FabProps: {
+      title: 'Drawing Tools'
+    },
+    ariaLabel: "Drawing Tools",
     icon: /*#__PURE__*/_react.default.createElement(_SpeedDialIcon.default, {
       icon: /*#__PURE__*/_react.default.createElement(_Box.default, {
         className: _indexModule.default.flexDiv
@@ -1265,7 +1271,10 @@ var Whiteboard = function Whiteboard(_ref9) {
       setOpenThickness(false);
     },
     direction: "up",
-    ariaLabel: "SpeedDial openIcon example",
+    FabProps: {
+      title: 'Color Picker'
+    },
+    ariaLabel: "Color Picker",
     icon: /*#__PURE__*/_react.default.createElement(_SpeedDialIcon.default, {
       icon: /*#__PURE__*/_react.default.createElement(_Box.default, {
         className: _indexModule.default.flexDiv
@@ -1300,6 +1309,9 @@ var Whiteboard = function Whiteboard(_ref9) {
       toolbarCommander(modes.ERASER, canvas);
     },
     direction: "up",
+    FabProps: {
+      title: 'Eraser'
+    },
     icon: /*#__PURE__*/_react.default.createElement(_SpeedDialIcon.default, {
       icon: /*#__PURE__*/_react.default.createElement(_Box.default, {
         className: _indexModule.default.flexDiv
@@ -1307,7 +1319,7 @@ var Whiteboard = function Whiteboard(_ref9) {
         src: _eraser.default
       }))
     }),
-    ariaLabel: "SpeedDial openIcon example"
+    ariaLabel: "Eraser"
   }), /*#__PURE__*/_react.default.createElement(_SpeedDial.default, {
     open: false,
     style: {
@@ -1318,7 +1330,10 @@ var Whiteboard = function Whiteboard(_ref9) {
       undoCanvas(canvas);
     },
     direction: "up",
-    ariaLabel: "SpeedDial openIcon example",
+    FabProps: {
+      title: 'Undo'
+    },
+    ariaLabel: "Undo",
     icon: /*#__PURE__*/_react.default.createElement(_SpeedDialIcon.default, {
       icon: /*#__PURE__*/_react.default.createElement(_Box.default, {
         className: _indexModule.default.flexDiv
@@ -1336,6 +1351,9 @@ var Whiteboard = function Whiteboard(_ref9) {
       redoCanvas(canvas);
     },
     direction: "up",
+    FabProps: {
+      title: 'Redo'
+    },
     icon: /*#__PURE__*/_react.default.createElement(_SpeedDialIcon.default, {
       icon: /*#__PURE__*/_react.default.createElement(_Box.default, {
         className: _indexModule.default.flexDiv
@@ -1343,7 +1361,7 @@ var Whiteboard = function Whiteboard(_ref9) {
         src: _redo.default
       }))
     }),
-    ariaLabel: "SpeedDial openIcon example"
+    ariaLabel: "Redo"
   }), /*#__PURE__*/_react.default.createElement(_SpeedDial.default, {
     open: false,
     style: {
@@ -1353,6 +1371,9 @@ var Whiteboard = function Whiteboard(_ref9) {
       zoomInCanvas(canvas);
     },
     direction: "up",
+    FabProps: {
+      title: 'Zoom In'
+    },
     icon: /*#__PURE__*/_react.default.createElement(_SpeedDialIcon.default, {
       icon: /*#__PURE__*/_react.default.createElement(_Box.default, {
         className: _indexModule.default.flexDiv
@@ -1360,7 +1381,7 @@ var Whiteboard = function Whiteboard(_ref9) {
         src: _zoomIn.default
       }))
     }),
-    ariaLabel: "SpeedDial openIcon example"
+    ariaLabel: "Zoom In"
   }), /*#__PURE__*/_react.default.createElement(_SpeedDial.default, {
     open: false,
     style: {
@@ -1370,6 +1391,9 @@ var Whiteboard = function Whiteboard(_ref9) {
       zoomOutCanvas(canvas);
     },
     direction: "up",
+    FabProps: {
+      title: 'Zoom Out'
+    },
     icon: /*#__PURE__*/_react.default.createElement(_SpeedDialIcon.default, {
       icon: /*#__PURE__*/_react.default.createElement(_Box.default, {
         className: _indexModule.default.flexDiv
@@ -1377,7 +1401,7 @@ var Whiteboard = function Whiteboard(_ref9) {
         src: _zoomOut.default
       }))
     }),
-    ariaLabel: "SpeedDial openIcon example"
+    ariaLabel: "Zoom Out"
   }), /*#__PURE__*/_react.default.createElement(_SpeedDial.default, {
     open: false,
     style: {
@@ -1387,6 +1411,9 @@ var Whiteboard = function Whiteboard(_ref9) {
       togglePanning(canvas);
     },
     direction: "up",
+    FabProps: {
+      title: 'Pan / Move'
+    },
     icon: /*#__PURE__*/_react.default.createElement(_SpeedDialIcon.default, {
       icon: /*#__PURE__*/_react.default.createElement(_Box.default, {
         className: _indexModule.default.flexDiv
@@ -1394,12 +1421,14 @@ var Whiteboard = function Whiteboard(_ref9) {
         src: _pan.default
       }))
     }),
-    ariaLabel: "SpeedDial openIcon example"
+    ariaLabel: "Pan / Move"
   })), /*#__PURE__*/_react.default.createElement("div", {
     className: _indexModule.default.upperToolBar
   }, /*#__PURE__*/_react.default.createElement("div", {
     className: _indexModule.default.upperToolBarFlex
-  }, !pdfViewer ? /*#__PURE__*/_react.default.createElement(_Button.default, null, /*#__PURE__*/_react.default.createElement(_Box.default, {
+  }, !pdfViewer ? /*#__PURE__*/_react.default.createElement(_Button.default, {
+    title: "Preview PDF"
+  }, /*#__PURE__*/_react.default.createElement(_Box.default, {
     className: _indexModule.default.flexDiv,
     onClick: function onClick() {
       var _extends11;
@@ -1414,7 +1443,9 @@ var Whiteboard = function Whiteboard(_ref9) {
     }
   }, /*#__PURE__*/_react.default.createElement("img", {
     src: _assignment.default
-  }))) : /*#__PURE__*/_react.default.createElement(_Button.default, null, /*#__PURE__*/_react.default.createElement(_Box.default, {
+  }))) : /*#__PURE__*/_react.default.createElement(_Button.default, {
+    title: "Back to Drawing"
+  }, /*#__PURE__*/_react.default.createElement(_Box.default, {
     className: _indexModule.default.flexDiv,
     onClick: function onClick() {
       setIndex(0);
@@ -1422,10 +1453,17 @@ var Whiteboard = function Whiteboard(_ref9) {
         currentPageNumber: 1
       });
       setPdfViewer(false);
+
+      if (canvasPage[0] !== undefined) {
+        setTimeout(function () {
+          return canvas.loadFromJSON(canvasPage[0], canvas.renderAll.bind(canvas));
+        }, 100);
+      }
     }
   }, /*#__PURE__*/_react.default.createElement("img", {
     src: _pencil.default
   }))), resend && /*#__PURE__*/_react.default.createElement(_Button.default, {
+    title: "Return for Revision",
     className: !buttonFlag ? _indexModule.default.disabledButton : '',
     onClick: function onClick() {
       if (!buttonFlag) return;
@@ -1439,6 +1477,7 @@ var Whiteboard = function Whiteboard(_ref9) {
   }) : /*#__PURE__*/_react.default.createElement("img", {
     src: _reviseDisabled.default
   }))), /*#__PURE__*/_react.default.createElement(_Button.default, {
+    title: resend ? "Grade & Submit" : "Submit Assignment",
     className: !buttonFlag ? _indexModule.default.disabledButton : '',
     onClick: function onClick() {
       if (!buttonFlag) return;
