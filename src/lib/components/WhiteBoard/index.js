@@ -599,16 +599,20 @@ const Whiteboard = ({
         clearCanvas(canvas);
         backUpCanvas = [];
         if (canvasPage[index] !== undefined) {
-          canvas.loadFromJSON(canvasPage[index]);
-          canvas.setZoom(canvasOriginalWidth / json[historyIndex].screen);
-        } else {
+          canvas.loadFromJSON(canvasPage[index], canvas.renderAll.bind(canvas));
+          if (json[historyIndex]?.screen) {
+            canvas.setZoom(canvasOriginalWidth / json[historyIndex].screen);
+          }
+        } else if (json[historyIndex]?.object?.[index]) {
           canvas.loadFromJSON(
             json[historyIndex].object[index],
             canvas.renderAll.bind(canvas),
             function (o, object) {
               object.set('selectable', false);
               object.set('evented', false);
-              canvas.setZoom(canvasOriginalWidth / json[historyIndex].screen);
+              if (json[historyIndex]?.screen) {
+                canvas.setZoom(canvasOriginalWidth / json[historyIndex].screen);
+              }
             },
           );
         }
@@ -616,7 +620,7 @@ const Whiteboard = ({
         console.log(err);
       }
     };
-    if (json && canvas && !pdfViewer) {
+    if (canvas && !pdfViewer) {
       clearCanvas(canvas);
       setIndex(0);
       fetchImg();
@@ -1226,9 +1230,6 @@ const Whiteboard = ({
                       setIndex(0);
                       updateFileCanvasInfo({ currentPageNumber: 1 });
                       setPdfViewer(false);
-                      if (canvasPage[0] !== undefined) {
-                        setTimeout(() => canvas.loadFromJSON(canvasPage[0], canvas.renderAll.bind(canvas)), 100);
-                      }
                     }}
                   >
                     <img src={Pencil} />
