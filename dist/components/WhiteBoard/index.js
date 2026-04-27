@@ -799,7 +799,7 @@ var Whiteboard = function Whiteboard(_ref9) {
 
   function onSaveCanvasAsImage(resendText, canvas) {
     if (json.length === 0 && index + 1 === fileCanvasInfo.totalPages && !pdfViewer || json.length !== 0 && index + 1 === totalPages && !pdfViewer) {
-      var textSwal = resendText ? 'You cannot undo the action once the assignment has been sent for revision.' : "Once submitted, you can't reverse the changes.";
+      var textSwal = resendText ? 'You cannot undo the action once the assignment has been sent for revision.' : resend ? "Once graded, you can't reverse the changes." : "Once submitted, you can't reverse the changes.";
       (0, _sweetalert.default)({
         title: 'Are you sure?',
         text: textSwal,

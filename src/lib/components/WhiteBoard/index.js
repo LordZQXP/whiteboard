@@ -643,6 +643,8 @@ const Whiteboard = ({
     ) {
       let textSwal = resendText
         ? 'You cannot undo the action once the assignment has been sent for revision.'
+        : resend
+        ? "Once graded, you can't reverse the changes."
         : "Once submitted, you can't reverse the changes.";
       swal({
         title: 'Are you sure?',
