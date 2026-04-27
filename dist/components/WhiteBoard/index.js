@@ -646,7 +646,8 @@ var Whiteboard = function Whiteboard(_ref9) {
       _ref9$pdf = _ref9.pdf,
       pdf = _ref9$pdf === void 0 ? undefined : _ref9$pdf,
       setResendFiles = _ref9.setResendFiles,
-      buttonFlag = _ref9.buttonFlag;
+      buttonFlag = _ref9.buttonFlag,
+      initialPdfViewer = _ref9.initialPdfViewer;
 
   var _useState = (0, _react.useState)((_color$ = color[0]) == null ? void 0 : _color$.color),
       currColor = _useState[0],
@@ -684,7 +685,7 @@ var Whiteboard = function Whiteboard(_ref9) {
       totalPages = _useState9[0],
       setTotalPages = _useState9[1];
 
-  var _React$useState = _react.default.useState(buttonFlag),
+  var _React$useState = _react.default.useState(initialPdfViewer !== undefined ? initialPdfViewer : buttonFlag),
       pdfViewer = _React$useState[0],
       setPdfViewer = _React$useState[1];
 

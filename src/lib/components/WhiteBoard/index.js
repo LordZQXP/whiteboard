@@ -538,6 +538,7 @@ const Whiteboard = ({
   pdf = undefined,
   setResendFiles,
   buttonFlag,
+  initialPdfViewer,
 }) => {
   const [currColor, setCurrColor] = useState(color[0]?.color);
   const [canvas, setCanvas] = useState(null);
@@ -548,7 +549,7 @@ const Whiteboard = ({
   const [disableButtons, setDisableButtons] = useState(false);
   const [historyIndex, setHistoryIndex] = useState(0);
   const [totalPages, setTotalPages] = useState(json[historyIndex]?.object?.length || 0);
-  const [pdfViewer, setPdfViewer] = React.useState(buttonFlag);
+  const [pdfViewer, setPdfViewer] = React.useState(initialPdfViewer !== undefined ? initialPdfViewer : buttonFlag);
   const [canvasOriginalWidth, setCanvasOriginalWidth] = React.useState(878);
 
   const [snackbarData, setSnackBarData] = useState({
