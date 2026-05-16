@@ -839,25 +839,27 @@ const Whiteboard = ({
       <canvas ref={canvasRef} id="canvas" />
       <div>
         <div>
-          {json && !pdfViewer && (
+          {json && !pdfViewer && totalPages > 1 && (
             <div className={styles.nextFixedButton}>
-              <Button
-                className={styles.floatingButtonsZoom}
-                disabled={index === 0}
-                onClick={() => previousPage(canvas)}
-              >
-                <img src={ArrowLeft} style={{ width: '20px', height: '20px' }} />
-              </Button>
+              {index > 0 && (
+                <Button
+                  className={styles.floatingButtonsZoom}
+                  onClick={() => previousPage(canvas)}
+                >
+                  <img src={ArrowLeft} style={{ width: '20px', height: '20px' }} />
+                </Button>
+              )}
               <p>
                 Page {index + 1} to {totalPages}
               </p>
-              <Button
-                className={styles.floatingButtonsZoom}
-                disabled={index + 1 === totalPages}
-                onClick={() => nextPage(canvas)}
-              >
-                <img src={ArrowRight} style={{ width: '20px', height: '20px' }} />
-              </Button>
+              {index + 1 < totalPages && (
+                <Button
+                  className={styles.floatingButtonsZoom}
+                  onClick={() => nextPage(canvas)}
+                >
+                  <img src={ArrowRight} style={{ width: '20px', height: '20px' }} />
+                </Button>
+              )}
             </div>
           )}
         </div>

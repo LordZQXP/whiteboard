@@ -40,14 +40,8 @@ const PDFCanvas = ({ fileCanvasInfo, updateFileCanvasInfo, back, next, setSubmit
             changePage(1);
             next();
         }
-        else if(fileCanvasInfo.currentPageNumber +1 > fileCanvasInfo.totalPages){
-            updateFileCanvasInfo({ totalPages: fileCanvasInfo.currentPageNumber + 1 });
-            extend();
-            changePage(1);
-            setTotalIndex(Math.max(totalIndex, fileCanvasInfo.currentPageNumber+1));
-        }
         if(fileCanvasInfo.currentPageNumber+1 == fileCanvasInfo.totalPages)
-        submitPdf(); 
+        submitPdf();
     };
     const previousPage = () => {
         changePage(-1);
@@ -70,24 +64,26 @@ const PDFCanvas = ({ fileCanvasInfo, updateFileCanvasInfo, back, next, setSubmit
                     />
                 </Document>
             </div>
-            { !spinnerValue && <div className={styles2.nextFixedButton}>
-                <Button
-                    className={styles2.floatingButtonsZoom}
-                    disabled={fileCanvasInfo.currentPageNumber <= 1}
-                    onClick={previousPage}
-                    >
-                    <img src={ArrowLeft} style={{ width: '20px', height: '20px' }} />
-                </Button>
+            { !spinnerValue && fileCanvasInfo.totalPages > 1 && <div className={styles2.nextFixedButton}>
+                {fileCanvasInfo.currentPageNumber > 1 && (
+                    <Button
+                        className={styles2.floatingButtonsZoom}
+                        onClick={previousPage}
+                        >
+                        <img src={ArrowLeft} style={{ width: '20px', height: '20px' }} />
+                    </Button>
+                )}
                     <p>
                     Page {fileCanvasInfo.currentPageNumber} of {totalIndex || '--'}
                     </p>
-                <Button
-                    className={styles2.floatingButtonsZoom}
-                    disabled={fileCanvasInfo.currentPageNumber >= fileCanvasInfo.totalPages && !revision}
-                    onClick={nextPage}
-                >
-                    <img src={ArrowRight} style={{ width: '20px', height: '20px' }} />
-                </Button>
+                {fileCanvasInfo.currentPageNumber < fileCanvasInfo.totalPages && (
+                    <Button
+                        className={styles2.floatingButtonsZoom}
+                        onClick={nextPage}
+                    >
+                        <img src={ArrowRight} style={{ width: '20px', height: '20px' }} />
+                    </Button>
+                )}
             </div>}
         </div>
     );
