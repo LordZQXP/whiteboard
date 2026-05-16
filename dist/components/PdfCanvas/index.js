@@ -74,13 +74,6 @@ var PDFCanvas = function PDFCanvas(_ref) {
     if (fileCanvasInfo.currentPageNumber + 1 <= fileCanvasInfo.totalPages) {
       changePage(1);
       next();
-    } else if (fileCanvasInfo.currentPageNumber + 1 > fileCanvasInfo.totalPages) {
-      updateFileCanvasInfo({
-        totalPages: fileCanvasInfo.currentPageNumber + 1
-      });
-      extend();
-      changePage(1);
-      setTotalIndex(Math.max(totalIndex, fileCanvasInfo.currentPageNumber + 1));
     }
 
     if (fileCanvasInfo.currentPageNumber + 1 == fileCanvasInfo.totalPages) submitPdf();
@@ -103,11 +96,10 @@ var PDFCanvas = function PDFCanvas(_ref) {
     className: "import-pdf-page",
     onRenderSuccess: onRenderSuccess,
     pageNumber: fileCanvasInfo.currentPageNumber
-  }))), !spinnerValue && /*#__PURE__*/_react.default.createElement("div", {
+  }))), !spinnerValue && fileCanvasInfo.totalPages > 1 && /*#__PURE__*/_react.default.createElement("div", {
     className: _indexModule2.default.nextFixedButton
-  }, /*#__PURE__*/_react.default.createElement(_material.Button, {
+  }, fileCanvasInfo.currentPageNumber > 1 && /*#__PURE__*/_react.default.createElement(_material.Button, {
     className: _indexModule2.default.floatingButtonsZoom,
-    disabled: fileCanvasInfo.currentPageNumber <= 1,
     onClick: previousPage
   }, /*#__PURE__*/_react.default.createElement("img", {
     src: _left.default,
@@ -115,9 +107,8 @@ var PDFCanvas = function PDFCanvas(_ref) {
       width: '20px',
       height: '20px'
     }
-  })), /*#__PURE__*/_react.default.createElement("p", null, "Page ", fileCanvasInfo.currentPageNumber, " of ", totalIndex || '--'), /*#__PURE__*/_react.default.createElement(_material.Button, {
+  })), /*#__PURE__*/_react.default.createElement("p", null, "Page ", fileCanvasInfo.currentPageNumber, " of ", totalIndex || '--'), fileCanvasInfo.currentPageNumber < fileCanvasInfo.totalPages && /*#__PURE__*/_react.default.createElement(_material.Button, {
     className: _indexModule2.default.floatingButtonsZoom,
-    disabled: fileCanvasInfo.currentPageNumber >= fileCanvasInfo.totalPages && !revision,
     onClick: nextPage
   }, /*#__PURE__*/_react.default.createElement("img", {
     src: _right.default,

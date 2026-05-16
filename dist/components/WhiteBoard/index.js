@@ -798,55 +798,51 @@ var Whiteboard = function Whiteboard(_ref9) {
   }
 
   function onSaveCanvasAsImage(resendText, canvas) {
-    if (json.length === 0 && index + 1 === fileCanvasInfo.totalPages && !pdfViewer || json.length !== 0 && index + 1 === totalPages && !pdfViewer) {
-      var textSwal = resendText ? 'You cannot undo the action once the assignment has been sent for revision.' : resend ? "Once graded, you can't reverse the changes." : "Once submitted, you can't reverse the changes.";
-      (0, _sweetalert.default)({
-        title: 'Are you sure?',
-        text: textSwal,
-        icon: 'warning',
-        customClass: 'Custom_Cancel',
-        buttons: true,
-        dangerMode: true
-      }).then( /*#__PURE__*/function () {
-        var _ref11 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(willDelete) {
-          return _regeneratorRuntime().wrap(function _callee2$(_context2) {
-            while (1) {
-              switch (_context2.prev = _context2.next) {
-                case 0:
-                  if (!willDelete) {
-                    _context2.next = 4;
-                    break;
-                  }
-
-                  canvasRef.current.toBlob(function (blob) {
-                    var _extends2, _extends3, _extends4;
-
-                    setPages(_extends({}, pages, (_extends2 = {}, _extends2[index] = blob, _extends2)));
-                    setFiles(_extends({}, pages, (_extends3 = {}, _extends3[index] = blob, _extends3)));
-                    setJSON(_extends({}, canvasPage, (_extends4 = {}, _extends4[index] = canvas.toJSON(), _extends4)));
-                    setJSONScreenWidth(canvas.width);
-                  });
-                  _context2.next = 5;
+    var textSwal = resendText ? 'You cannot undo the action once the assignment has been sent for revision.' : resend ? "Once graded, you can't reverse the changes." : "Once submitted, you can't reverse the changes.";
+    (0, _sweetalert.default)({
+      title: 'Are you sure?',
+      text: textSwal,
+      icon: 'warning',
+      customClass: 'Custom_Cancel',
+      buttons: true,
+      dangerMode: true
+    }).then( /*#__PURE__*/function () {
+      var _ref11 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(willDelete) {
+        return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                if (!willDelete) {
+                  _context2.next = 4;
                   break;
+                }
 
-                case 4:
-                  return _context2.abrupt("return");
+                canvasRef.current.toBlob(function (blob) {
+                  var _extends2, _extends3, _extends4;
 
-                case 5:
-                case "end":
-                  return _context2.stop();
-              }
+                  setPages(_extends({}, pages, (_extends2 = {}, _extends2[index] = blob, _extends2)));
+                  setFiles(_extends({}, pages, (_extends3 = {}, _extends3[index] = blob, _extends3)));
+                  setJSON(_extends({}, canvasPage, (_extends4 = {}, _extends4[index] = canvas.toJSON(), _extends4)));
+                  setJSONScreenWidth(canvas.width);
+                });
+                _context2.next = 5;
+                break;
+
+              case 4:
+                return _context2.abrupt("return");
+
+              case 5:
+              case "end":
+                return _context2.stop();
             }
-          }, _callee2);
-        }));
+          }
+        }, _callee2);
+      }));
 
-        return function (_x) {
-          return _ref11.apply(this, arguments);
-        };
-      }());
-    } else {
-      (0, _sweetalert.default)('Info', 'Please review the entire assignment before submitting it.', 'info');
-    }
+      return function (_x) {
+        return _ref11.apply(this, arguments);
+      };
+    }());
   }
 
   function extendPage(canvas) {
@@ -1049,11 +1045,10 @@ var Whiteboard = function Whiteboard(_ref9) {
   }, /*#__PURE__*/_react.default.createElement("canvas", {
     ref: canvasRef,
     id: "canvas"
-  }), /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("div", null, json && !pdfViewer && /*#__PURE__*/_react.default.createElement("div", {
+  }), /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("div", null, json && !pdfViewer && totalPages > 1 && /*#__PURE__*/_react.default.createElement("div", {
     className: _indexModule.default.nextFixedButton
-  }, /*#__PURE__*/_react.default.createElement(_Button.default, {
+  }, index > 0 && /*#__PURE__*/_react.default.createElement(_Button.default, {
     className: _indexModule.default.floatingButtonsZoom,
-    disabled: index === 0,
     onClick: function onClick() {
       return previousPage(canvas);
     }
@@ -1063,9 +1058,8 @@ var Whiteboard = function Whiteboard(_ref9) {
       width: '20px',
       height: '20px'
     }
-  })), /*#__PURE__*/_react.default.createElement("p", null, "Page ", index + 1, " to ", totalPages), /*#__PURE__*/_react.default.createElement(_Button.default, {
+  })), /*#__PURE__*/_react.default.createElement("p", null, "Page ", index + 1, " to ", totalPages), index + 1 < totalPages && /*#__PURE__*/_react.default.createElement(_Button.default, {
     className: _indexModule.default.floatingButtonsZoom,
-    disabled: index + 1 === totalPages,
     onClick: function onClick() {
       return nextPage(canvas);
     }
