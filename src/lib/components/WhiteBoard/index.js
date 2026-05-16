@@ -797,6 +797,7 @@ const Whiteboard = ({
   const [openDraw, setOpenDraw] = useState(false);
   const [openThickness, setOpenThickness] = useState(false);
   const [openColor, setOpenColor] = useState(false);
+  const [selectedDrawIcon, setSelectedDrawIcon] = useState(Pencil);
 
   useEffect(() => {
     if (canvas) {
@@ -930,7 +931,7 @@ const Whiteboard = ({
                     <SpeedDialIcon
                       icon={
                         <Box className={styles.flexDiv}>
-                          <img src={Pencil} />
+                          <img src={selectedDrawIcon} />
                         </Box>
                       }
                     />
@@ -950,7 +951,10 @@ const Whiteboard = ({
                       }
                     />}
                     tooltipTitle="Line"
-                    onClick={() => toolbarCommander(modes.LINE, canvas)}
+                    onClick={() => {
+                      setSelectedDrawIcon(Line);
+                      toolbarCommander(modes.LINE, canvas);
+                    }}
                   />
                   <SpeedDialAction
                     FabProps={{
@@ -966,7 +970,10 @@ const Whiteboard = ({
                       }
                     />}
                     tooltipTitle="Rectangle"
-                    onClick={() => toolbarCommander(modes.RECTANGLE, canvas)}
+                    onClick={() => {
+                      setSelectedDrawIcon(Rectangle);
+                      toolbarCommander(modes.RECTANGLE, canvas);
+                    }}
                   />
                   <SpeedDialAction
                     FabProps={{
@@ -982,7 +989,10 @@ const Whiteboard = ({
                       }
                     />}
                     tooltipTitle="Ellipse"
-                    onClick={() => toolbarCommander(modes.ELLIPSE, canvas)}
+                    onClick={() => {
+                      setSelectedDrawIcon(Circle);
+                      toolbarCommander(modes.ELLIPSE, canvas);
+                    }}
                   />
                   <SpeedDialAction
                     FabProps={{
@@ -998,7 +1008,10 @@ const Whiteboard = ({
                       }
                     />}
                     tooltipTitle="Triangle"
-                    onClick={() => toolbarCommander(modes.TRIANGLE, canvas, options)}
+                    onClick={() => {
+                      setSelectedDrawIcon(Triangle);
+                      toolbarCommander(modes.TRIANGLE, canvas, options);
+                    }}
                   />
                   <SpeedDialAction
                     FabProps={{
@@ -1014,7 +1027,10 @@ const Whiteboard = ({
                       }
                     />}
                     tooltipTitle="Pencil"
-                    onClick={() => toolbarCommander(modes.PENCIL, canvas)}
+                    onClick={() => {
+                      setSelectedDrawIcon(Pencil);
+                      toolbarCommander(modes.PENCIL, canvas);
+                    }}
                   />
                   <SpeedDialAction
                     FabProps={{
@@ -1030,7 +1046,10 @@ const Whiteboard = ({
                       }
                     />}
                     tooltipTitle="Text"
-                    onClick={() => toolbarCommander('TEXT', canvas)}
+                    onClick={() => {
+                      setSelectedDrawIcon(Font);
+                      toolbarCommander('TEXT', canvas);
+                    }}
                   />
                 </SpeedDial>
               </Box>
@@ -1054,7 +1073,21 @@ const Whiteboard = ({
                     <SpeedDialIcon
                       icon={
                         <Box className={styles.flexDiv}>
-                          <img src={Brush} />
+                          <Box
+                            sx={{
+                              width: 24,
+                              height: 24,
+                              backgroundColor: currColor,
+                              WebkitMaskImage: `url(${Brush})`,
+                              maskImage: `url(${Brush})`,
+                              WebkitMaskRepeat: 'no-repeat',
+                              maskRepeat: 'no-repeat',
+                              WebkitMaskPosition: 'center',
+                              maskPosition: 'center',
+                              WebkitMaskSize: 'contain',
+                              maskSize: 'contain',
+                            }}
+                          />
                         </Box>
                       }
                     />
