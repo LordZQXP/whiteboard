@@ -503,8 +503,9 @@ function createText(canvas) {
   canvas.getObjects().map((item) => item.set({ selectable: false }));
   canvas.discardActiveObject().requestRenderAll();
 
-  const placeText = ({ e }) => {
-    const pointer = canvas.getPointer(e);
+  const placeText = (opt) => {
+    if (opt.target) return;
+    const pointer = canvas.getPointer(opt.e);
     const text = new fabric.Textbox('text', {
       left: pointer.x,
       top: pointer.y,
@@ -516,10 +517,6 @@ function createText(canvas) {
     canvas.setActiveObject(text);
     text.enterEditing();
     text.selectAll();
-
-    canvas.off('mouse:down', placeText);
-    canvas.defaultCursor = 'default';
-    canvas.hoverCursor = 'all-scroll';
     canvas.renderAll();
   };
 
