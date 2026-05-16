@@ -65,6 +65,9 @@ const PDFCanvas = ({ fileCanvasInfo, updateFileCanvasInfo, back, next, setSubmit
                 </Document>
             </div>
             { !spinnerValue && fileCanvasInfo.totalPages > 1 && <div className={styles2.nextFixedButton}>
+                    <p>
+                    Page {fileCanvasInfo.currentPageNumber} of {totalIndex || '--'}
+                    </p>
                 {fileCanvasInfo.currentPageNumber > 1 && (
                     <Button
                         className={styles2.floatingButtonsZoom}
@@ -73,9 +76,6 @@ const PDFCanvas = ({ fileCanvasInfo, updateFileCanvasInfo, back, next, setSubmit
                         <img src={ArrowLeft} style={{ width: '20px', height: '20px' }} />
                     </Button>
                 )}
-                    <p>
-                    Page {fileCanvasInfo.currentPageNumber} of {totalIndex || '--'}
-                    </p>
                 {fileCanvasInfo.currentPageNumber < fileCanvasInfo.totalPages && (
                     <Button
                         className={styles2.floatingButtonsZoom}

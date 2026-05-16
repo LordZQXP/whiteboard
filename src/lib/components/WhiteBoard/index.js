@@ -841,6 +841,9 @@ const Whiteboard = ({
         <div>
           {json && !pdfViewer && totalPages > 1 && (
             <div className={styles.nextFixedButton}>
+              <p>
+                Page {index + 1} to {totalPages}
+              </p>
               {index > 0 && (
                 <Button
                   className={styles.floatingButtonsZoom}
@@ -849,9 +852,6 @@ const Whiteboard = ({
                   <img src={ArrowLeft} style={{ width: '20px', height: '20px' }} />
                 </Button>
               )}
-              <p>
-                Page {index + 1} to {totalPages}
-              </p>
               {index + 1 < totalPages && (
                 <Button
                   className={styles.floatingButtonsZoom}
