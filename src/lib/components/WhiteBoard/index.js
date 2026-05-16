@@ -637,37 +637,30 @@ const Whiteboard = ({
   }
 
   function onSaveCanvasAsImage(resendText, canvas) {
-    if (
-      (json.length === 0 && index + 1 === fileCanvasInfo.totalPages && !pdfViewer) ||
-      (json.length !== 0 && index + 1 === totalPages && !pdfViewer)
-    ) {
-      let textSwal = resendText
-        ? 'You cannot undo the action once the assignment has been sent for revision.'
-        : resend
-        ? "Once graded, you can't reverse the changes."
-        : "Once submitted, you can't reverse the changes.";
-      swal({
-        title: 'Are you sure?',
-        text: textSwal,
-        icon: 'warning',
-        customClass: 'Custom_Cancel',
-        buttons: true,
-        dangerMode: true,
-      }).then(async (willDelete) => {
-        if (willDelete) {
-          canvasRef.current.toBlob(function (blob) {
-            setPages({ ...pages, [index]: blob });
-            setFiles({ ...pages, [index]: blob });
-            setJSON({ ...canvasPage, [index]: canvas.toJSON() });
-            setJSONScreenWidth(canvas.width);
-          });
-        } else {
-          return;
-        }
-      });
-    } else {
-      swal('Info', 'Please review the entire assignment before submitting it.', 'info');
-    }
+    let textSwal = resendText
+      ? 'You cannot undo the action once the assignment has been sent for revision.'
+      : resend
+      ? "Once graded, you can't reverse the changes."
+      : "Once submitted, you can't reverse the changes.";
+    swal({
+      title: 'Are you sure?',
+      text: textSwal,
+      icon: 'warning',
+      customClass: 'Custom_Cancel',
+      buttons: true,
+      dangerMode: true,
+    }).then(async (willDelete) => {
+      if (willDelete) {
+        canvasRef.current.toBlob(function (blob) {
+          setPages({ ...pages, [index]: blob });
+          setFiles({ ...pages, [index]: blob });
+          setJSON({ ...canvasPage, [index]: canvas.toJSON() });
+          setJSONScreenWidth(canvas.width);
+        });
+      } else {
+        return;
+      }
+    });
   }
 
   function extendPage(canvas) {
