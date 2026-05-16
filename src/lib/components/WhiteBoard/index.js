@@ -34,6 +34,7 @@ import Rectangle from './images/rectangle.svg';
 import Circle from './images/circle.svg';
 import Triangle from './images/triangle.svg';
 import Font from './images/font.svg';
+import OpenWithIcon from '@mui/icons-material/OpenWith';
 
 let drawInstance = null;
 let origX;
@@ -797,7 +798,7 @@ const Whiteboard = ({
   const [openDraw, setOpenDraw] = useState(false);
   const [openThickness, setOpenThickness] = useState(false);
   const [openColor, setOpenColor] = useState(false);
-  const [selectedDrawIcon, setSelectedDrawIcon] = useState(Pencil);
+  const [selectedDrawIcon, setSelectedDrawIcon] = useState(<img src={Pencil} />);
 
   useEffect(() => {
     if (canvas) {
@@ -931,12 +932,31 @@ const Whiteboard = ({
                     <SpeedDialIcon
                       icon={
                         <Box className={styles.flexDiv}>
-                          <img src={selectedDrawIcon} />
+                          {selectedDrawIcon}
                         </Box>
                       }
                     />
                   }
                 >
+                  <SpeedDialAction
+                    FabProps={{
+                      style: {
+                        boxShadow: 'none',
+                      },
+                    }}
+                    icon={<SpeedDialIcon
+                      icon={
+                        <Box className={styles.flexDiv}>
+                          <OpenWithIcon />
+                        </Box>
+                      }
+                    />}
+                    tooltipTitle="Select / Move"
+                    onClick={() => {
+                      setSelectedDrawIcon(<OpenWithIcon />);
+                      toolbarCommander('SELECT', canvas);
+                    }}
+                  />
                   <SpeedDialAction
                     FabProps={{
                       style: {
@@ -952,7 +972,7 @@ const Whiteboard = ({
                     />}
                     tooltipTitle="Line"
                     onClick={() => {
-                      setSelectedDrawIcon(Line);
+                      setSelectedDrawIcon(<img src={Line} />);
                       toolbarCommander(modes.LINE, canvas);
                     }}
                   />
@@ -971,7 +991,7 @@ const Whiteboard = ({
                     />}
                     tooltipTitle="Rectangle"
                     onClick={() => {
-                      setSelectedDrawIcon(Rectangle);
+                      setSelectedDrawIcon(<img src={Rectangle} />);
                       toolbarCommander(modes.RECTANGLE, canvas);
                     }}
                   />
@@ -990,7 +1010,7 @@ const Whiteboard = ({
                     />}
                     tooltipTitle="Ellipse"
                     onClick={() => {
-                      setSelectedDrawIcon(Circle);
+                      setSelectedDrawIcon(<img src={Circle} />);
                       toolbarCommander(modes.ELLIPSE, canvas);
                     }}
                   />
@@ -1009,7 +1029,7 @@ const Whiteboard = ({
                     />}
                     tooltipTitle="Triangle"
                     onClick={() => {
-                      setSelectedDrawIcon(Triangle);
+                      setSelectedDrawIcon(<img src={Triangle} />);
                       toolbarCommander(modes.TRIANGLE, canvas, options);
                     }}
                   />
@@ -1028,7 +1048,7 @@ const Whiteboard = ({
                     />}
                     tooltipTitle="Pencil"
                     onClick={() => {
-                      setSelectedDrawIcon(Pencil);
+                      setSelectedDrawIcon(<img src={Pencil} />);
                       toolbarCommander(modes.PENCIL, canvas);
                     }}
                   />
@@ -1047,7 +1067,7 @@ const Whiteboard = ({
                     />}
                     tooltipTitle="Text"
                     onClick={() => {
-                      setSelectedDrawIcon(Font);
+                      setSelectedDrawIcon(<img src={Font} />);
                       toolbarCommander('TEXT', canvas);
                     }}
                   />
