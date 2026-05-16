@@ -98,7 +98,7 @@ var PDFCanvas = function PDFCanvas(_ref) {
     pageNumber: fileCanvasInfo.currentPageNumber
   }))), !spinnerValue && fileCanvasInfo.totalPages > 1 && /*#__PURE__*/_react.default.createElement("div", {
     className: _indexModule2.default.nextFixedButton
-  }, fileCanvasInfo.currentPageNumber > 1 && /*#__PURE__*/_react.default.createElement(_material.Button, {
+  }, /*#__PURE__*/_react.default.createElement("p", null, "Page ", fileCanvasInfo.currentPageNumber, " of ", totalIndex || '--'), fileCanvasInfo.currentPageNumber > 1 && /*#__PURE__*/_react.default.createElement(_material.Button, {
     className: _indexModule2.default.floatingButtonsZoom,
     onClick: previousPage
   }, /*#__PURE__*/_react.default.createElement("img", {
@@ -107,7 +107,7 @@ var PDFCanvas = function PDFCanvas(_ref) {
       width: '20px',
       height: '20px'
     }
-  })), /*#__PURE__*/_react.default.createElement("p", null, "Page ", fileCanvasInfo.currentPageNumber, " of ", totalIndex || '--'), fileCanvasInfo.currentPageNumber < fileCanvasInfo.totalPages && /*#__PURE__*/_react.default.createElement(_material.Button, {
+  })), fileCanvasInfo.currentPageNumber < fileCanvasInfo.totalPages && /*#__PURE__*/_react.default.createElement(_material.Button, {
     className: _indexModule2.default.floatingButtonsZoom,
     onClick: nextPage
   }, /*#__PURE__*/_react.default.createElement("img", {

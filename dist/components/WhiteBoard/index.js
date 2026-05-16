@@ -75,6 +75,8 @@ var _triangle = _interopRequireDefault(require("./images/triangle.svg"));
 
 var _font = _interopRequireDefault(require("./images/font.svg"));
 
+var _OpenWith = _interopRequireDefault(require("@mui/icons-material/OpenWith"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
@@ -595,19 +597,37 @@ function remove(canvas) {
 }
 
 function createText(canvas) {
-  canvas.hoverCursor = "default";
-  draw(canvas);
+  options.currentMode = 'TEXT';
   removeCanvasListener(canvas);
   canvas.isDrawingMode = false;
-  var text = new _fabric.fabric.Textbox('text', {
-    left: 100,
-    top: 100,
-    fill: options.currentColor,
-    editable: true
+  canvas.selection = false;
+  canvas.hoverCursor = 'text';
+  canvas.defaultCursor = 'text';
+  canvas.getObjects().map(function (item) {
+    return item.set({
+      selectable: false
+    });
   });
-  canvas.add(text);
-  backUpCanvas = [];
-  canvas.renderAll();
+  canvas.discardActiveObject().requestRenderAll();
+
+  var placeText = function placeText(opt) {
+    if (opt.target) return;
+    var pointer = canvas.getPointer(opt.e);
+    var text = new _fabric.fabric.Textbox('text', {
+      left: pointer.x,
+      top: pointer.y,
+      fill: options.currentColor,
+      editable: true
+    });
+    canvas.add(text);
+    backUpCanvas = [];
+    canvas.setActiveObject(text);
+    text.enterEditing();
+    text.selectAll();
+    canvas.renderAll();
+  };
+
+  canvas.on('mouse:down', placeText);
 }
 
 function handleResize(callback) {
@@ -1005,6 +1025,12 @@ var Whiteboard = function Whiteboard(_ref9) {
       openColor = _useState15[0],
       setOpenColor = _useState15[1];
 
+  var _useState16 = (0, _react.useState)( /*#__PURE__*/_react.default.createElement("img", {
+    src: _pencil.default
+  })),
+      selectedDrawIcon = _useState16[0],
+      setSelectedDrawIcon = _useState16[1];
+
   (0, _react.useEffect)(function () {
     if (canvas) {
       if (!pdfViewer && json.length !== 0) return;
@@ -1047,7 +1073,7 @@ var Whiteboard = function Whiteboard(_ref9) {
     id: "canvas"
   }), /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("div", null, json && !pdfViewer && totalPages > 1 && /*#__PURE__*/_react.default.createElement("div", {
     className: _indexModule.default.nextFixedButton
-  }, index > 0 && /*#__PURE__*/_react.default.createElement(_Button.default, {
+  }, /*#__PURE__*/_react.default.createElement("p", null, "Page ", index + 1, " to ", totalPages), index > 0 && /*#__PURE__*/_react.default.createElement(_Button.default, {
     className: _indexModule.default.floatingButtonsZoom,
     onClick: function onClick() {
       return previousPage(canvas);
@@ -1058,7 +1084,7 @@ var Whiteboard = function Whiteboard(_ref9) {
       width: '20px',
       height: '20px'
     }
-  })), /*#__PURE__*/_react.default.createElement("p", null, "Page ", index + 1, " to ", totalPages), index + 1 < totalPages && /*#__PURE__*/_react.default.createElement(_Button.default, {
+  })), index + 1 < totalPages && /*#__PURE__*/_react.default.createElement(_Button.default, {
     className: _indexModule.default.floatingButtonsZoom,
     onClick: function onClick() {
       return nextPage(canvas);
@@ -1145,11 +1171,25 @@ var Whiteboard = function Whiteboard(_ref9) {
     icon: /*#__PURE__*/_react.default.createElement(_SpeedDialIcon.default, {
       icon: /*#__PURE__*/_react.default.createElement(_Box.default, {
         className: _indexModule.default.flexDiv
-      }, /*#__PURE__*/_react.default.createElement("img", {
-        src: _pencil.default
-      }))
+      }, selectedDrawIcon)
     })
   }, /*#__PURE__*/_react.default.createElement(_SpeedDialAction.default, {
+    FabProps: {
+      style: {
+        boxShadow: 'none'
+      }
+    },
+    icon: /*#__PURE__*/_react.default.createElement(_SpeedDialIcon.default, {
+      icon: /*#__PURE__*/_react.default.createElement(_Box.default, {
+        className: _indexModule.default.flexDiv
+      }, /*#__PURE__*/_react.default.createElement(_OpenWith.default, null))
+    }),
+    tooltipTitle: "Select / Move",
+    onClick: function onClick() {
+      setSelectedDrawIcon( /*#__PURE__*/_react.default.createElement(_OpenWith.default, null));
+      toolbarCommander('SELECT', canvas);
+    }
+  }), /*#__PURE__*/_react.default.createElement(_SpeedDialAction.default, {
     FabProps: {
       style: {
         boxShadow: 'none'
@@ -1164,7 +1204,10 @@ var Whiteboard = function Whiteboard(_ref9) {
     }),
     tooltipTitle: "Line",
     onClick: function onClick() {
-      return toolbarCommander(modes.LINE, canvas);
+      setSelectedDrawIcon( /*#__PURE__*/_react.default.createElement("img", {
+        src: _line.default
+      }));
+      toolbarCommander(modes.LINE, canvas);
     }
   }), /*#__PURE__*/_react.default.createElement(_SpeedDialAction.default, {
     FabProps: {
@@ -1181,7 +1224,10 @@ var Whiteboard = function Whiteboard(_ref9) {
     }),
     tooltipTitle: "Rectangle",
     onClick: function onClick() {
-      return toolbarCommander(modes.RECTANGLE, canvas);
+      setSelectedDrawIcon( /*#__PURE__*/_react.default.createElement("img", {
+        src: _rectangle.default
+      }));
+      toolbarCommander(modes.RECTANGLE, canvas);
     }
   }), /*#__PURE__*/_react.default.createElement(_SpeedDialAction.default, {
     FabProps: {
@@ -1198,7 +1244,10 @@ var Whiteboard = function Whiteboard(_ref9) {
     }),
     tooltipTitle: "Ellipse",
     onClick: function onClick() {
-      return toolbarCommander(modes.ELLIPSE, canvas);
+      setSelectedDrawIcon( /*#__PURE__*/_react.default.createElement("img", {
+        src: _circle.default
+      }));
+      toolbarCommander(modes.ELLIPSE, canvas);
     }
   }), /*#__PURE__*/_react.default.createElement(_SpeedDialAction.default, {
     FabProps: {
@@ -1215,7 +1264,10 @@ var Whiteboard = function Whiteboard(_ref9) {
     }),
     tooltipTitle: "Triangle",
     onClick: function onClick() {
-      return toolbarCommander(modes.TRIANGLE, canvas, options);
+      setSelectedDrawIcon( /*#__PURE__*/_react.default.createElement("img", {
+        src: _triangle.default
+      }));
+      toolbarCommander(modes.TRIANGLE, canvas, options);
     }
   }), /*#__PURE__*/_react.default.createElement(_SpeedDialAction.default, {
     FabProps: {
@@ -1232,7 +1284,10 @@ var Whiteboard = function Whiteboard(_ref9) {
     }),
     tooltipTitle: "Pencil",
     onClick: function onClick() {
-      return toolbarCommander(modes.PENCIL, canvas);
+      setSelectedDrawIcon( /*#__PURE__*/_react.default.createElement("img", {
+        src: _pencil.default
+      }));
+      toolbarCommander(modes.PENCIL, canvas);
     }
   }), /*#__PURE__*/_react.default.createElement(_SpeedDialAction.default, {
     FabProps: {
@@ -1249,7 +1304,10 @@ var Whiteboard = function Whiteboard(_ref9) {
     }),
     tooltipTitle: "Text",
     onClick: function onClick() {
-      return toolbarCommander('TEXT', canvas);
+      setSelectedDrawIcon( /*#__PURE__*/_react.default.createElement("img", {
+        src: _font.default
+      }));
+      toolbarCommander('TEXT', canvas);
     }
   }))), /*#__PURE__*/_react.default.createElement(_Box.default, {
     style: {
@@ -1273,8 +1331,20 @@ var Whiteboard = function Whiteboard(_ref9) {
     icon: /*#__PURE__*/_react.default.createElement(_SpeedDialIcon.default, {
       icon: /*#__PURE__*/_react.default.createElement(_Box.default, {
         className: _indexModule.default.flexDiv
-      }, /*#__PURE__*/_react.default.createElement("img", {
-        src: _paintBucket.default
+      }, /*#__PURE__*/_react.default.createElement(_Box.default, {
+        sx: {
+          width: 24,
+          height: 24,
+          backgroundColor: currColor,
+          WebkitMaskImage: "url(" + _paintBucket.default + ")",
+          maskImage: "url(" + _paintBucket.default + ")",
+          WebkitMaskRepeat: 'no-repeat',
+          maskRepeat: 'no-repeat',
+          WebkitMaskPosition: 'center',
+          maskPosition: 'center',
+          WebkitMaskSize: 'contain',
+          maskSize: 'contain'
+        }
       }))
     })
   }, color.map(function (col) {
