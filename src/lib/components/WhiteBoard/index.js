@@ -494,19 +494,36 @@ function remove(canvas) {
 }
 
 function createText(canvas) {
-  canvas.hoverCursor = `default`;
-  draw(canvas);
+  options.currentMode = 'TEXT';
   removeCanvasListener(canvas);
   canvas.isDrawingMode = false;
-  const text = new fabric.Textbox('text', {
-    left: 100,
-    top: 100,
-    fill: options.currentColor,
-    editable: true,
-  });
-  canvas.add(text);
-  backUpCanvas = [];
-  canvas.renderAll();
+  canvas.selection = false;
+  canvas.hoverCursor = 'text';
+  canvas.defaultCursor = 'text';
+  canvas.getObjects().map((item) => item.set({ selectable: false }));
+  canvas.discardActiveObject().requestRenderAll();
+
+  const placeText = ({ e }) => {
+    const pointer = canvas.getPointer(e);
+    const text = new fabric.Textbox('text', {
+      left: pointer.x,
+      top: pointer.y,
+      fill: options.currentColor,
+      editable: true,
+    });
+    canvas.add(text);
+    backUpCanvas = [];
+    canvas.setActiveObject(text);
+    text.enterEditing();
+    text.selectAll();
+
+    canvas.off('mouse:down', placeText);
+    canvas.defaultCursor = 'default';
+    canvas.hoverCursor = 'all-scroll';
+    canvas.renderAll();
+  };
+
+  canvas.on('mouse:down', placeText);
 }
 
 function handleResize(callback) {
