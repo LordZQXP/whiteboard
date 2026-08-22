@@ -1,6 +1,5 @@
 import React from 'react';
-import { Document, Page } from 'react-pdf/dist/esm/entry.webpack';
-import { pdfjs } from 'react-pdf';
+import { Document, Page } from 'react-pdf';
 import styles from './index.module.scss';
 import { Button } from '@mui/material';
 import stylesW from '../WhiteBoard/index.module.scss';
@@ -9,7 +8,7 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import PageviewOutlinedIcon from '@mui/icons-material/PageviewOutlined';
 
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
+import '../../pdfWorker';
 
 const PDFReader = ({ fileReaderInfo, open }) => {
   const [spinnerValue, setSpinnerValue] = React.useState(true);
@@ -70,7 +69,7 @@ const PDFReader = ({ fileReaderInfo, open }) => {
     <div className={ numPages > 1 ? styles.pdfAbsoluteDiv : styles.pdfFixedDiv}>
       {spinnerValue && <SimpleBackdrop open={true} />}
       <Document file={fileReaderInfo} onLoadSuccess={onDocumentLoadSuccess}>
-        {Array.from(Array(numPages), (e,x) => <Page key={x} pageNumber={x+1} width={width} scale={scale} /> )}
+        {Array.from(Array(numPages), (e,x) => <Page key={x} pageNumber={x+1} width={width} scale={scale} renderTextLayer={false} renderAnnotationLayer={false} /> )}
       </Document>
     </div>
   );

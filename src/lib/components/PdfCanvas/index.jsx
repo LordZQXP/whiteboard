@@ -1,6 +1,5 @@
 import React from 'react';
-import { Document, Page } from 'react-pdf/dist/esm/entry.webpack';
-import { pdfjs } from 'react-pdf';
+import { Document, Page } from 'react-pdf';
 import styles from '../PdfReader/index.module.scss';
 import styles2 from '../WhiteBoard/index.module.scss';
 import ArrowLeft from '../WhiteBoard/images/left.svg';
@@ -8,7 +7,7 @@ import ArrowRight from '../WhiteBoard/images/right.svg';
 import { Button, CircularProgress } from '@mui/material';
 import SimpleBackdrop from '../CircularProgress';
 
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
+import '../../pdfWorker';
 
 const PDFCanvas = ({ fileCanvasInfo, updateFileCanvasInfo, back, next, setSubmitPdf, extend, revision }) => {
     const [spinnerValue, setSpinnerValue] = React.useState(true);
@@ -61,6 +60,8 @@ const PDFCanvas = ({ fileCanvasInfo, updateFileCanvasInfo, back, next, setSubmit
                         className="import-pdf-page"
                         onRenderSuccess={onRenderSuccess}
                         pageNumber={fileCanvasInfo.currentPageNumber}
+                        renderTextLayer={false}
+                        renderAnnotationLayer={false}
                     />
                 </Document>
             </div>

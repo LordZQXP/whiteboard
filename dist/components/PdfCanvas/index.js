@@ -5,8 +5,6 @@ exports.default = void 0;
 
 var _react = _interopRequireDefault(require("react"));
 
-var _entry = require("react-pdf/dist/esm/entry.webpack");
-
 var _reactPdf = require("react-pdf");
 
 var _indexModule = _interopRequireDefault(require("../PdfReader/index.module.scss"));
@@ -21,9 +19,9 @@ var _material = require("@mui/material");
 
 var _CircularProgress = _interopRequireDefault(require("../CircularProgress"));
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+require("../../pdfWorker");
 
-_reactPdf.pdfjs.GlobalWorkerOptions.workerSrc = "//cdnjs.cloudflare.com/ajax/libs/pdf.js/" + _reactPdf.pdfjs.version + "/pdf.worker.js";
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var PDFCanvas = function PDFCanvas(_ref) {
   var fileCanvasInfo = _ref.fileCanvasInfo,
@@ -88,14 +86,16 @@ var PDFCanvas = function PDFCanvas(_ref) {
     className: _indexModule.default.fileContainer
   }, spinnerValue && /*#__PURE__*/_react.default.createElement(_CircularProgress.default, {
     open: true
-  }), /*#__PURE__*/_react.default.createElement(_entry.Document, {
+  }), /*#__PURE__*/_react.default.createElement(_reactPdf.Document, {
     className: _indexModule.default.document,
     file: fileCanvasInfo.file,
     onLoadSuccess: onDocumentLoadSuccess
-  }, /*#__PURE__*/_react.default.createElement(_entry.Page, {
+  }, /*#__PURE__*/_react.default.createElement(_reactPdf.Page, {
     className: "import-pdf-page",
     onRenderSuccess: onRenderSuccess,
-    pageNumber: fileCanvasInfo.currentPageNumber
+    pageNumber: fileCanvasInfo.currentPageNumber,
+    renderTextLayer: false,
+    renderAnnotationLayer: false
   }))), !spinnerValue && fileCanvasInfo.totalPages > 1 && /*#__PURE__*/_react.default.createElement("div", {
     className: _indexModule2.default.nextFixedButton
   }, /*#__PURE__*/_react.default.createElement("p", null, "Page ", fileCanvasInfo.currentPageNumber, " of ", totalIndex || '--'), fileCanvasInfo.currentPageNumber > 1 && /*#__PURE__*/_react.default.createElement(_material.Button, {

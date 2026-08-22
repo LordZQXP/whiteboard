@@ -5,8 +5,6 @@ exports.default = void 0;
 
 var _react = _interopRequireDefault(require("react"));
 
-var _entry = require("react-pdf/dist/esm/entry.webpack");
-
 var _reactPdf = require("react-pdf");
 
 var _indexModule = _interopRequireDefault(require("./index.module.scss"));
@@ -23,9 +21,9 @@ var _Remove = _interopRequireDefault(require("@mui/icons-material/Remove"));
 
 var _PageviewOutlined = _interopRequireDefault(require("@mui/icons-material/PageviewOutlined"));
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+require("../../pdfWorker");
 
-_reactPdf.pdfjs.GlobalWorkerOptions.workerSrc = "//cdnjs.cloudflare.com/ajax/libs/pdf.js/" + _reactPdf.pdfjs.version + "/pdf.worker.js";
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var PDFReader = function PDFReader(_ref) {
   var fileReaderInfo = _ref.fileReaderInfo,
@@ -97,15 +95,17 @@ var PDFReader = function PDFReader(_ref) {
     className: numPages > 1 ? _indexModule.default.pdfAbsoluteDiv : _indexModule.default.pdfFixedDiv
   }, spinnerValue && /*#__PURE__*/_react.default.createElement(_CircularProgress.default, {
     open: true
-  }), /*#__PURE__*/_react.default.createElement(_entry.Document, {
+  }), /*#__PURE__*/_react.default.createElement(_reactPdf.Document, {
     file: fileReaderInfo,
     onLoadSuccess: onDocumentLoadSuccess
   }, Array.from(Array(numPages), function (e, x) {
-    return /*#__PURE__*/_react.default.createElement(_entry.Page, {
+    return /*#__PURE__*/_react.default.createElement(_reactPdf.Page, {
       key: x,
       pageNumber: x + 1,
       width: width,
-      scale: scale
+      scale: scale,
+      renderTextLayer: false,
+      renderAnnotationLayer: false
     });
   })));
 };
