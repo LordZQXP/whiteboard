@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import * as fabric from 'fabric';
 import getCursor from './cursors';
+import sanitizeCanvasJson from '../../utils/sanitizeCanvasJson';
 import EraserIcon from './images/eraser.svg';
 import Brush from './images/paint-bucket.svg';
 import Pencil from './images/pencil.svg';
@@ -623,11 +624,16 @@ const Whiteboard = ({
         clearCanvas(canvas);
         backUpCanvas = [];
         if (canvasPage[index] !== undefined) {
+          // canvasPage and backUpCanvas are both `canvas.toJSON()` off a
+          // canvas that only ever loaded sanitized input, so they inherit the
+          // guarantee and are not re-checked here.
           await canvas.loadFromJSON(canvasPage[index]);
           canvas.setZoom(canvasOriginalWidth / json[historyIndex].screen);
           canvas.renderAll();
         } else {
-          await canvas.loadFromJSON(json[historyIndex].object[index], (o, object) => {
+          // Student-authored graph — sanitize before fabric enlivens it.
+          // SECURITY_PENTEST_PREP.md Finding 29.
+          await canvas.loadFromJSON(sanitizeCanvasJson(json[historyIndex].object[index]), (o, object) => {
             object.set('selectable', false);
             object.set('evented', false);
           });
@@ -719,7 +725,8 @@ const Whiteboard = ({
           clearCanvasNextPage(canvas);
           clearCanvas(canvas);
           canvas
-            .loadFromJSON(json[historyIndex].object[index + 1], (o, object) => {
+            // Student-authored graph — see Finding 29.
+            .loadFromJSON(sanitizeCanvasJson(json[historyIndex].object[index + 1]), (o, object) => {
               object.set('selectable', false);
               object.set('evented', false);
             })

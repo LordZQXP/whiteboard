@@ -6,6 +6,7 @@ var _react = _interopRequireWildcard(require("react"));
 var _propTypes = _interopRequireDefault(require("prop-types"));
 var fabric = _interopRequireWildcard(require("fabric"));
 var _cursors = _interopRequireDefault(require("./cursors"));
+var _sanitizeCanvasJson = _interopRequireDefault(require("../../utils/sanitizeCanvasJson"));
 var _eraser = _interopRequireDefault(require("./images/eraser.svg"));
 var _paintBucket = _interopRequireDefault(require("./images/paint-bucket.svg"));
 var _pencil = _interopRequireDefault(require("./images/pencil.svg"));
@@ -683,7 +684,7 @@ var Whiteboard = function Whiteboard(_ref9) {
                 break;
               case 10:
                 _context.next = 12;
-                return canvas.loadFromJSON(json[historyIndex].object[index], function (o, object) {
+                return canvas.loadFromJSON((0, _sanitizeCanvasJson["default"])(json[historyIndex].object[index]), function (o, object) {
                   object.set('selectable', false);
                   object.set('evented', false);
                 });
@@ -807,7 +808,9 @@ var Whiteboard = function Whiteboard(_ref9) {
         } else {
           clearCanvasNextPage(canvas);
           clearCanvas(canvas);
-          canvas.loadFromJSON(json[historyIndex].object[index + 1], function (o, object) {
+          canvas
+          // Student-authored graph — see Finding 29.
+          .loadFromJSON((0, _sanitizeCanvasJson["default"])(json[historyIndex].object[index + 1]), function (o, object) {
             object.set('selectable', false);
             object.set('evented', false);
           }).then(function () {
