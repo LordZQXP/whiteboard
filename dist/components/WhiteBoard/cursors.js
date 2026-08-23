@@ -1,29 +1,20 @@
 "use strict";
 
 exports.__esModule = true;
-exports.default = void 0;
-
+exports["default"] = void 0;
 var _remove = _interopRequireDefault(require("./images/remove.svg"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-const getCursor = _ref => {
-  let {
-    type
-  } = _ref;
-
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
+var getCursor = function getCursor(_ref) {
+  var type = _ref.type;
   switch (type) {
     case 'eraser':
       {
-        return _remove.default;
+        return _remove["default"];
       }
-
     default:
       {
         return '';
       }
   }
 };
-
-var _default = getCursor;
-exports.default = _default;
+var _default = exports["default"] = getCursor;

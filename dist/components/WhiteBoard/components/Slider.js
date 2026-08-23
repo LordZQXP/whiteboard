@@ -1,47 +1,33 @@
 "use strict";
 
 exports.__esModule = true;
-exports.default = InputSlider;
-
+exports["default"] = InputSlider;
 var React = _interopRequireWildcard(require("react"));
-
 var _styles = require("@mui/material/styles");
-
 var _Box = _interopRequireDefault(require("@mui/material/Box"));
-
 var _Grid = _interopRequireDefault(require("@mui/material/Grid"));
-
 var _Slider = _interopRequireDefault(require("@mui/material/Slider"));
-
 var _Input = _interopRequireDefault(require("@mui/material/Input"));
-
 var _indexModule = _interopRequireDefault(require("../index.module.scss"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
-
-function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
-
-const Input = (0, _styles.styled)(_Input.default)`
-  width: 42px;
-`;
-
+var _templateObject;
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
+function _interopRequireWildcard(e, t) { if ("function" == typeof WeakMap) var r = new WeakMap(), n = new WeakMap(); return (_interopRequireWildcard = function _interopRequireWildcard(e, t) { if (!t && e && e.__esModule) return e; var o, i, f = { __proto__: null, "default": e }; if (null === e || "object" != typeof e && "function" != typeof e) return f; if (o = t ? n : r) { if (o.has(e)) return o.get(e); o.set(e, f); } for (var _t in e) { "default" !== _t && {}.hasOwnProperty.call(e, _t) && ((i = (o = Object.defineProperty) && Object.getOwnPropertyDescriptor(e, _t)) && (i.get || i.set) ? o(f, _t, i) : f[_t] = e[_t]); } return f; })(e, t); }
+function _taggedTemplateLiteralLoose(e, t) { return t || (t = e.slice(0)), e.raw = t, e; }
+var Input = (0, _styles.styled)(_Input["default"])(_templateObject || (_templateObject = _taggedTemplateLiteralLoose(["\n  width: 42px;\n"])));
 function InputSlider(props) {
-  const [value, setValue] = React.useState(props == null ? void 0 : props.value);
-
-  const handleSliderChange = (event, newValue) => {
+  var _React$useState = React.useState(props == null ? void 0 : props.value),
+    value = _React$useState[0],
+    setValue = _React$useState[1];
+  var handleSliderChange = function handleSliderChange(event, newValue) {
     if (newValue < 5) return;
     setValue(newValue);
     props == null ? void 0 : props.changeHandler(newValue);
   };
-
-  const handleInputChange = event => {
+  var handleInputChange = function handleInputChange(event) {
     setValue(event.target.value === '' ? '' : Number(event.target.value));
     props == null ? void 0 : props.changeHandler(event.target.value === '' ? '' : Number(event.target.value));
   };
-
-  return /*#__PURE__*/React.createElement(_Box.default, {
+  return /*#__PURE__*/React.createElement(_Box["default"], {
     sx: {
       width: 280,
       marginBottom: "120px",
@@ -55,23 +41,23 @@ function InputSlider(props) {
       justifyContent: 'center',
       alignItems: 'center'
     }
-  }, /*#__PURE__*/React.createElement(_Grid.default, {
+  }, /*#__PURE__*/React.createElement(_Grid["default"], {
     container: true,
     spacing: 2,
     alignItems: "center",
-    className: _indexModule.default.slider
-  }, /*#__PURE__*/React.createElement(_Grid.default, {
+    className: _indexModule["default"].slider
+  }, /*#__PURE__*/React.createElement(_Grid["default"], {
     item: true,
     xs: true,
-    className: _indexModule.default.slider
-  }, /*#__PURE__*/React.createElement(_Slider.default, {
+    className: _indexModule["default"].slider
+  }, /*#__PURE__*/React.createElement(_Slider["default"], {
     value: typeof value === 'number' ? value : props == null ? void 0 : props.min,
     onChange: handleSliderChange,
     max: 20,
     min: 0,
     step: 1,
     "aria-labelledby": "input-slider"
-  })), /*#__PURE__*/React.createElement(_Grid.default, {
+  })), /*#__PURE__*/React.createElement(_Grid["default"], {
     item: true
   }, /*#__PURE__*/React.createElement(Input, {
     value: value,

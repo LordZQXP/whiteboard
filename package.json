@@ -46,39 +46,23 @@
     "@babel/polyfill": "^7.12.1",
     "@babel/preset-env": "^7.18.2",
     "@babel/preset-react": "^7.17.12",
+    "@vitejs/plugin-react": "^6.1.0",
     "eslint": "^7.20.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-react": "^7.22.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-scripts": "^5.0.1"
+    "vite": "^8.2.2"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "vite",
+    "build": "vite build",
     "build-npm": "babel src/lib --out-dir dist --copy-files",
-    "test": "react-scripts test",
     "copy-pdf-worker": "node scripts/copy-pdf-worker.js",
     "prestart": "npm run copy-pdf-worker && npm run make-sample-pdf",
     "prebuild": "npm run copy-pdf-worker && npm run make-sample-pdf",
-    "make-sample-pdf": "node scripts/make-sample-pdf.js"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "make-sample-pdf": "node scripts/make-sample-pdf.js",
+    "preview": "vite preview",
+    "lint": "eslint src --ext .js,.jsx"
   }
 }
