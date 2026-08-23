@@ -5,7 +5,10 @@
   "author": "Fauzan Siddiqui",
   "private": false,
   "license": "MIT",
-  "sideEffects": false,
+  "sideEffects": [
+    "*.css",
+    "*.scss"
+  ],
   "main": "dist/index.js",
   "module": "dist/index.js",
   "keywords": [
@@ -46,15 +49,19 @@
     "eslint": "^7.20.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-react": "^7.22.0",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "react-scripts": "4.0.3"
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-scripts": "^5.0.1"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "build-npm": "babel src/lib --out-dir dist --copy-files",
-    "test": "react-scripts test"
+    "test": "react-scripts test",
+    "copy-pdf-worker": "node scripts/copy-pdf-worker.js",
+    "prestart": "npm run copy-pdf-worker && npm run make-sample-pdf",
+    "prebuild": "npm run copy-pdf-worker && npm run make-sample-pdf",
+    "make-sample-pdf": "node scripts/make-sample-pdf.js"
   },
   "eslintConfig": {
     "extends": [

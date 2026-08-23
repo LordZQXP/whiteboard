@@ -139,7 +139,8 @@ function createLine(canvas) {
     canvas.hoverCursor = 'auto';
     canvas.isDrawingMode = false;
     canvas.getObjects().map((item) => item.set({ selectable: false }));
-    canvas.discardActiveObject().requestRenderAll();
+    canvas.discardActiveObject();
+    canvas.requestRenderAll();
   }
 }
 
@@ -184,7 +185,8 @@ function createRect(canvas) {
     canvas.hoverCursor = 'auto';
     canvas.isDrawingMode = false;
     canvas.getObjects().map((item) => item.set({ selectable: false }));
-    canvas.discardActiveObject().requestRenderAll();
+    canvas.discardActiveObject();
+    canvas.requestRenderAll();
   }
 }
 
@@ -247,7 +249,8 @@ function createEllipse(canvas) {
     canvas.hoverCursor = 'auto';
     canvas.isDrawingMode = false;
     canvas.getObjects().map((item) => item.set({ selectable: false }));
-    canvas.discardActiveObject().requestRenderAll();
+    canvas.discardActiveObject();
+    canvas.requestRenderAll();
   }
 }
 
@@ -388,7 +391,8 @@ function createTriangle(canvas) {
   canvas.hoverCursor = 'auto';
   canvas.isDrawingMode = false;
   canvas.getObjects().map((item) => item.set({ selectable: false }));
-  canvas.discardActiveObject().requestRenderAll();
+  canvas.discardActiveObject();
+  canvas.requestRenderAll();
 }
 
 function startAddTriangle(canvas) {
@@ -504,7 +508,8 @@ function createText(canvas) {
   canvas.hoverCursor = 'text';
   canvas.defaultCursor = 'text';
   canvas.getObjects().map((item) => item.set({ selectable: false }));
-  canvas.discardActiveObject().requestRenderAll();
+  canvas.discardActiveObject();
+  canvas.requestRenderAll();
 
   const placeText = (opt) => {
     if (opt.target) return;

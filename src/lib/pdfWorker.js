@@ -17,18 +17,24 @@ const DEFAULT_WORKER_SRC = '/pdf.worker.min.mjs';
 
 let workerSrc = DEFAULT_WORKER_SRC;
 
-const apply = () => {
+/**
+ * Point pdf.js at the configured worker.
+ *
+ * The components that render PDFs call this on import. It is an explicit call
+ * rather than a module side effect because bundlers that honour the
+ * `sideEffects` package flag will drop a side-effect-only `import` outright,
+ * which leaves `GlobalWorkerOptions.workerSrc` unset and makes pdf.js throw.
+ */
+export const ensurePdfWorker = () => {
   pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
 };
 
 export const setPdfWorkerSrc = (src) => {
   workerSrc = src;
-  apply();
+  ensurePdfWorker();
 };
 
 /** The pdfjs version this library is built against — useful for pinning the copied worker. */
 export const pdfjsVersion = pdfjs.version;
-
-apply();
 
 export { pdfjs };

@@ -7,7 +7,9 @@ import ArrowRight from '../WhiteBoard/images/right.svg';
 import { Button, CircularProgress } from '@mui/material';
 import SimpleBackdrop from '../CircularProgress';
 
-import '../../pdfWorker';
+import { ensurePdfWorker } from '../../pdfWorker';
+
+ensurePdfWorker();
 
 const PDFCanvas = ({ fileCanvasInfo, updateFileCanvasInfo, back, next, setSubmitPdf, extend, revision }) => {
     const [spinnerValue, setSpinnerValue] = React.useState(true);
