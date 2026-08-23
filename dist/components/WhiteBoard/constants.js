@@ -2,7 +2,7 @@
 
 exports.__esModule = true;
 exports.drawingMode = exports.defaultTriangleOptions = exports.defaultRectOptions = exports.defaultLineOptions = exports.defaultEllipseOptions = void 0;
-var drawingMode = {
+const drawingMode = {
   RECTANGLE: 'RECTANGLE',
   ELLIPSE: 'ELLIPSE',
   TRIANGLE: 'TRIANGLE',
@@ -10,7 +10,7 @@ var drawingMode = {
   ERASER: 'ERASER'
 };
 exports.drawingMode = drawingMode;
-var defaultRectOptions = {
+const defaultRectOptions = {
   strokeWidth: 2,
   stroke: 'black',
   fill: 'transparent',
@@ -19,7 +19,7 @@ var defaultRectOptions = {
   objectCaching: false
 };
 exports.defaultRectOptions = defaultRectOptions;
-var defaultEllipseOptions = {
+const defaultEllipseOptions = {
   strokeWidth: 2,
   stroke: 'black',
   fill: 'black',
@@ -27,7 +27,7 @@ var defaultEllipseOptions = {
   noScaleCache: false
 };
 exports.defaultEllipseOptions = defaultEllipseOptions;
-var defaultTriangleOptions = {
+const defaultTriangleOptions = {
   strokeWidth: 2,
   stroke: 'black',
   fill: 'black',
@@ -35,7 +35,7 @@ var defaultTriangleOptions = {
   noScaleCache: false
 };
 exports.defaultTriangleOptions = defaultTriangleOptions;
-var defaultLineOptions = {
+const defaultLineOptions = {
   strokeWidth: 2,
   stroke: 'black',
   fill: 'black',

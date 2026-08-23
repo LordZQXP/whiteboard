@@ -19,37 +19,39 @@ var _material = require("@mui/material");
 
 var _CircularProgress = _interopRequireDefault(require("../CircularProgress"));
 
-require("../../pdfWorker");
+var _pdfWorker = require("../../pdfWorker");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var PDFCanvas = function PDFCanvas(_ref) {
-  var fileCanvasInfo = _ref.fileCanvasInfo,
-      updateFileCanvasInfo = _ref.updateFileCanvasInfo,
-      back = _ref.back,
-      next = _ref.next,
-      setSubmitPdf = _ref.setSubmitPdf,
-      extend = _ref.extend,
-      revision = _ref.revision;
+(0, _pdfWorker.ensurePdfWorker)();
 
-  var _React$useState = _react.default.useState(true),
-      spinnerValue = _React$useState[0],
-      setSpinnerValue = _React$useState[1];
+const PDFCanvas = _ref => {
+  let {
+    fileCanvasInfo,
+    updateFileCanvasInfo,
+    back,
+    next,
+    setSubmitPdf,
+    extend,
+    revision
+  } = _ref;
 
-  var _React$useState2 = _react.default.useState(1),
-      totalIndex = _React$useState2[0],
-      setTotalIndex = _React$useState2[1];
+  const [spinnerValue, setSpinnerValue] = _react.default.useState(true);
+
+  const [totalIndex, setTotalIndex] = _react.default.useState(1);
 
   function onRenderSuccess() {
-    var importPDFCanvas = document.querySelector('.import-pdf-page canvas');
-    var pdfAsImageSrc = importPDFCanvas.toDataURL();
+    const importPDFCanvas = document.querySelector('.import-pdf-page canvas');
+    const pdfAsImageSrc = importPDFCanvas.toDataURL();
     updateFileCanvasInfo({
       currentPage: pdfAsImageSrc
     });
   }
 
   function onDocumentLoadSuccess(_ref2) {
-    var numPages = _ref2.numPages;
+    let {
+      numPages
+    } = _ref2;
     setSpinnerValue(false);
     updateFileCanvasInfo({
       totalPages: numPages
@@ -68,7 +70,7 @@ var PDFCanvas = function PDFCanvas(_ref) {
     setSubmitPdf(true);
   }
 
-  var nextPage = function nextPage() {
+  const nextPage = () => {
     if (fileCanvasInfo.currentPageNumber + 1 <= fileCanvasInfo.totalPages) {
       changePage(1);
       next();
@@ -77,7 +79,7 @@ var PDFCanvas = function PDFCanvas(_ref) {
     if (fileCanvasInfo.currentPageNumber + 1 == fileCanvasInfo.totalPages) submitPdf();
   };
 
-  var previousPage = function previousPage() {
+  const previousPage = () => {
     changePage(-1);
     back();
   };

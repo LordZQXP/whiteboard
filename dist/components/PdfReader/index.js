@@ -21,71 +21,65 @@ var _Remove = _interopRequireDefault(require("@mui/icons-material/Remove"));
 
 var _PageviewOutlined = _interopRequireDefault(require("@mui/icons-material/PageviewOutlined"));
 
-require("../../pdfWorker");
+var _pdfWorker = require("../../pdfWorker");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var PDFReader = function PDFReader(_ref) {
-  var fileReaderInfo = _ref.fileReaderInfo,
-      open = _ref.open;
+(0, _pdfWorker.ensurePdfWorker)();
 
-  var _React$useState = _react.default.useState(true),
-      spinnerValue = _React$useState[0],
-      setSpinnerValue = _React$useState[1];
+const PDFReader = _ref => {
+  let {
+    fileReaderInfo,
+    open
+  } = _ref;
 
-  var _React$useState2 = _react.default.useState(false),
-      zoomToggle = _React$useState2[0],
-      setZoomToggle = _React$useState2[1];
+  const [spinnerValue, setSpinnerValue] = _react.default.useState(true);
 
-  var _React$useState3 = _react.default.useState(1.0),
-      scale = _React$useState3[0],
-      setScale = _React$useState3[1];
+  const [zoomToggle, setZoomToggle] = _react.default.useState(false);
 
-  var intervalRef = _react.default.useRef(null);
+  const [scale, setScale] = _react.default.useState(1.0);
 
-  var zoomIn = function zoomIn(value) {
+  const intervalRef = _react.default.useRef(null);
+
+  const zoomIn = value => {
     setScale(value += 0.01);
   };
 
-  var zoomOut = function zoomOut(value) {
+  const zoomOut = value => {
     if (value > 1.0) setScale(value -= 0.01);
   };
 
-  var startCounter = function startCounter(zoom) {
-    var value = scale;
-    intervalRef.current = setInterval(function () {
+  const startCounter = zoom => {
+    let value = scale;
+    intervalRef.current = setInterval(() => {
       if (zoom === "in") zoomIn(value);else {
         zoomOut(value);
       }
     }, 10);
   };
 
-  var stopCounter = function stopCounter() {
+  const stopCounter = () => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
     }
   };
 
-  var _React$useState4 = _react.default.useState(null),
-      numPages = _React$useState4[0],
-      setNumPages = _React$useState4[1];
+  const [numPages, setNumPages] = _react.default.useState(null);
 
-  var _React$useState5 = _react.default.useState(1),
-      pageNumber = _React$useState5[0],
-      setPageNumber = _React$useState5[1];
+  const [pageNumber, setPageNumber] = _react.default.useState(1);
 
   function onDocumentLoadSuccess(_ref2) {
-    var numPages = _ref2.numPages;
+    let {
+      numPages
+    } = _ref2;
     setSpinnerValue(false);
     setNumPages(numPages);
   }
 
-  var _React$useState6 = _react.default.useState(500),
-      width = _React$useState6[0],
-      setWidth = _React$useState6[1];
+  const [width, setWidth] = _react.default.useState(500);
 
-  _react.default.useEffect(function () {
+  _react.default.useEffect(() => {
     if (window.innerWidth > 900) setWidth(500);else if (window.innerWidth > 480 && window.innerWidth < 900) setWidth(window.innerWidth);else if (window.innerWidth > 350) {
       setWidth(350);
     } else if (window.innerWidth < 330) setWidth(200);
@@ -98,16 +92,14 @@ var PDFReader = function PDFReader(_ref) {
   }), /*#__PURE__*/_react.default.createElement(_reactPdf.Document, {
     file: fileReaderInfo,
     onLoadSuccess: onDocumentLoadSuccess
-  }, Array.from(Array(numPages), function (e, x) {
-    return /*#__PURE__*/_react.default.createElement(_reactPdf.Page, {
-      key: x,
-      pageNumber: x + 1,
-      width: width,
-      scale: scale,
-      renderTextLayer: false,
-      renderAnnotationLayer: false
-    });
-  })));
+  }, Array.from(Array(numPages), (e, x) => /*#__PURE__*/_react.default.createElement(_reactPdf.Page, {
+    key: x,
+    pageNumber: x + 1,
+    width: width,
+    scale: scale,
+    renderTextLayer: false,
+    renderAnnotationLayer: false
+  }))));
 };
 
 var _default = PDFReader;

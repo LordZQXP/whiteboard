@@ -1,7 +1,7 @@
 "use strict";
 
 exports.__esModule = true;
-exports.setPdfWorkerSrc = exports.pdfjsVersion = void 0;
+exports.setPdfWorkerSrc = exports.pdfjsVersion = exports.ensurePdfWorker = void 0;
 
 var _reactPdf = require("react-pdf");
 
@@ -20,21 +20,30 @@ exports.pdfjs = _reactPdf.pdfjs;
  * they serve static assets from (`public/` for CRA), or call
  * `setPdfWorkerSrc()` once at startup with wherever they serve it from.
  */
-var DEFAULT_WORKER_SRC = '/pdf.worker.min.mjs';
-var workerSrc = DEFAULT_WORKER_SRC;
+const DEFAULT_WORKER_SRC = '/pdf.worker.min.mjs';
+let workerSrc = DEFAULT_WORKER_SRC;
+/**
+ * Point pdf.js at the configured worker.
+ *
+ * The components that render PDFs call this on import. It is an explicit call
+ * rather than a module side effect because bundlers that honour the
+ * `sideEffects` package flag will drop a side-effect-only `import` outright,
+ * which leaves `GlobalWorkerOptions.workerSrc` unset and makes pdf.js throw.
+ */
 
-var apply = function apply() {
+const ensurePdfWorker = () => {
   _reactPdf.pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
 };
 
-var setPdfWorkerSrc = function setPdfWorkerSrc(src) {
+exports.ensurePdfWorker = ensurePdfWorker;
+
+const setPdfWorkerSrc = src => {
   workerSrc = src;
-  apply();
+  ensurePdfWorker();
 };
 /** The pdfjs version this library is built against — useful for pinning the copied worker. */
 
 
 exports.setPdfWorkerSrc = setPdfWorkerSrc;
-var pdfjsVersion = _reactPdf.pdfjs.version;
+const pdfjsVersion = _reactPdf.pdfjs.version;
 exports.pdfjsVersion = pdfjsVersion;
-apply();

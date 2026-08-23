@@ -17,30 +17,26 @@ var _Input = _interopRequireDefault(require("@mui/material/Input"));
 
 var _indexModule = _interopRequireDefault(require("../index.module.scss"));
 
-var _templateObject;
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
-function _taggedTemplateLiteralLoose(strings, raw) { if (!raw) { raw = strings.slice(0); } strings.raw = raw; return strings; }
-
-var Input = (0, _styles.styled)(_Input.default)(_templateObject || (_templateObject = _taggedTemplateLiteralLoose(["\n  width: 42px;\n"])));
+const Input = (0, _styles.styled)(_Input.default)`
+  width: 42px;
+`;
 
 function InputSlider(props) {
-  var _React$useState = React.useState(props == null ? void 0 : props.value),
-      value = _React$useState[0],
-      setValue = _React$useState[1];
+  const [value, setValue] = React.useState(props == null ? void 0 : props.value);
 
-  var handleSliderChange = function handleSliderChange(event, newValue) {
+  const handleSliderChange = (event, newValue) => {
     if (newValue < 5) return;
     setValue(newValue);
     props == null ? void 0 : props.changeHandler(newValue);
   };
 
-  var handleInputChange = function handleInputChange(event) {
+  const handleInputChange = event => {
     setValue(event.target.value === '' ? '' : Number(event.target.value));
     props == null ? void 0 : props.changeHandler(event.target.value === '' ? '' : Number(event.target.value));
   };

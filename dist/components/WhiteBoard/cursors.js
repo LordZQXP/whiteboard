@@ -7,8 +7,10 @@ var _remove = _interopRequireDefault(require("./images/remove.svg"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var getCursor = function getCursor(_ref) {
-  var type = _ref.type;
+const getCursor = _ref => {
+  let {
+    type
+  } = _ref;
 
   switch (type) {
     case 'eraser':

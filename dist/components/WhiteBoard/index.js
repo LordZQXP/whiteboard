@@ -77,34 +77,26 @@ var _OpenWith = _interopRequireDefault(require("@mui/icons-material/OpenWith"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
-function _extends() { _extends = Object.assign ? Object.assign.bind() : function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return generator._invoke = function (innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; }(innerFn, self, context), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == typeof value && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; this._invoke = function (method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); }; } function maybeInvokeDelegate(delegate, context) { var method = delegate.iterator[context.method]; if (undefined === method) { if (context.delegate = null, "throw" === context.method) { if (delegate.iterator.return && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method)) return ContinueSentinel; context.method = "throw", context.arg = new TypeError("The iterator does not provide a 'throw' method"); } return ContinueSentinel; } var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) { if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; } return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, define(Gp, "constructor", GeneratorFunctionPrototype), define(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (object) { var keys = []; for (var key in object) { keys.push(key); } return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) { "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); } }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, catch: function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
-
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
-var drawInstance = null;
-var origX;
-var origY;
-var mouseDown = false;
-var isPanning = false;
-var lastPosX, lastPosY;
-var options = {
+let drawInstance = null;
+let origX;
+let origY;
+let mouseDown = false;
+let isPanning = false;
+let lastPosX, lastPosY;
+const options = {
   currentMode: '',
   currentColor: '#000000',
   currentWidth: 5,
   fill: false,
   group: {}
 };
-var backUpCanvas = [];
-var backupIndex = 0;
-var modes = {
+let backUpCanvas = [];
+let backupIndex = 0;
+const modes = {
   RECTANGLE: 'RECTANGLE',
   TRIANGLE: 'TRIANGLE',
   ELLIPSE: 'ELLIPSE',
@@ -114,10 +106,10 @@ var modes = {
   PANNING: 'PANNING'
 };
 
-var initCanvas = function initCanvas(width, height) {
-  var canvas = new fabric.Canvas('canvas', {
-    height: height,
-    width: width
+const initCanvas = (width, height) => {
+  const canvas = new fabric.Canvas('canvas', {
+    height,
+    width
   });
   Object.assign(fabric.InteractiveFabricObject.ownDefaults, {
     transparentCorners: false,
@@ -130,10 +122,10 @@ var initCanvas = function initCanvas(width, height) {
   }); // fabric 6+ no longer creates a default freeDrawingBrush.
 
   canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
-  canvas.on('object:added', function (e) {
+  canvas.on('object:added', e => {
     e.target.on('mousedown', removeObject(canvas));
   });
-  canvas.on('path:created', function (e) {
+  canvas.on('path:created', e => {
     backUpCanvas = [];
     e.path.on('mousedown', removeObject(canvas));
   });
@@ -141,7 +133,7 @@ var initCanvas = function initCanvas(width, height) {
 };
 
 function removeObject(canvas) {
-  return function (e) {
+  return e => {
     if (options.currentMode === modes.ERASER) {
       pushToBackUp(canvas);
       canvas.remove(e.target);
@@ -158,7 +150,7 @@ function removeCanvasListener(canvas) {
   canvas.off('mouse:move');
   canvas.off('mouse:up');
   canvas.off('mouse:wheel');
-  var touch = 'ontouchstart' in window || navigator.maxTouchPoints > 0; //const mouse = window.matchMedia('(pointer:fine)').matches;
+  const touch = 'ontouchstart' in window || navigator.maxTouchPoints > 0; //const mouse = window.matchMedia('(pointer:fine)').matches;
 
   if (touch) {
     if (startHandler) {
@@ -190,20 +182,21 @@ function createLine(canvas) {
     canvas.selection = false;
     canvas.hoverCursor = 'auto';
     canvas.isDrawingMode = false;
-    canvas.getObjects().map(function (item) {
-      return item.set({
-        selectable: false
-      });
-    });
-    canvas.discardActiveObject().requestRenderAll();
+    canvas.getObjects().map(item => item.set({
+      selectable: false
+    }));
+    canvas.discardActiveObject();
+    canvas.requestRenderAll();
   }
 }
 
 function startAddLine(canvas) {
-  return function (_ref) {
-    var e = _ref.e;
+  return _ref => {
+    let {
+      e
+    } = _ref;
     mouseDown = true;
-    var pointer = canvas.getScenePoint(e);
+    let pointer = canvas.getScenePoint(e);
     drawInstance = new fabric.Line([pointer.x, pointer.y, pointer.x, pointer.y], {
       strokeWidth: options.currentWidth,
       stroke: options.currentColor,
@@ -216,11 +209,13 @@ function startAddLine(canvas) {
 }
 
 function startDrawingLine(canvas) {
-  return function (_ref2) {
-    var e = _ref2.e;
+  return _ref2 => {
+    let {
+      e
+    } = _ref2;
 
     if (mouseDown) {
-      var pointer = canvas.getScenePoint(e);
+      const pointer = canvas.getScenePoint(e);
       drawInstance.set({
         x2: pointer.x,
         y2: pointer.y
@@ -243,20 +238,21 @@ function createRect(canvas) {
     canvas.selection = false;
     canvas.hoverCursor = 'auto';
     canvas.isDrawingMode = false;
-    canvas.getObjects().map(function (item) {
-      return item.set({
-        selectable: false
-      });
-    });
-    canvas.discardActiveObject().requestRenderAll();
+    canvas.getObjects().map(item => item.set({
+      selectable: false
+    }));
+    canvas.discardActiveObject();
+    canvas.requestRenderAll();
   }
 }
 
 function startAddRect(canvas) {
-  return function (_ref3) {
-    var e = _ref3.e;
+  return _ref3 => {
+    let {
+      e
+    } = _ref3;
     mouseDown = true;
-    var pointer = canvas.getScenePoint(e);
+    const pointer = canvas.getScenePoint(e);
     origX = pointer.x;
     origY = pointer.y;
     drawInstance = new fabric.Rect({
@@ -271,7 +267,7 @@ function startAddRect(canvas) {
     });
     canvas.add(drawInstance);
     backUpCanvas = [];
-    drawInstance.on('mousedown', function (e) {
+    drawInstance.on('mousedown', e => {
       if (options.currentMode === modes.ERASER) {
         canvas.remove(e.target);
       }
@@ -280,11 +276,13 @@ function startAddRect(canvas) {
 }
 
 function startDrawingRect(canvas) {
-  return function (_ref4) {
-    var e = _ref4.e;
+  return _ref4 => {
+    let {
+      e
+    } = _ref4;
 
     if (mouseDown) {
-      var pointer = canvas.getScenePoint(e);
+      const pointer = canvas.getScenePoint(e);
 
       if (pointer.x < origX) {
         drawInstance.set('left', pointer.x);
@@ -316,12 +314,11 @@ function createEllipse(canvas) {
     canvas.selection = false;
     canvas.hoverCursor = 'auto';
     canvas.isDrawingMode = false;
-    canvas.getObjects().map(function (item) {
-      return item.set({
-        selectable: false
-      });
-    });
-    canvas.discardActiveObject().requestRenderAll();
+    canvas.getObjects().map(item => item.set({
+      selectable: false
+    }));
+    canvas.discardActiveObject();
+    canvas.requestRenderAll();
   }
 }
 
@@ -332,11 +329,11 @@ function togglePanning(canvas) {
     canvas.selection = false;
     canvas.hoverCursor = 'auto';
     canvas.isDrawingMode = false;
-    var touch = 'ontouchstart' in window || navigator.maxTouchPoints > 0; //const mouse = window.matchMedia('(pointer:fine)').matches;
+    const touch = 'ontouchstart' in window || navigator.maxTouchPoints > 0; //const mouse = window.matchMedia('(pointer:fine)').matches;
 
     if (!touch) {
-      canvas.on('mouse:down', function (opt) {
-        var evt = opt.e;
+      canvas.on('mouse:down', opt => {
+        const evt = opt.e;
 
         if (evt.button === 0) {
           // Left mouse button
@@ -346,10 +343,10 @@ function togglePanning(canvas) {
           lastPosY = evt.clientY;
         }
       });
-      canvas.on('mouse:move', function (opt) {
+      canvas.on('mouse:move', opt => {
         if (isPanning) {
-          var e = opt.e;
-          var vpt = canvas.viewportTransform;
+          const e = opt.e;
+          const vpt = canvas.viewportTransform;
           vpt[4] += e.clientX - lastPosX;
           vpt[5] += e.clientY - lastPosY;
           canvas.requestRenderAll();
@@ -357,7 +354,7 @@ function togglePanning(canvas) {
           lastPosY = e.clientY;
         }
       });
-      canvas.on('mouse:up', function () {
+      canvas.on('mouse:up', () => {
         isPanning = false;
         canvas.selection = true;
       });
@@ -377,47 +374,43 @@ function togglePanning(canvas) {
   }
 }
 
-var startHandler = null;
-var moveHandler = null;
-var endHandler = null;
+let startHandler = null;
+let moveHandler = null;
+let endHandler = null;
 
-var createTouchStartHandler = function createTouchStartHandler(canvas) {
-  return function (e) {
-    if (e.touches.length === 1) {
-      var touch = e.touches[0];
-      isPanning = true;
-      canvas.selection = false;
-      lastPosX = touch.clientX;
-      lastPosY = touch.clientY;
-    }
-  };
-};
-
-var createTouchMoveHandler = function createTouchMoveHandler(canvas) {
-  return function (e) {
-    if (!isPanning || e.touches.length !== 1) return;
-    var touch = e.touches[0];
-    var vpt = canvas.viewportTransform;
-    vpt[4] += touch.clientX - lastPosX;
-    vpt[5] += touch.clientY - lastPosY;
-    canvas.requestRenderAll();
+const createTouchStartHandler = canvas => e => {
+  if (e.touches.length === 1) {
+    const touch = e.touches[0];
+    isPanning = true;
+    canvas.selection = false;
     lastPosX = touch.clientX;
     lastPosY = touch.clientY;
-  };
+  }
 };
 
-var createTouchEndHandler = function createTouchEndHandler(canvas) {
-  return function (e) {
-    isPanning = false;
-    canvas.selection = true;
-  };
+const createTouchMoveHandler = canvas => e => {
+  if (!isPanning || e.touches.length !== 1) return;
+  const touch = e.touches[0];
+  const vpt = canvas.viewportTransform;
+  vpt[4] += touch.clientX - lastPosX;
+  vpt[5] += touch.clientY - lastPosY;
+  canvas.requestRenderAll();
+  lastPosX = touch.clientX;
+  lastPosY = touch.clientY;
+};
+
+const createTouchEndHandler = canvas => e => {
+  isPanning = false;
+  canvas.selection = true;
 };
 
 function startAddEllipse(canvas) {
-  return function (_ref5) {
-    var e = _ref5.e;
+  return _ref5 => {
+    let {
+      e
+    } = _ref5;
     mouseDown = true;
-    var pointer = canvas.getScenePoint(e);
+    const pointer = canvas.getScenePoint(e);
     origX = pointer.x;
     origY = pointer.y;
     drawInstance = new fabric.Ellipse({
@@ -436,11 +429,13 @@ function startAddEllipse(canvas) {
 }
 
 function startDrawingEllipse(canvas) {
-  return function (_ref6) {
-    var e = _ref6.e;
+  return _ref6 => {
+    let {
+      e
+    } = _ref6;
 
     if (mouseDown) {
-      var pointer = canvas.getScenePoint(e);
+      const pointer = canvas.getScenePoint(e);
 
       if (pointer.x < origX) {
         drawInstance.set('left', pointer.x);
@@ -470,20 +465,21 @@ function createTriangle(canvas) {
   canvas.selection = false;
   canvas.hoverCursor = 'auto';
   canvas.isDrawingMode = false;
-  canvas.getObjects().map(function (item) {
-    return item.set({
-      selectable: false
-    });
-  });
-  canvas.discardActiveObject().requestRenderAll();
+  canvas.getObjects().map(item => item.set({
+    selectable: false
+  }));
+  canvas.discardActiveObject();
+  canvas.requestRenderAll();
 }
 
 function startAddTriangle(canvas) {
-  return function (_ref7) {
-    var e = _ref7.e;
+  return _ref7 => {
+    let {
+      e
+    } = _ref7;
     mouseDown = true;
     options.currentMode = modes.TRIANGLE;
-    var pointer = canvas.getScenePoint(e);
+    const pointer = canvas.getScenePoint(e);
     origX = pointer.x;
     origY = pointer.y;
     drawInstance = new fabric.Triangle({
@@ -502,11 +498,13 @@ function startAddTriangle(canvas) {
 }
 
 function startDrawingTriangle(canvas) {
-  return function (_ref8) {
-    var e = _ref8.e;
+  return _ref8 => {
+    let {
+      e
+    } = _ref8;
 
     if (mouseDown) {
-      var pointer = canvas.getScenePoint(e);
+      const pointer = canvas.getScenePoint(e);
 
       if (pointer.x < origX) {
         drawInstance.set('left', pointer.x);
@@ -530,9 +528,9 @@ function changeToErasingMode(canvas) {
   removeCanvasListener(canvas);
   canvas.isDrawingMode = false;
   options.currentMode = modes.ERASER;
-  canvas.hoverCursor = "url(" + (0, _cursors.default)({
+  canvas.hoverCursor = `url(${(0, _cursors.default)({
     type: 'eraser'
-  }) + "), default";
+  })}), default`;
 }
 
 function canvasObjectsSize(canvas) {
@@ -543,16 +541,14 @@ function onSelectMode(canvas) {
   options.currentMode = '';
   canvas.isDrawingMode = false;
   removeCanvasListener(canvas);
-  canvas.getObjects().map(function (item) {
-    return item.set({
-      selectable: true
-    });
-  });
+  canvas.getObjects().map(item => item.set({
+    selectable: true
+  }));
   canvas.hoverCursor = 'all-scroll';
 }
 
 function clearCanvas(canvas) {
-  canvas.getObjects().forEach(function (item) {
+  canvas.getObjects().forEach(item => {
     if (item !== canvas.backgroundImage) {
       canvas.remove(item);
     }
@@ -560,7 +556,7 @@ function clearCanvas(canvas) {
 }
 
 function clearCanvasNextPage(canvas) {
-  canvas.getObjects().forEach(function (item) {
+  canvas.getObjects().forEach(item => {
     canvas.remove(item);
   });
 }
@@ -590,11 +586,9 @@ function remove(canvas) {
   options.currentMode = '';
   canvas.isDrawingMode = false;
   removeCanvasListener(canvas);
-  canvas.getObjects().map(function (item) {
-    return item.set({
-      selectable: false
-    });
-  });
+  canvas.getObjects().map(item => item.set({
+    selectable: false
+  }));
   canvas.hoverCursor = 'all-scroll';
 }
 
@@ -605,17 +599,16 @@ function createText(canvas) {
   canvas.selection = false;
   canvas.hoverCursor = 'text';
   canvas.defaultCursor = 'text';
-  canvas.getObjects().map(function (item) {
-    return item.set({
-      selectable: false
-    });
-  });
-  canvas.discardActiveObject().requestRenderAll();
+  canvas.getObjects().map(item => item.set({
+    selectable: false
+  }));
+  canvas.discardActiveObject();
+  canvas.requestRenderAll();
 
-  var placeText = function placeText(opt) {
+  const placeText = opt => {
     if (opt.target) return;
-    var pointer = canvas.getScenePoint(opt.e);
-    var text = new fabric.Textbox('text', {
+    const pointer = canvas.getScenePoint(opt.e);
+    const text = new fabric.Textbox('text', {
       left: pointer.x,
       top: pointer.y,
       fill: options.currentColor,
@@ -633,16 +626,16 @@ function createText(canvas) {
 }
 
 function handleResize(callback) {
-  var resize_ob = new ResizeObserver(callback);
+  const resize_ob = new ResizeObserver(callback);
   return resize_ob;
 }
 
 function resizeCanvas(canvas, whiteboard) {
-  return function () {
-    var ratio = canvas.getWidth() / canvas.getHeight();
-    var whiteboardWidth = whiteboard.clientWidth;
-    var scale = whiteboardWidth / canvas.getWidth();
-    var zoom = canvas.getZoom() * scale;
+  return () => {
+    const ratio = canvas.getWidth() / canvas.getHeight();
+    const whiteboardWidth = whiteboard.clientWidth;
+    const scale = whiteboardWidth / canvas.getWidth();
+    const zoom = canvas.getZoom() * scale;
     canvas.setDimensions({
       width: whiteboardWidth,
       height: whiteboardWidth / ratio
@@ -651,88 +644,52 @@ function resizeCanvas(canvas, whiteboard) {
   };
 }
 
-var Whiteboard = function Whiteboard(_ref9) {
+const Whiteboard = _ref9 => {
   var _color$, _json$historyIndex, _json$historyIndex$ob;
 
-  var _ref9$aspectRatio = _ref9.aspectRatio,
-      aspectRatio = _ref9$aspectRatio === void 0 ? 4 / 3 : _ref9$aspectRatio,
-      setFiles = _ref9.setFiles,
-      color = _ref9.color,
-      setJSON = _ref9.setJSON,
-      json = _ref9.json,
-      pdfUrl = _ref9.pdfUrl,
-      revision = _ref9.revision,
-      setJSONScreenWidth = _ref9.setJSONScreenWidth,
-      resend = _ref9.resend,
-      jsonScreenWidth = _ref9.jsonScreenWidth,
-      _ref9$pdf = _ref9.pdf,
-      pdf = _ref9$pdf === void 0 ? undefined : _ref9$pdf,
-      setResendFiles = _ref9.setResendFiles,
-      buttonFlag = _ref9.buttonFlag,
-      initialPdfViewer = _ref9.initialPdfViewer;
+  let {
+    aspectRatio = 4 / 3,
+    setFiles,
+    color,
+    setJSON,
+    json,
+    pdfUrl,
+    revision,
+    setJSONScreenWidth,
+    resend,
+    jsonScreenWidth,
+    pdf = undefined,
+    setResendFiles,
+    buttonFlag,
+    initialPdfViewer
+  } = _ref9;
+  const [currColor, setCurrColor] = (0, _react.useState)((_color$ = color[0]) == null ? void 0 : _color$.color);
+  const [canvas, setCanvas] = (0, _react.useState)(null);
+  const [submitPdf, setSubmitPdf] = (0, _react.useState)(false);
+  const [pages, setPages] = (0, _react.useState)({});
+  const [canvasPage, setCanvasPage] = (0, _react.useState)([]);
+  const [index, setIndex] = (0, _react.useState)(0);
+  const [disableButtons, setDisableButtons] = (0, _react.useState)(false);
+  const [historyIndex, setHistoryIndex] = (0, _react.useState)(0);
+  const [totalPages, setTotalPages] = (0, _react.useState)(((_json$historyIndex = json[historyIndex]) == null ? void 0 : (_json$historyIndex$ob = _json$historyIndex.object) == null ? void 0 : _json$historyIndex$ob.length) || 0);
 
-  var _useState = (0, _react.useState)((_color$ = color[0]) == null ? void 0 : _color$.color),
-      currColor = _useState[0],
-      setCurrColor = _useState[1];
+  const [pdfViewer, setPdfViewer] = _react.default.useState(initialPdfViewer !== undefined ? initialPdfViewer : buttonFlag);
 
-  var _useState2 = (0, _react.useState)(null),
-      canvas = _useState2[0],
-      setCanvas = _useState2[1];
+  const [canvasOriginalWidth, setCanvasOriginalWidth] = _react.default.useState(878);
 
-  var _useState3 = (0, _react.useState)(false),
-      submitPdf = _useState3[0],
-      setSubmitPdf = _useState3[1];
-
-  var _useState4 = (0, _react.useState)({}),
-      pages = _useState4[0],
-      setPages = _useState4[1];
-
-  var _useState5 = (0, _react.useState)([]),
-      canvasPage = _useState5[0],
-      setCanvasPage = _useState5[1];
-
-  var _useState6 = (0, _react.useState)(0),
-      index = _useState6[0],
-      setIndex = _useState6[1];
-
-  var _useState7 = (0, _react.useState)(false),
-      disableButtons = _useState7[0],
-      setDisableButtons = _useState7[1];
-
-  var _useState8 = (0, _react.useState)(0),
-      historyIndex = _useState8[0],
-      setHistoryIndex = _useState8[1];
-
-  var _useState9 = (0, _react.useState)(((_json$historyIndex = json[historyIndex]) == null ? void 0 : (_json$historyIndex$ob = _json$historyIndex.object) == null ? void 0 : _json$historyIndex$ob.length) || 0),
-      totalPages = _useState9[0],
-      setTotalPages = _useState9[1];
-
-  var _React$useState = _react.default.useState(initialPdfViewer !== undefined ? initialPdfViewer : buttonFlag),
-      pdfViewer = _React$useState[0],
-      setPdfViewer = _React$useState[1];
-
-  var _React$useState2 = _react.default.useState(878),
-      canvasOriginalWidth = _React$useState2[0],
-      setCanvasOriginalWidth = _React$useState2[1];
-
-  var _useState10 = (0, _react.useState)({
+  const [snackbarData, setSnackBarData] = (0, _react.useState)({
     xPos: 'center',
     yPos: 'bottom',
     title: '',
     status: 'success'
-  }),
-      snackbarData = _useState10[0],
-      setSnackBarData = _useState10[1];
+  });
+  const [openSnack, setOpenSnack] = (0, _react.useState)(false);
 
-  var _useState11 = (0, _react.useState)(false),
-      openSnack = _useState11[0],
-      setOpenSnack = _useState11[1];
-
-  var handleClick = function handleClick() {
+  const handleClick = () => {
     setOpenSnack(true);
   };
 
-  var handleCloseSnack = function handleCloseSnack(event, reason) {
+  const handleCloseSnack = (event, reason) => {
     if (reason === 'clickaway') {
       return;
     }
@@ -740,85 +697,44 @@ var Whiteboard = function Whiteboard(_ref9) {
     setOpenSnack(false);
   };
 
-  var _useState12 = (0, _react.useState)({
+  const [fileCanvasInfo, setFileCanvasInfo] = (0, _react.useState)({
     file: pdf,
     totalPages: null,
     currentPageNumber: 1,
     currentPage: ''
-  }),
-      fileCanvasInfo = _useState12[0],
-      setFileCanvasInfo = _useState12[1];
-
+  });
   var canvasRef = (0, _react.useRef)(null);
-  var whiteboardRef = (0, _react.useRef)(null);
-  (0, _react.useEffect)(function () {
+  const whiteboardRef = (0, _react.useRef)(null);
+  (0, _react.useEffect)(() => {
     if (!canvas && canvasRef.current) {
-      var _canvas = initCanvas(whiteboardRef.current.clientWidth, whiteboardRef.current.clientWidth / aspectRatio);
-
-      setCanvas(function () {
-        return _canvas;
-      });
-      handleResize(resizeCanvas(_canvas, whiteboardRef.current)).observe(whiteboardRef.current);
-      setCanvasOriginalWidth(_canvas.width);
+      const canvas = initCanvas(whiteboardRef.current.clientWidth, whiteboardRef.current.clientWidth / aspectRatio);
+      setCanvas(() => canvas);
+      handleResize(resizeCanvas(canvas, whiteboardRef.current)).observe(whiteboardRef.current);
+      setCanvasOriginalWidth(canvas.width);
     }
   }, [canvasRef]);
-  (0, _react.useEffect)(function () {
-    var fetchImg = /*#__PURE__*/function () {
-      var _ref10 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-        return _regeneratorRuntime().wrap(function _callee$(_context) {
-          while (1) {
-            switch (_context.prev = _context.next) {
-              case 0:
-                _context.prev = 0;
-                clearCanvas(canvas);
-                backUpCanvas = [];
+  (0, _react.useEffect)(() => {
+    const fetchImg = async () => {
+      try {
+        clearCanvas(canvas);
+        backUpCanvas = [];
 
-                if (!(canvasPage[index] !== undefined)) {
-                  _context.next = 10;
-                  break;
-                }
-
-                _context.next = 6;
-                return canvas.loadFromJSON(canvasPage[index]);
-
-              case 6:
-                canvas.setZoom(canvasOriginalWidth / json[historyIndex].screen);
-                canvas.renderAll();
-                _context.next = 14;
-                break;
-
-              case 10:
-                _context.next = 12;
-                return canvas.loadFromJSON(json[historyIndex].object[index], function (o, object) {
-                  object.set('selectable', false);
-                  object.set('evented', false);
-                });
-
-              case 12:
-                canvas.setZoom(canvasOriginalWidth / json[historyIndex].screen);
-                canvas.renderAll();
-
-              case 14:
-                _context.next = 19;
-                break;
-
-              case 16:
-                _context.prev = 16;
-                _context.t0 = _context["catch"](0);
-                console.log(_context.t0);
-
-              case 19:
-              case "end":
-                return _context.stop();
-            }
-          }
-        }, _callee, null, [[0, 16]]);
-      }));
-
-      return function fetchImg() {
-        return _ref10.apply(this, arguments);
-      };
-    }();
+        if (canvasPage[index] !== undefined) {
+          await canvas.loadFromJSON(canvasPage[index]);
+          canvas.setZoom(canvasOriginalWidth / json[historyIndex].screen);
+          canvas.renderAll();
+        } else {
+          await canvas.loadFromJSON(json[historyIndex].object[index], (o, object) => {
+            object.set('selectable', false);
+            object.set('evented', false);
+          });
+          canvas.setZoom(canvasOriginalWidth / json[historyIndex].screen);
+          canvas.renderAll();
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
 
     if (json && canvas && !pdfViewer) {
       clearCanvas(canvas);
@@ -828,7 +744,7 @@ var Whiteboard = function Whiteboard(_ref9) {
   }, [json, canvas, pdfViewer]);
 
   function changeCurrentWidth(value) {
-    var intValue = parseInt(value);
+    const intValue = parseInt(value);
     options.currentWidth = intValue;
     canvas.freeDrawingBrush.width = intValue;
   }
@@ -840,7 +756,7 @@ var Whiteboard = function Whiteboard(_ref9) {
   }
 
   function onSaveCanvasAsImage(resendText, canvas) {
-    var textSwal = resendText ? 'You cannot undo the action once the assignment has been sent for revision.' : resend ? "Once graded, you can't reverse the changes." : "Once submitted, you can't reverse the changes.";
+    let textSwal = resendText ? 'You cannot undo the action once the assignment has been sent for revision.' : resend ? "Once graded, you can't reverse the changes." : "Once submitted, you can't reverse the changes.";
     (0, _sweetalert.default)({
       title: 'Are you sure?',
       text: textSwal,
@@ -848,43 +764,24 @@ var Whiteboard = function Whiteboard(_ref9) {
       customClass: 'Custom_Cancel',
       buttons: true,
       dangerMode: true
-    }).then( /*#__PURE__*/function () {
-      var _ref11 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(willDelete) {
-        return _regeneratorRuntime().wrap(function _callee2$(_context2) {
-          while (1) {
-            switch (_context2.prev = _context2.next) {
-              case 0:
-                if (!willDelete) {
-                  _context2.next = 4;
-                  break;
-                }
-
-                canvasRef.current.toBlob(function (blob) {
-                  var _extends2, _extends3, _extends4;
-
-                  setPages(_extends({}, pages, (_extends2 = {}, _extends2[index] = blob, _extends2)));
-                  setFiles(_extends({}, pages, (_extends3 = {}, _extends3[index] = blob, _extends3)));
-                  setJSON(_extends({}, canvasPage, (_extends4 = {}, _extends4[index] = canvas.toJSON(), _extends4)));
-                  setJSONScreenWidth(canvas.width);
-                });
-                _context2.next = 5;
-                break;
-
-              case 4:
-                return _context2.abrupt("return");
-
-              case 5:
-              case "end":
-                return _context2.stop();
-            }
-          }
-        }, _callee2);
-      }));
-
-      return function (_x) {
-        return _ref11.apply(this, arguments);
-      };
-    }());
+    }).then(async willDelete => {
+      if (willDelete) {
+        canvasRef.current.toBlob(function (blob) {
+          setPages({ ...pages,
+            [index]: blob
+          });
+          setFiles({ ...pages,
+            [index]: blob
+          });
+          setJSON({ ...canvasPage,
+            [index]: canvas.toJSON()
+          });
+          setJSONScreenWidth(canvas.width);
+        });
+      } else {
+        return;
+      }
+    });
   }
 
   function extendPage(canvas) {
@@ -898,19 +795,17 @@ var Whiteboard = function Whiteboard(_ref9) {
 
     if (json.length === 0) {
       if (!pdfViewer) {
-        var _extends5;
-
-        setCanvasPage(_extends({}, canvasPage, (_extends5 = {}, _extends5[index] = canvas.toJSON(), _extends5)));
+        setCanvasPage({ ...canvasPage,
+          [index]: canvas.toJSON()
+        });
         canvasRef.current.toBlob(function (blob) {
-          var _extends6;
-
-          setPages(_extends({}, pages, (_extends6 = {}, _extends6[index] = blob, _extends6)));
+          setPages({ ...pages,
+            [index]: blob
+          });
         });
 
         if (canvasPage[index + 1] !== undefined) {
-          canvas.loadFromJSON(canvasPage[index + 1]).then(function () {
-            return canvas.renderAll();
-          });
+          canvas.loadFromJSON(canvasPage[index + 1]).then(() => canvas.renderAll());
         } else {
           clearCanvasNextPage(canvas);
           setTotalPages(totalPages + 1);
@@ -922,26 +817,24 @@ var Whiteboard = function Whiteboard(_ref9) {
       if (index + 1 >= totalPages) return;
 
       if (!pdfViewer) {
-        var _extends7;
-
-        setCanvasPage(_extends({}, canvasPage, (_extends7 = {}, _extends7[index] = canvas.toJSON(), _extends7)));
+        setCanvasPage({ ...canvasPage,
+          [index]: canvas.toJSON()
+        });
         canvasRef.current.toBlob(function (blob) {
-          var _extends8;
-
-          setPages(_extends({}, pages, (_extends8 = {}, _extends8[index] = blob, _extends8)));
+          setPages({ ...pages,
+            [index]: blob
+          });
         });
 
         if (canvasPage[index + 1] !== undefined) {
-          canvas.loadFromJSON(canvasPage[index + 1]).then(function () {
-            return canvas.renderAll();
-          });
+          canvas.loadFromJSON(canvasPage[index + 1]).then(() => canvas.renderAll());
         } else {
           clearCanvasNextPage(canvas);
           clearCanvas(canvas);
-          canvas.loadFromJSON(json[historyIndex].object[index + 1], function (o, object) {
+          canvas.loadFromJSON(json[historyIndex].object[index + 1], (o, object) => {
             object.set('selectable', false);
             object.set('evented', false);
-          }).then(function () {
+          }).then(() => {
             canvas.setZoom(canvasOriginalWidth / json[historyIndex].screen);
             canvas.renderAll();
           });
@@ -962,17 +855,15 @@ var Whiteboard = function Whiteboard(_ref9) {
     }
 
     if (!pdfViewer) {
-      var _extends9;
-
-      setCanvasPage(_extends({}, canvasPage, (_extends9 = {}, _extends9[index] = canvas.toJSON(), _extends9)));
+      setCanvasPage({ ...canvasPage,
+        [index]: canvas.toJSON()
+      });
       canvasRef.current.toBlob(function (blob) {
-        var _extends10;
-
-        setPages(_extends({}, pages, (_extends10 = {}, _extends10[index] = blob, _extends10)));
+        setPages({ ...pages,
+          [index]: blob
+        });
       });
-      canvas.loadFromJSON(canvasPage[index - 1]).then(function () {
-        return canvas.renderAll();
-      });
+      canvas.loadFromJSON(canvasPage[index - 1]).then(() => canvas.renderAll());
     }
 
     setIndex(index - 1);
@@ -980,13 +871,11 @@ var Whiteboard = function Whiteboard(_ref9) {
 
   function redoCanvas() {
     if (backupIndex - 1 < 0) return;
-    canvas.loadFromJSON(popFromBackUp(canvas)).then(function () {
-      return canvas.renderAll();
-    });
+    canvas.loadFromJSON(popFromBackUp(canvas)).then(() => canvas.renderAll());
   }
 
   function undoCanvas(canvas) {
-    var length = canvasObjectsSize(canvas) - 1;
+    let length = canvasObjectsSize(canvas) - 1;
     pushToBackUp(canvas);
 
     if (canvas.getObjects()[length] !== canvas.backgroundImage || canvas.getObjects()[length] !== canvas.Image) {
@@ -995,16 +884,16 @@ var Whiteboard = function Whiteboard(_ref9) {
   }
 
   function zoomInCanvas(canvas) {
-    var center = new fabric.Point(canvas.getWidth() / 2, canvas.getHeight() / 4);
+    const center = new fabric.Point(canvas.getWidth() / 2, canvas.getHeight() / 4);
     canvas.zoomToPoint(center, canvas.getZoom() * 1.1);
   }
 
   function zoomOutCanvas(canvas) {
-    var center = new fabric.Point(canvas.getWidth() / 2, canvas.getHeight() / 4);
+    const center = new fabric.Point(canvas.getWidth() / 2, canvas.getHeight() / 4);
     canvas.zoomToPoint(center, canvas.getZoom() / 1.1);
   }
 
-  var toolbarCommander = function toolbarCommander(props, canvas, options) {
+  const toolbarCommander = (props, canvas, options) => {
     setOpenDraw(false);
 
     switch (props) {
@@ -1046,30 +935,18 @@ var Whiteboard = function Whiteboard(_ref9) {
     }
   };
 
-  var _useState13 = (0, _react.useState)(false),
-      openDraw = _useState13[0],
-      setOpenDraw = _useState13[1];
-
-  var _useState14 = (0, _react.useState)(false),
-      openThickness = _useState14[0],
-      setOpenThickness = _useState14[1];
-
-  var _useState15 = (0, _react.useState)(false),
-      openColor = _useState15[0],
-      setOpenColor = _useState15[1];
-
-  var _useState16 = (0, _react.useState)( /*#__PURE__*/_react.default.createElement("img", {
+  const [openDraw, setOpenDraw] = (0, _react.useState)(false);
+  const [openThickness, setOpenThickness] = (0, _react.useState)(false);
+  const [openColor, setOpenColor] = (0, _react.useState)(false);
+  const [selectedDrawIcon, setSelectedDrawIcon] = (0, _react.useState)( /*#__PURE__*/_react.default.createElement("img", {
     src: _pencil.default
-  })),
-      selectedDrawIcon = _useState16[0],
-      setSelectedDrawIcon = _useState16[1];
-
-  (0, _react.useEffect)(function () {
+  }));
+  (0, _react.useEffect)(() => {
     if (canvas) {
       if (!pdfViewer && json.length !== 0) return;
       canvas.setZoom(1);
-      var center = canvas.getCenterPoint();
-      fabric.FabricImage.fromURL(fileCanvasInfo.currentPage).then(function (img) {
+      const center = canvas.getCenterPoint();
+      fabric.FabricImage.fromURL(fileCanvasInfo.currentPage).then(img => {
         img.scaleToHeight(whiteboardRef.current.clientWidth);
         img.scaleToWidth(whiteboardRef.current.clientWidth);
         img.set({
@@ -1085,14 +962,16 @@ var Whiteboard = function Whiteboard(_ref9) {
   }, [fileCanvasInfo.currentPage, pdfViewer]);
 
   function updateFileCanvasInfo(data) {
-    setFileCanvasInfo(_extends({}, fileCanvasInfo, data));
+    setFileCanvasInfo({ ...fileCanvasInfo,
+      ...data
+    });
   }
 
-  (0, _react.useEffect)(function () {
+  (0, _react.useEffect)(() => {
     options.currentColor = currColor;
     if (canvas && buttonFlag && !pdfViewer) draw(canvas);
   }, [canvas, color]);
-  (0, _react.useEffect)(function () {
+  (0, _react.useEffect)(() => {
     options.currentColor = currColor;
     if (canvas && buttonFlag && !pdfViewer) draw(canvas);else if (canvas && buttonFlag && pdfViewer) {
       remove(canvas);
@@ -1108,9 +987,7 @@ var Whiteboard = function Whiteboard(_ref9) {
     className: _indexModule.default.nextFixedButton
   }, /*#__PURE__*/_react.default.createElement("p", null, "Page ", index + 1, " to ", totalPages), index > 0 && /*#__PURE__*/_react.default.createElement(_Button.default, {
     className: _indexModule.default.floatingButtonsZoom,
-    onClick: function onClick() {
-      return previousPage(canvas);
-    }
+    onClick: () => previousPage(canvas)
   }, /*#__PURE__*/_react.default.createElement("img", {
     src: _left.default,
     style: {
@@ -1119,9 +996,7 @@ var Whiteboard = function Whiteboard(_ref9) {
     }
   })), index + 1 < totalPages && /*#__PURE__*/_react.default.createElement(_Button.default, {
     className: _indexModule.default.floatingButtonsZoom,
-    onClick: function onClick() {
-      return nextPage(canvas);
-    }
+    onClick: () => nextPage(canvas)
   }, /*#__PURE__*/_react.default.createElement("img", {
     src: _right.default,
     style: {
@@ -1130,17 +1005,11 @@ var Whiteboard = function Whiteboard(_ref9) {
     }
   })))), (json.length === 0 || pdfViewer) && /*#__PURE__*/_react.default.createElement(_PdfCanvas.default, {
     setSubmitPdf: setSubmitPdf,
-    next: function next() {
-      return nextPage(canvas);
-    },
-    back: function back() {
-      return previousPage(canvas);
-    },
+    next: () => nextPage(canvas),
+    back: () => previousPage(canvas),
     fileCanvasInfo: fileCanvasInfo,
     updateFileCanvasInfo: updateFileCanvasInfo,
-    extend: function extend() {
-      return extendPage(canvas);
-    },
+    extend: () => extendPage(canvas),
     revision: revision
   })), /*#__PURE__*/_react.default.createElement("div", {
     className: _indexModule.default.toolbarWithColor,
@@ -1159,7 +1028,7 @@ var Whiteboard = function Whiteboard(_ref9) {
     style: {
       display: 'flex'
     },
-    onClick: function onClick() {
+    onClick: () => {
       if (!buttonFlag) return;
       setOpenThickness(!openThickness);
     },
@@ -1177,9 +1046,7 @@ var Whiteboard = function Whiteboard(_ref9) {
     }),
     ariaLabel: "Stroke Thickness"
   }), /*#__PURE__*/_react.default.createElement(_Slider.default, {
-    changeHandler: function changeHandler(v) {
-      return changeCurrentWidth(v);
-    },
+    changeHandler: v => changeCurrentWidth(v),
     open: openThickness && !openDraw && !openColor,
     value: options.currentWidth
   })), /*#__PURE__*/_react.default.createElement(_Box.default, {
@@ -1189,7 +1056,7 @@ var Whiteboard = function Whiteboard(_ref9) {
     }
   }, /*#__PURE__*/_react.default.createElement(_SpeedDial.default, {
     open: openDraw,
-    onClick: function onClick() {
+    onClick: () => {
       if (disableButtons) return;
       if (!buttonFlag) return;
       setOpenDraw(!openDraw);
@@ -1218,7 +1085,7 @@ var Whiteboard = function Whiteboard(_ref9) {
       }, /*#__PURE__*/_react.default.createElement(_OpenWith.default, null))
     }),
     tooltipTitle: "Select / Move",
-    onClick: function onClick() {
+    onClick: () => {
       setSelectedDrawIcon( /*#__PURE__*/_react.default.createElement(_OpenWith.default, null));
       toolbarCommander('SELECT', canvas);
     }
@@ -1236,7 +1103,7 @@ var Whiteboard = function Whiteboard(_ref9) {
       }))
     }),
     tooltipTitle: "Line",
-    onClick: function onClick() {
+    onClick: () => {
       setSelectedDrawIcon( /*#__PURE__*/_react.default.createElement("img", {
         src: _line.default
       }));
@@ -1256,7 +1123,7 @@ var Whiteboard = function Whiteboard(_ref9) {
       }))
     }),
     tooltipTitle: "Rectangle",
-    onClick: function onClick() {
+    onClick: () => {
       setSelectedDrawIcon( /*#__PURE__*/_react.default.createElement("img", {
         src: _rectangle.default
       }));
@@ -1276,7 +1143,7 @@ var Whiteboard = function Whiteboard(_ref9) {
       }))
     }),
     tooltipTitle: "Ellipse",
-    onClick: function onClick() {
+    onClick: () => {
       setSelectedDrawIcon( /*#__PURE__*/_react.default.createElement("img", {
         src: _circle.default
       }));
@@ -1296,7 +1163,7 @@ var Whiteboard = function Whiteboard(_ref9) {
       }))
     }),
     tooltipTitle: "Triangle",
-    onClick: function onClick() {
+    onClick: () => {
       setSelectedDrawIcon( /*#__PURE__*/_react.default.createElement("img", {
         src: _triangle.default
       }));
@@ -1316,7 +1183,7 @@ var Whiteboard = function Whiteboard(_ref9) {
       }))
     }),
     tooltipTitle: "Pencil",
-    onClick: function onClick() {
+    onClick: () => {
       setSelectedDrawIcon( /*#__PURE__*/_react.default.createElement("img", {
         src: _pencil.default
       }));
@@ -1336,7 +1203,7 @@ var Whiteboard = function Whiteboard(_ref9) {
       }))
     }),
     tooltipTitle: "Text",
-    onClick: function onClick() {
+    onClick: () => {
       setSelectedDrawIcon( /*#__PURE__*/_react.default.createElement("img", {
         src: _font.default
       }));
@@ -1349,7 +1216,7 @@ var Whiteboard = function Whiteboard(_ref9) {
     className: openColor ? _indexModule.default.speeddialColorDivOpen : _indexModule.default.speeddialColorDivClose
   }, /*#__PURE__*/_react.default.createElement(_SpeedDial.default, {
     open: openColor,
-    onClick: function onClick() {
+    onClick: () => {
       if (disableButtons) return;
       if (!buttonFlag) return;
       setOpenColor(!openColor);
@@ -1369,8 +1236,8 @@ var Whiteboard = function Whiteboard(_ref9) {
           width: 24,
           height: 24,
           backgroundColor: currColor,
-          WebkitMaskImage: "url(" + _paintBucket.default + ")",
-          maskImage: "url(" + _paintBucket.default + ")",
+          WebkitMaskImage: `url(${_paintBucket.default})`,
+          maskImage: `url(${_paintBucket.default})`,
           WebkitMaskRepeat: 'no-repeat',
           maskRepeat: 'no-repeat',
           WebkitMaskPosition: 'center',
@@ -1380,28 +1247,26 @@ var Whiteboard = function Whiteboard(_ref9) {
         }
       }))
     })
-  }, color.map(function (col) {
-    return /*#__PURE__*/_react.default.createElement(_SpeedDialAction.default, {
-      key: col.color,
-      FabProps: {
-        style: {
-          background: col.color,
-          boxShadow: currColor === col.color && '0 0 10px black'
-        }
-      },
-      className: "floating_buttons",
-      tooltipTitle: col.title,
-      onClick: function onClick() {
-        changeCurrentColor(col.color);
-        setOpenColor(!openColor);
+  }, color.map(col => /*#__PURE__*/_react.default.createElement(_SpeedDialAction.default, {
+    key: col.color,
+    FabProps: {
+      style: {
+        background: col.color,
+        boxShadow: currColor === col.color && '0 0 10px black'
       }
-    });
-  }))), /*#__PURE__*/_react.default.createElement(_SpeedDial.default, {
+    },
+    className: "floating_buttons",
+    tooltipTitle: col.title,
+    onClick: () => {
+      changeCurrentColor(col.color);
+      setOpenColor(!openColor);
+    }
+  })))), /*#__PURE__*/_react.default.createElement(_SpeedDial.default, {
     open: false,
     style: {
       display: 'flex'
     },
-    onClick: function onClick() {
+    onClick: () => {
       if (disableButtons) return;
       if (!buttonFlag) return;
       toolbarCommander(modes.ERASER, canvas);
@@ -1423,7 +1288,7 @@ var Whiteboard = function Whiteboard(_ref9) {
     style: {
       display: 'flex'
     },
-    onClick: function onClick() {
+    onClick: () => {
       if (disableButtons) return;
       undoCanvas(canvas);
     },
@@ -1444,7 +1309,7 @@ var Whiteboard = function Whiteboard(_ref9) {
     style: {
       display: 'flex'
     },
-    onClick: function onClick() {
+    onClick: () => {
       if (disableButtons) return;
       redoCanvas(canvas);
     },
@@ -1465,7 +1330,7 @@ var Whiteboard = function Whiteboard(_ref9) {
     style: {
       display: 'flex'
     },
-    onClick: function onClick() {
+    onClick: () => {
       zoomInCanvas(canvas);
     },
     direction: "up",
@@ -1485,7 +1350,7 @@ var Whiteboard = function Whiteboard(_ref9) {
     style: {
       display: 'flex'
     },
-    onClick: function onClick() {
+    onClick: () => {
       zoomOutCanvas(canvas);
     },
     direction: "up",
@@ -1505,7 +1370,7 @@ var Whiteboard = function Whiteboard(_ref9) {
     style: {
       display: 'flex'
     },
-    onClick: function onClick() {
+    onClick: () => {
       togglePanning(canvas);
     },
     direction: "up",
@@ -1528,14 +1393,14 @@ var Whiteboard = function Whiteboard(_ref9) {
     title: "Preview PDF"
   }, /*#__PURE__*/_react.default.createElement(_Box.default, {
     className: _indexModule.default.flexDiv,
-    onClick: function onClick() {
-      var _extends11;
-
+    onClick: () => {
       setIndex(0);
       updateFileCanvasInfo({
         currentPageNumber: 1
       });
-      setCanvasPage(_extends({}, canvasPage, (_extends11 = {}, _extends11[index] = canvas.toJSON(), _extends11)));
+      setCanvasPage({ ...canvasPage,
+        [index]: canvas.toJSON()
+      });
       clearCanvas(canvas);
       setPdfViewer(true);
     }
@@ -1545,7 +1410,7 @@ var Whiteboard = function Whiteboard(_ref9) {
     title: "Back to Drawing"
   }, /*#__PURE__*/_react.default.createElement(_Box.default, {
     className: _indexModule.default.flexDiv,
-    onClick: function onClick() {
+    onClick: () => {
       setIndex(0);
       updateFileCanvasInfo({
         currentPageNumber: 1
@@ -1557,7 +1422,7 @@ var Whiteboard = function Whiteboard(_ref9) {
   }))), resend && /*#__PURE__*/_react.default.createElement(_Button.default, {
     title: "Return for Revision",
     className: !buttonFlag ? _indexModule.default.disabledButton : '',
-    onClick: function onClick() {
+    onClick: () => {
       if (!buttonFlag) return;
       setResendFiles(true);
       onSaveCanvasAsImage(true, canvas);
@@ -1571,7 +1436,7 @@ var Whiteboard = function Whiteboard(_ref9) {
   }))), /*#__PURE__*/_react.default.createElement(_Button.default, {
     title: resend ? "Grade & Submit" : "Submit Assignment",
     className: !buttonFlag ? _indexModule.default.disabledButton : '',
-    onClick: function onClick() {
+    onClick: () => {
       if (!buttonFlag) return;
       setResendFiles(false);
       onSaveCanvasAsImage(false, canvas);
