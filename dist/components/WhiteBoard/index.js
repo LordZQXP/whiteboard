@@ -7,7 +7,7 @@ var _react = _interopRequireWildcard(require("react"));
 
 var _propTypes = _interopRequireDefault(require("prop-types"));
 
-var _fabric = require("fabric");
+var fabric = _interopRequireWildcard(require("fabric"));
 
 var _cursors = _interopRequireDefault(require("./cursors"));
 
@@ -34,8 +34,6 @@ var _assignment = _interopRequireDefault(require("./images/assignment.svg"));
 var _left = _interopRequireDefault(require("./images/left.svg"));
 
 var _right = _interopRequireDefault(require("./images/right.svg"));
-
-require("./eraserBrush");
 
 var _indexModule = _interopRequireDefault(require("./index.module.scss"));
 
@@ -117,17 +115,21 @@ var modes = {
 };
 
 var initCanvas = function initCanvas(width, height) {
-  var canvas = new _fabric.fabric.Canvas('canvas', {
+  var canvas = new fabric.Canvas('canvas', {
     height: height,
     width: width
   });
-  _fabric.fabric.Object.prototype.transparentCorners = false;
-  _fabric.fabric.Object.prototype.cornerStyle = 'circle';
-  _fabric.fabric.Object.prototype.borderColor = '#4447A9';
-  _fabric.fabric.Object.prototype.cornerColor = '#4447A9';
-  _fabric.fabric.Object.prototype.cornerSize = 6;
-  _fabric.fabric.Object.prototype.padding = 10;
-  _fabric.fabric.Object.prototype.borderDashArray = [5, 5];
+  Object.assign(fabric.InteractiveFabricObject.ownDefaults, {
+    transparentCorners: false,
+    cornerStyle: 'circle',
+    borderColor: '#4447A9',
+    cornerColor: '#4447A9',
+    cornerSize: 6,
+    padding: 10,
+    borderDashArray: [5, 5]
+  }); // fabric 6+ no longer creates a default freeDrawingBrush.
+
+  canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
   canvas.on('object:added', function (e) {
     e.target.on('mousedown', removeObject(canvas));
   });
@@ -201,8 +203,8 @@ function startAddLine(canvas) {
   return function (_ref) {
     var e = _ref.e;
     mouseDown = true;
-    var pointer = canvas.getPointer(e);
-    drawInstance = new _fabric.fabric.Line([pointer.x, pointer.y, pointer.x, pointer.y], {
+    var pointer = canvas.getScenePoint(e);
+    drawInstance = new fabric.Line([pointer.x, pointer.y, pointer.x, pointer.y], {
       strokeWidth: options.currentWidth,
       stroke: options.currentColor,
       selectable: false
@@ -218,7 +220,7 @@ function startDrawingLine(canvas) {
     var e = _ref2.e;
 
     if (mouseDown) {
-      var pointer = canvas.getPointer(e);
+      var pointer = canvas.getScenePoint(e);
       drawInstance.set({
         x2: pointer.x,
         y2: pointer.y
@@ -254,10 +256,10 @@ function startAddRect(canvas) {
   return function (_ref3) {
     var e = _ref3.e;
     mouseDown = true;
-    var pointer = canvas.getPointer(e);
+    var pointer = canvas.getScenePoint(e);
     origX = pointer.x;
     origY = pointer.y;
-    drawInstance = new _fabric.fabric.Rect({
+    drawInstance = new fabric.Rect({
       stroke: options.currentColor,
       strokeWidth: options.currentWidth,
       fill: options.fill ? options.currentColor : 'transparent',
@@ -282,7 +284,7 @@ function startDrawingRect(canvas) {
     var e = _ref4.e;
 
     if (mouseDown) {
-      var pointer = canvas.getPointer(e);
+      var pointer = canvas.getScenePoint(e);
 
       if (pointer.x < origX) {
         drawInstance.set('left', pointer.x);
@@ -415,10 +417,10 @@ function startAddEllipse(canvas) {
   return function (_ref5) {
     var e = _ref5.e;
     mouseDown = true;
-    var pointer = canvas.getPointer(e);
+    var pointer = canvas.getScenePoint(e);
     origX = pointer.x;
     origY = pointer.y;
-    drawInstance = new _fabric.fabric.Ellipse({
+    drawInstance = new fabric.Ellipse({
       stroke: options.currentColor,
       strokeWidth: options.currentWidth,
       fill: options.fill ? options.currentColor : 'transparent',
@@ -438,7 +440,7 @@ function startDrawingEllipse(canvas) {
     var e = _ref6.e;
 
     if (mouseDown) {
-      var pointer = canvas.getPointer(e);
+      var pointer = canvas.getScenePoint(e);
 
       if (pointer.x < origX) {
         drawInstance.set('left', pointer.x);
@@ -481,10 +483,10 @@ function startAddTriangle(canvas) {
     var e = _ref7.e;
     mouseDown = true;
     options.currentMode = modes.TRIANGLE;
-    var pointer = canvas.getPointer(e);
+    var pointer = canvas.getScenePoint(e);
     origX = pointer.x;
     origY = pointer.y;
-    drawInstance = new _fabric.fabric.Triangle({
+    drawInstance = new fabric.Triangle({
       stroke: options.currentColor,
       strokeWidth: options.currentWidth,
       fill: options.fill ? options.currentColor : 'transparent',
@@ -504,7 +506,7 @@ function startDrawingTriangle(canvas) {
     var e = _ref8.e;
 
     if (mouseDown) {
-      var pointer = canvas.getPointer(e);
+      var pointer = canvas.getScenePoint(e);
 
       if (pointer.x < origX) {
         drawInstance.set('left', pointer.x);
@@ -612,8 +614,8 @@ function createText(canvas) {
 
   var placeText = function placeText(opt) {
     if (opt.target) return;
-    var pointer = canvas.getPointer(opt.e);
-    var text = new _fabric.fabric.Textbox('text', {
+    var pointer = canvas.getScenePoint(opt.e);
+    var text = new fabric.Textbox('text', {
       left: pointer.x,
       top: pointer.y,
       fill: options.currentColor,
@@ -767,30 +769,50 @@ var Whiteboard = function Whiteboard(_ref9) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                try {
-                  clearCanvas(canvas);
-                  backUpCanvas = [];
+                _context.prev = 0;
+                clearCanvas(canvas);
+                backUpCanvas = [];
 
-                  if (canvasPage[index] !== undefined) {
-                    canvas.loadFromJSON(canvasPage[index]);
-                    canvas.setZoom(canvasOriginalWidth / json[historyIndex].screen);
-                  } else {
-                    canvas.loadFromJSON(json[historyIndex].object[index], canvas.renderAll.bind(canvas), function (o, object) {
-                      object.set('selectable', false);
-                      object.set('evented', false);
-                      canvas.setZoom(canvasOriginalWidth / json[historyIndex].screen);
-                    });
-                  }
-                } catch (err) {
-                  console.log(err);
+                if (!(canvasPage[index] !== undefined)) {
+                  _context.next = 10;
+                  break;
                 }
 
-              case 1:
+                _context.next = 6;
+                return canvas.loadFromJSON(canvasPage[index]);
+
+              case 6:
+                canvas.setZoom(canvasOriginalWidth / json[historyIndex].screen);
+                canvas.renderAll();
+                _context.next = 14;
+                break;
+
+              case 10:
+                _context.next = 12;
+                return canvas.loadFromJSON(json[historyIndex].object[index], function (o, object) {
+                  object.set('selectable', false);
+                  object.set('evented', false);
+                });
+
+              case 12:
+                canvas.setZoom(canvasOriginalWidth / json[historyIndex].screen);
+                canvas.renderAll();
+
+              case 14:
+                _context.next = 19;
+                break;
+
+              case 16:
+                _context.prev = 16;
+                _context.t0 = _context["catch"](0);
+                console.log(_context.t0);
+
+              case 19:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee);
+        }, _callee, null, [[0, 16]]);
       }));
 
       return function fetchImg() {
@@ -867,7 +889,8 @@ var Whiteboard = function Whiteboard(_ref9) {
 
   function extendPage(canvas) {
     nextPage(canvas);
-    canvas.setBackgroundImage(null, canvas.renderAll.bind(canvas));
+    canvas.backgroundImage = null;
+    canvas.renderAll();
   }
 
   function nextPage(canvas) {
@@ -885,7 +908,9 @@ var Whiteboard = function Whiteboard(_ref9) {
         });
 
         if (canvasPage[index + 1] !== undefined) {
-          canvas.loadFromJSON(canvasPage[index + 1]);
+          canvas.loadFromJSON(canvasPage[index + 1]).then(function () {
+            return canvas.renderAll();
+          });
         } else {
           clearCanvasNextPage(canvas);
           setTotalPages(totalPages + 1);
@@ -907,14 +932,18 @@ var Whiteboard = function Whiteboard(_ref9) {
         });
 
         if (canvasPage[index + 1] !== undefined) {
-          canvas.loadFromJSON(canvasPage[index + 1]);
+          canvas.loadFromJSON(canvasPage[index + 1]).then(function () {
+            return canvas.renderAll();
+          });
         } else {
           clearCanvasNextPage(canvas);
           clearCanvas(canvas);
-          canvas.loadFromJSON(json[historyIndex].object[index + 1], canvas.renderAll.bind(canvas), function (o, object) {
+          canvas.loadFromJSON(json[historyIndex].object[index + 1], function (o, object) {
             object.set('selectable', false);
             object.set('evented', false);
+          }).then(function () {
             canvas.setZoom(canvasOriginalWidth / json[historyIndex].screen);
+            canvas.renderAll();
           });
         }
       }
@@ -941,7 +970,9 @@ var Whiteboard = function Whiteboard(_ref9) {
 
         setPages(_extends({}, pages, (_extends10 = {}, _extends10[index] = blob, _extends10)));
       });
-      canvas.loadFromJSON(canvasPage[index - 1]);
+      canvas.loadFromJSON(canvasPage[index - 1]).then(function () {
+        return canvas.renderAll();
+      });
     }
 
     setIndex(index - 1);
@@ -949,7 +980,9 @@ var Whiteboard = function Whiteboard(_ref9) {
 
   function redoCanvas() {
     if (backupIndex - 1 < 0) return;
-    canvas.loadFromJSON(popFromBackUp(canvas));
+    canvas.loadFromJSON(popFromBackUp(canvas)).then(function () {
+      return canvas.renderAll();
+    });
   }
 
   function undoCanvas(canvas) {
@@ -962,12 +995,12 @@ var Whiteboard = function Whiteboard(_ref9) {
   }
 
   function zoomInCanvas(canvas) {
-    var center = new _fabric.fabric.Point(canvas.getWidth() / 2, canvas.getHeight() / 4);
+    var center = new fabric.Point(canvas.getWidth() / 2, canvas.getHeight() / 4);
     canvas.zoomToPoint(center, canvas.getZoom() * 1.1);
   }
 
   function zoomOutCanvas(canvas) {
-    var center = new _fabric.fabric.Point(canvas.getWidth() / 2, canvas.getHeight() / 4);
+    var center = new fabric.Point(canvas.getWidth() / 2, canvas.getHeight() / 4);
     canvas.zoomToPoint(center, canvas.getZoom() / 1.1);
   }
 
@@ -1035,17 +1068,17 @@ var Whiteboard = function Whiteboard(_ref9) {
     if (canvas) {
       if (!pdfViewer && json.length !== 0) return;
       canvas.setZoom(1);
-      var center = canvas.getCenter();
-
-      _fabric.fabric.Image.fromURL(fileCanvasInfo.currentPage, function (img) {
+      var center = canvas.getCenterPoint();
+      fabric.FabricImage.fromURL(fileCanvasInfo.currentPage).then(function (img) {
         img.scaleToHeight(whiteboardRef.current.clientWidth);
         img.scaleToWidth(whiteboardRef.current.clientWidth);
-        canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
-          top: center.top,
-          left: center.left,
+        img.set({
+          top: center.y,
+          left: center.x,
           originX: 'center',
           originY: 'center'
         });
+        canvas.backgroundImage = img;
         canvas.renderAll();
       });
     }

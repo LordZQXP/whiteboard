@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import getCursor from './cursors';
 import EraserIcon from './images/eraser.svg';
 import Brush from './images/paint-bucket.svg';
@@ -14,7 +14,6 @@ import sendTostudent from './images/revise.svg';
 import preview from './images/assignment.svg';
 import ArrowLeft from './images/left.svg';
 import ArrowRight from './images/right.svg';
-import './eraserBrush';
 import styles from './index.module.scss';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -67,13 +66,17 @@ const modes = {
 
 const initCanvas = (width, height) => {
   const canvas = new fabric.Canvas('canvas', { height, width });
-  fabric.Object.prototype.transparentCorners = false;
-  fabric.Object.prototype.cornerStyle = 'circle';
-  fabric.Object.prototype.borderColor = '#4447A9';
-  fabric.Object.prototype.cornerColor = '#4447A9';
-  fabric.Object.prototype.cornerSize = 6;
-  fabric.Object.prototype.padding = 10;
-  fabric.Object.prototype.borderDashArray = [5, 5];
+  Object.assign(fabric.InteractiveFabricObject.ownDefaults, {
+    transparentCorners: false,
+    cornerStyle: 'circle',
+    borderColor: '#4447A9',
+    cornerColor: '#4447A9',
+    cornerSize: 6,
+    padding: 10,
+    borderDashArray: [5, 5],
+  });
+  // fabric 6+ no longer creates a default freeDrawingBrush.
+  canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
   canvas.on('object:added', (e) => {
     e.target.on('mousedown', removeObject(canvas));
   });
@@ -143,7 +146,7 @@ function createLine(canvas) {
 function startAddLine(canvas) {
   return ({ e }) => {
     mouseDown = true;
-    let pointer = canvas.getPointer(e);
+    let pointer = canvas.getScenePoint(e);
     drawInstance = new fabric.Line([pointer.x, pointer.y, pointer.x, pointer.y], {
       strokeWidth: options.currentWidth,
       stroke: options.currentColor,
@@ -158,7 +161,7 @@ function startAddLine(canvas) {
 function startDrawingLine(canvas) {
   return ({ e }) => {
     if (mouseDown) {
-      const pointer = canvas.getPointer(e);
+      const pointer = canvas.getScenePoint(e);
       drawInstance.set({
         x2: pointer.x,
         y2: pointer.y,
@@ -188,7 +191,7 @@ function createRect(canvas) {
 function startAddRect(canvas) {
   return ({ e }) => {
     mouseDown = true;
-    const pointer = canvas.getPointer(e);
+    const pointer = canvas.getScenePoint(e);
     origX = pointer.x;
     origY = pointer.y;
     drawInstance = new fabric.Rect({
@@ -214,7 +217,7 @@ function startAddRect(canvas) {
 function startDrawingRect(canvas) {
   return ({ e }) => {
     if (mouseDown) {
-      const pointer = canvas.getPointer(e);
+      const pointer = canvas.getScenePoint(e);
 
       if (pointer.x < origX) {
         drawInstance.set('left', pointer.x);
@@ -337,7 +340,7 @@ const createTouchEndHandler = (canvas) => (e) => {
 function startAddEllipse(canvas) {
   return ({ e }) => {
     mouseDown = true;
-    const pointer = canvas.getPointer(e);
+    const pointer = canvas.getScenePoint(e);
     origX = pointer.x;
     origY = pointer.y;
     drawInstance = new fabric.Ellipse({
@@ -358,7 +361,7 @@ function startAddEllipse(canvas) {
 function startDrawingEllipse(canvas) {
   return ({ e }) => {
     if (mouseDown) {
-      const pointer = canvas.getPointer(e);
+      const pointer = canvas.getScenePoint(e);
       if (pointer.x < origX) {
         drawInstance.set('left', pointer.x);
       }
@@ -392,7 +395,7 @@ function startAddTriangle(canvas) {
   return ({ e }) => {
     mouseDown = true;
     options.currentMode = modes.TRIANGLE;
-    const pointer = canvas.getPointer(e);
+    const pointer = canvas.getScenePoint(e);
     origX = pointer.x;
     origY = pointer.y;
     drawInstance = new fabric.Triangle({
@@ -413,7 +416,7 @@ function startAddTriangle(canvas) {
 function startDrawingTriangle(canvas) {
   return ({ e }) => {
     if (mouseDown) {
-      const pointer = canvas.getPointer(e);
+      const pointer = canvas.getScenePoint(e);
       if (pointer.x < origX) {
         drawInstance.set('left', pointer.x);
       }
@@ -505,7 +508,7 @@ function createText(canvas) {
 
   const placeText = (opt) => {
     if (opt.target) return;
-    const pointer = canvas.getPointer(opt.e);
+    const pointer = canvas.getScenePoint(opt.e);
     const text = new fabric.Textbox('text', {
       left: pointer.x,
       top: pointer.y,
@@ -615,18 +618,16 @@ const Whiteboard = ({
         clearCanvas(canvas);
         backUpCanvas = [];
         if (canvasPage[index] !== undefined) {
-          canvas.loadFromJSON(canvasPage[index]);
+          await canvas.loadFromJSON(canvasPage[index]);
           canvas.setZoom(canvasOriginalWidth / json[historyIndex].screen);
+          canvas.renderAll();
         } else {
-          canvas.loadFromJSON(
-            json[historyIndex].object[index],
-            canvas.renderAll.bind(canvas),
-            function (o, object) {
-              object.set('selectable', false);
-              object.set('evented', false);
-              canvas.setZoom(canvasOriginalWidth / json[historyIndex].screen);
-            },
-          );
+          await canvas.loadFromJSON(json[historyIndex].object[index], (o, object) => {
+            object.set('selectable', false);
+            object.set('evented', false);
+          });
+          canvas.setZoom(canvasOriginalWidth / json[historyIndex].screen);
+          canvas.renderAll();
         }
       } catch (err) {
         console.log(err);
@@ -680,7 +681,8 @@ const Whiteboard = ({
 
   function extendPage(canvas) {
     nextPage(canvas);
-    canvas.setBackgroundImage(null, canvas.renderAll.bind(canvas));
+    canvas.backgroundImage = null;
+    canvas.renderAll();
   }
 
   function nextPage(canvas) {
@@ -692,7 +694,7 @@ const Whiteboard = ({
           setPages({ ...pages, [index]: blob });
         });
         if (canvasPage[index + 1] !== undefined) {
-          canvas.loadFromJSON(canvasPage[index + 1]);
+          canvas.loadFromJSON(canvasPage[index + 1]).then(() => canvas.renderAll());
         } else {
           clearCanvasNextPage(canvas);
           setTotalPages(totalPages + 1);
@@ -707,19 +709,19 @@ const Whiteboard = ({
           setPages({ ...pages, [index]: blob });
         });
         if (canvasPage[index + 1] !== undefined) {
-          canvas.loadFromJSON(canvasPage[index + 1]);
+          canvas.loadFromJSON(canvasPage[index + 1]).then(() => canvas.renderAll());
         } else {
           clearCanvasNextPage(canvas);
           clearCanvas(canvas);
-          canvas.loadFromJSON(
-            json[historyIndex].object[index + 1],
-            canvas.renderAll.bind(canvas),
-            function (o, object) {
+          canvas
+            .loadFromJSON(json[historyIndex].object[index + 1], (o, object) => {
               object.set('selectable', false);
               object.set('evented', false);
+            })
+            .then(() => {
               canvas.setZoom(canvasOriginalWidth / json[historyIndex].screen);
-            },
-          );
+              canvas.renderAll();
+            });
         }
       }
       setIndex(index + 1);
@@ -737,14 +739,14 @@ const Whiteboard = ({
       canvasRef.current.toBlob(function (blob) {
         setPages({ ...pages, [index]: blob });
       });
-      canvas.loadFromJSON(canvasPage[index - 1]);
+      canvas.loadFromJSON(canvasPage[index - 1]).then(() => canvas.renderAll());
     }
     setIndex(index - 1);
   }
 
   function redoCanvas() {
     if (backupIndex - 1 < 0) return;
-    canvas.loadFromJSON(popFromBackUp(canvas));
+    canvas.loadFromJSON(popFromBackUp(canvas)).then(() => canvas.renderAll());
   }
 
   function undoCanvas(canvas) {
@@ -818,16 +820,17 @@ const Whiteboard = ({
     if (canvas) {
       if (!pdfViewer && json.length !== 0) return;
       canvas.setZoom(1);
-      const center = canvas.getCenter();
-      fabric.Image.fromURL(fileCanvasInfo.currentPage, (img) => {
+      const center = canvas.getCenterPoint();
+      fabric.FabricImage.fromURL(fileCanvasInfo.currentPage).then((img) => {
         img.scaleToHeight(whiteboardRef.current.clientWidth);
         img.scaleToWidth(whiteboardRef.current.clientWidth);
-        canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
-          top: center.top,
-          left: center.left,
+        img.set({
+          top: center.y,
+          left: center.x,
           originX: 'center',
           originY: 'center',
         });
+        canvas.backgroundImage = img;
         canvas.renderAll();
       });
     }
