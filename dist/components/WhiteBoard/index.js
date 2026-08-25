@@ -664,6 +664,7 @@ var Whiteboard = function Whiteboard(_ref9) {
   (0, _react.useEffect)(function () {
     var fetchImg = /*#__PURE__*/function () {
       var _ref0 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
+        var _history$object, history;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -671,39 +672,51 @@ var Whiteboard = function Whiteboard(_ref9) {
                 _context.prev = 0;
                 clearCanvas(canvas);
                 backUpCanvas = [];
+                // `json` is `[]` until a stored submission arrives, and stays `[]` when
+                // the student never submitted one — a teacher opening that assignment
+                // gets a blank board to grade on, not a crash.
+                history = json[historyIndex];
                 if (!(canvasPage[index] !== undefined)) {
-                  _context.next = 10;
+                  _context.next = 9;
                   break;
                 }
-                _context.next = 6;
+                _context.next = 7;
                 return canvas.loadFromJSON(canvasPage[index]);
-              case 6:
-                canvas.setZoom(canvasOriginalWidth / json[historyIndex].screen);
-                canvas.renderAll();
-                _context.next = 14;
+              case 7:
+                _context.next = 15;
                 break;
-              case 10:
+              case 9:
+                if (!((history == null ? void 0 : (_history$object = history.object) == null ? void 0 : _history$object[index]) !== undefined)) {
+                  _context.next = 14;
+                  break;
+                }
                 _context.next = 12;
-                return canvas.loadFromJSON((0, _sanitizeCanvasJson["default"])(json[historyIndex].object[index]), function (o, object) {
+                return canvas.loadFromJSON((0, _sanitizeCanvasJson["default"])(history.object[index]), function (o, object) {
                   object.set('selectable', false);
                   object.set('evented', false);
                 });
               case 12:
-                canvas.setZoom(canvasOriginalWidth / json[historyIndex].screen);
-                canvas.renderAll();
-              case 14:
-                _context.next = 19;
+                _context.next = 15;
                 break;
-              case 16:
-                _context.prev = 16;
+              case 14:
+                return _context.abrupt("return");
+              case 15:
+                if (history != null && history.screen) {
+                  canvas.setZoom(canvasOriginalWidth / history.screen);
+                }
+                canvas.renderAll();
+                _context.next = 22;
+                break;
+              case 19:
+                _context.prev = 19;
                 _context.t0 = _context["catch"](0);
                 console.log(_context.t0);
-              case 19:
+              case 22:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, null, [[0, 16]]);
+        }, _callee, null, [[0, 19]]);
       }));
       return function fetchImg() {
         return _ref0.apply(this, arguments);
@@ -806,17 +819,23 @@ var Whiteboard = function Whiteboard(_ref9) {
             return canvas.renderAll();
           });
         } else {
+          var _history$object2;
           clearCanvasNextPage(canvas);
           clearCanvas(canvas);
-          canvas
-          // Student-authored graph — see Finding 29.
-          .loadFromJSON((0, _sanitizeCanvasJson["default"])(json[historyIndex].object[index + 1]), function (o, object) {
-            object.set('selectable', false);
-            object.set('evented', false);
-          }).then(function () {
-            canvas.setZoom(canvasOriginalWidth / json[historyIndex].screen);
-            canvas.renderAll();
-          });
+          var history = json[historyIndex];
+          if ((history == null ? void 0 : (_history$object2 = history.object) == null ? void 0 : _history$object2[index + 1]) !== undefined) {
+            canvas
+            // Student-authored graph — see Finding 29.
+            .loadFromJSON((0, _sanitizeCanvasJson["default"])(history.object[index + 1]), function (o, object) {
+              object.set('selectable', false);
+              object.set('evented', false);
+            }).then(function () {
+              if (history != null && history.screen) {
+                canvas.setZoom(canvasOriginalWidth / history.screen);
+              }
+              canvas.renderAll();
+            });
+          }
         }
       }
       setIndex(index + 1);

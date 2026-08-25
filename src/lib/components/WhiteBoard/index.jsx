@@ -623,23 +623,29 @@ const Whiteboard = ({
       try {
         clearCanvas(canvas);
         backUpCanvas = [];
+        // `json` is `[]` until a stored submission arrives, and stays `[]` when
+        // the student never submitted one — a teacher opening that assignment
+        // gets a blank board to grade on, not a crash.
+        const history = json[historyIndex];
         if (canvasPage[index] !== undefined) {
           // canvasPage and backUpCanvas are both `canvas.toJSON()` off a
           // canvas that only ever loaded sanitized input, so they inherit the
           // guarantee and are not re-checked here.
           await canvas.loadFromJSON(canvasPage[index]);
-          canvas.setZoom(canvasOriginalWidth / json[historyIndex].screen);
-          canvas.renderAll();
-        } else {
+        } else if (history?.object?.[index] !== undefined) {
           // Student-authored graph — sanitize before fabric enlivens it.
           // SECURITY_PENTEST_PREP.md Finding 29.
-          await canvas.loadFromJSON(sanitizeCanvasJson(json[historyIndex].object[index]), (o, object) => {
+          await canvas.loadFromJSON(sanitizeCanvasJson(history.object[index]), (o, object) => {
             object.set('selectable', false);
             object.set('evented', false);
           });
-          canvas.setZoom(canvasOriginalWidth / json[historyIndex].screen);
-          canvas.renderAll();
+        } else {
+          return;
         }
+        if (history?.screen) {
+          canvas.setZoom(canvasOriginalWidth / history.screen);
+        }
+        canvas.renderAll();
       } catch (err) {
         console.log(err);
       }
@@ -724,16 +730,21 @@ const Whiteboard = ({
         } else {
           clearCanvasNextPage(canvas);
           clearCanvas(canvas);
-          canvas
-            // Student-authored graph — see Finding 29.
-            .loadFromJSON(sanitizeCanvasJson(json[historyIndex].object[index + 1]), (o, object) => {
-              object.set('selectable', false);
-              object.set('evented', false);
-            })
-            .then(() => {
-              canvas.setZoom(canvasOriginalWidth / json[historyIndex].screen);
-              canvas.renderAll();
-            });
+          const history = json[historyIndex];
+          if (history?.object?.[index + 1] !== undefined) {
+            canvas
+              // Student-authored graph — see Finding 29.
+              .loadFromJSON(sanitizeCanvasJson(history.object[index + 1]), (o, object) => {
+                object.set('selectable', false);
+                object.set('evented', false);
+              })
+              .then(() => {
+                if (history?.screen) {
+                  canvas.setZoom(canvasOriginalWidth / history.screen);
+                }
+                canvas.renderAll();
+              });
+          }
         }
       }
       setIndex(index + 1);
