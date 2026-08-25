@@ -24,7 +24,7 @@ import SpeedDialIcon from '@mui/material/SpeedDialIcon';
 import Stroke from './images/stroke.svg';
 import InputSlider from './components/Slider';
 import PDFCanvas from '../PdfCanvas';
-import swal from 'sweetalert';
+import swal from '../../utils/swal';
 import StyledSnackbar from './components/StyledSnackbar';
 import ZoomIn from './images/zoom-in.svg';
 import ZoomOut from './images/zoom-out.svg';

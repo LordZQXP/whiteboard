@@ -28,7 +28,7 @@ var _SpeedDialIcon = _interopRequireDefault(require("@mui/material/SpeedDialIcon
 var _stroke = _interopRequireDefault(require("./images/stroke.svg"));
 var _Slider = _interopRequireDefault(require("./components/Slider"));
 var _PdfCanvas = _interopRequireDefault(require("../PdfCanvas"));
-var _sweetalert = _interopRequireDefault(require("sweetalert"));
+var _swal = _interopRequireDefault(require("../../utils/swal"));
 var _StyledSnackbar = _interopRequireDefault(require("./components/StyledSnackbar"));
 var _zoomIn = _interopRequireDefault(require("./images/zoom-in.svg"));
 var _zoomOut = _interopRequireDefault(require("./images/zoom-out.svg"));
@@ -727,7 +727,7 @@ var Whiteboard = function Whiteboard(_ref9) {
   }
   function onSaveCanvasAsImage(resendText, canvas) {
     var textSwal = resendText ? 'You cannot undo the action once the assignment has been sent for revision.' : resend ? "Once graded, you can't reverse the changes." : "Once submitted, you can't reverse the changes.";
-    (0, _sweetalert["default"])({
+    (0, _swal["default"])({
       title: 'Are you sure?',
       text: textSwal,
       icon: 'warning',
